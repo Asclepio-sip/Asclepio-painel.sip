@@ -1,0 +1,27 @@
+<nav class="navbar">
+  <div class="logo" routerLink="/">
+   + PROMOFARMA
+  </div>
+
+  <div class="actions">
+
+    <!-- 🔓 NÃO LOGADO -->
+    @if (!authService.isAuthenticated()) {
+      <a routerLink="/login" class="login-btn">
+        Login
+      </a>
+    }
+
+    <!-- 🔐 LOGADO -->
+    @if (authService.isAuthenticated()) {
+      <button class="user-btn">
+        Olá, {{ authService.getUserName() || 'suporte' }}
+      </button>
+
+      <button class="logout-btn" (click)="logout()">
+        Sair
+      </button>
+    }
+
+  </div>
+</nav>

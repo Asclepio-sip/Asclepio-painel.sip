@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+h2 {
+  text-align: center;
+    margin-top: 120px;
+    margin: 0 0 40px 0;
+    font-weight: 600;
+    font-size: 32px;
+    color: #333;
+}
+
+.product-container {
+  display: flex;
+  justify-content: center;
+}
+
+.product-card {
+  background: #ffffff;
+  width: 900px;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* 🔥 AQUI É O SEGREDO */
+.product-card form {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+}
+
+/* inputs + select */
+.product-card input,
+.product-card select {
+  flex: 1;
+  padding: 12px 10px;
+  border: none;
+  border-bottom: 2px solid #ddd;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+}
+
+.product-card input:focus,
+.product-card select:focus {
+  border-bottom-color: #3fd3dc;
+}
+
+/* botão */
+.product-card button {
+  padding: 14px 28px;
+  background: #3fd3dc;
+  border: none;
+  border-radius: 30px;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.product-card button:hover {
+  background: #35bcc4;
+}
+
+/* 📱 RESPONSIVO */
+@media (max-width: 768px) {
+  .product-card {
+    width: 90%;
+  }
+
+  .product-card form {
+    flex-direction: column;
+  }
+
+  .product-card button {
+    width: 100%;
+  }
+}

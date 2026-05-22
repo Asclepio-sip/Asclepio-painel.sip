@@ -1,0 +1,108 @@
+<h2 class="section-title">
+  Produtos Disponíveis
+</h2>
+
+<div class="carousel-wrapper">
+
+  <button
+    class="carousel-btn left"
+    (click)="scrollLeft()"
+  >
+    ❮
+  </button>
+
+  <div
+    class="carousel"
+    #carouselContainer
+  >
+
+    <div class="products">
+
+      @for (p of produtos; track p.id) {
+
+        <div class="product-card">
+
+          @if (p.percentualDesconto > 0) {
+
+            <div class="discount-badge">
+              -{{ p.percentualDesconto }}%
+            </div>
+
+          }
+
+          <div class="image-container">
+
+            <img
+              [src]="
+                p.imagemBase64
+                  ? 'data:image/png;base64,' + p.imagemBase64
+                  : 'assets/sem-imagem.png'
+              "
+              [alt]="p.nomeProduto"
+            />
+
+          </div>
+
+         
+
+          <h3 class="product-name">
+            {{ p.nomeProduto }}
+          </h3>
+
+           <small class="store-name">
+              {{ p.nomeLoja }}
+            </small>
+              <small class="store-name">
+              {{ p.Entregar }}
+            </small>
+          @if (p.variacao) {
+
+            <span class="variation">
+              {{ p.variacao }}
+            </span>
+
+          }
+
+          <div class="price-box">
+
+            @if (p.percentualDesconto > 0) {
+
+              <span class="old-price">
+                {{ p.precoVenda | currency:'BRL' }}
+              </span>
+
+            }
+
+            <span class="current-price">
+              {{ p.valorFinal | currency:'BRL' }}
+            </span>
+
+          </div>
+
+          <span class="stock">
+            {{ p.quantidade }} disponíveis
+          </span>
+
+          <button
+            class="add-btn"
+            (click)="adicionar(p)"
+          >
+            +
+          </button>
+
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+  <button
+    class="carousel-btn right"
+    (click)="scrollRight()"
+  >
+    ❯
+  </button>
+
+</div>

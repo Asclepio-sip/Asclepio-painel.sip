@@ -1,0 +1,73 @@
+
+<div class="lista-container">
+
+  <div *ngIf="lojas.length === 0" class="empty-state">
+    Nenhuma loja cadastrada.
+  </div>
+
+  <div
+    *ngIf="lojas.length > 0"
+    class="table-wrapper"
+  >
+
+    <table class="lojas-table">
+
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Tipo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let loja of lojas">
+
+          <td>
+            {{ loja.nomeLoja }}
+          </td>
+
+         
+          <td>
+            {{ loja.tipoAtendimento }}
+          </td>
+
+          <td class="acoes">
+
+            <button
+              class="btn editar"
+              [routerLink]="[
+                '/editar-loja',
+                loja.id
+              ]"
+            >
+              Editar
+            </button>
+
+            <button
+              class="btn funcionario"
+              [routerLink]="[
+                '/addloja',
+                loja.id,
+                'funcionarios'
+              ]"
+            >
+              Funcionários
+            </button>
+
+            <button [routerLink]="['/loja', loja.id, 'bairros']">
+          Relacionar Bairro
+        </button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</div>

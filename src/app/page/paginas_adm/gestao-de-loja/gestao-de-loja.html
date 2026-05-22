@@ -1,0 +1,58 @@
+<app-navbar-administrador></app-navbar-administrador>
+<app-sidebar></app-sidebar>
+
+
+
+<form class="card-form">
+  <div class="card">
+
+  
+      <h2 class="card-title">
+  <i data-lucide="package"></i>
+  Gerenciamento das Farmacia
+</h2>
+
+
+    <!-- Barra de busca -->
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Pesquisar produtos..."
+        (input)="onSearch($event.target.value)"
+      />
+    </div>
+
+    <!-- Botões de ação -->
+    <div class="action-buttons">
+
+<button type="button" class="btn primary" [routerLink]="['/addloja']">
+  <i data-lucide="plus"></i>
+  Novo Produto
+</button>
+
+<button
+  type="button"
+  class="btn secondary"
+  [routerLink]="['/add-bairro']"
+>
+  <i data-lucide="map-pin"></i>
+  Novo Bairro
+</button>
+
+<button type="button" class="btn success">
+  <i data-lucide="bar-chart-3"></i>
+  Relatórios
+</button>
+
+<button type="button" class="btn danger">
+  <i data-lucide="trash-2"></i>
+  Excluir
+</button>
+
+
+    </div>
+
+  </div>
+</form>
+
+<app-lista-de-loja></app-lista-de-loja>

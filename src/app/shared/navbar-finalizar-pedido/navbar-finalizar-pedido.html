@@ -1,0 +1,59 @@
+<nav class="checkout-navbar">
+
+  <div class="checkout-container">
+
+  
+    <div class="logo" (click)="telaInicial()">
+      + PROMOFARMA
+    </div>
+
+@if (showStepper) {
+<div class="checkout-steps">
+
+  <div class="step" [class.active]="activeStep >= 1">
+    <div class="circle">1</div>
+    <span>Cesta</span>
+  </div>
+
+  <div class="line"></div>
+
+  <div class="step" [class.active]="activeStep >= 2">
+    <div class="circle">2</div>
+    <span>Entrega</span>
+  </div>
+
+  <div class="line"></div>
+
+  <div class="step" [class.active]="activeStep >= 3">
+    <div class="circle">3</div>
+    <span>Pagamento</span>
+  </div>
+
+</div>
+}
+
+
+     
+    @if (showCart) {
+<div class="cart-box" (click)="abrirCarrinho()">
+  <i data-lucide="shopping-cart"></i>
+
+  <div class="cart-info">
+    <span class="cart-label">Cesta</span>
+    <strong class="cart-total">
+      {{ cartService.totalValor() | currency:'BRL' }}
+    </strong>
+  </div>
+
+  @if (cartService.totalItens() > 0) {
+    <span class="cart-badge">
+      {{ cartService.totalItens() }}
+    </span>
+  }
+</div>
+}
+
+
+  </div>
+
+</nav>

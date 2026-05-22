@@ -1,0 +1,64 @@
+<app-navbar-administrador>
+</app-navbar-administrador>
+
+<app-sidebar>
+</app-sidebar>
+
+<div class="container">
+
+  <div class="card">
+    <button class="btn-voltar"routerLink="/loja">Voltar</button>
+    <h2>
+      Gerenciamento de Bairros
+    </h2>
+
+    <div class="form-group">
+
+      <label>
+        Nome do Bairro
+      </label>
+
+      <input
+        type="text"
+        [(ngModel)]="bairro.nome"
+        placeholder="Digite o bairro"
+      />
+
+    </div>
+
+    <button
+      class="btn-salvar"
+      (click)="salvar()"
+    >
+      Salvar Bairro
+    </button>
+
+  </div>
+
+  <div class="lista">
+
+    <h3>
+      Bairros cadastrados
+    </h3>
+
+    <div
+      *ngFor="let bairro of bairros"
+      class="bairro-item"
+    >
+
+      <span>
+        {{ bairro.nome }}
+      </span>
+
+      <button
+        class="btn-delete"
+        (click)="deletar(bairro.id)"
+      >
+        Excluir
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

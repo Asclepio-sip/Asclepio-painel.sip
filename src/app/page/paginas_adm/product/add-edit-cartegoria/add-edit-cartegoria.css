@@ -1,0 +1,282 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== CONTAINER GERAL ===== */
+.card-form {
+  display: flex;
+  justify-content: center;
+  padding: 30px 20px;
+  background-color: #f4f6f8;
+  min-height: 100vh;
+}
+
+/* ===== CARD ===== */
+.card {
+  width: 100%;
+  max-width: 900px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  height: fit-content;
+}
+
+/* ===== TÍTULO ===== */
+.card-title {
+  margin-bottom: 24px;
+  font-size: 1.4rem;
+  color: #333;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ===== FORM BOX ===== */
+.form-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ===== INPUT ===== */
+input {
+  flex: 1;
+  min-width: 160px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+  font-family: 'Poppins', sans-serif;
+  color: #111111 !important;
+  background-color: #ffffff !important;
+  -webkit-text-fill-color: #111111 !important;
+  opacity: 1 !important;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input:focus {
+  border-color: #4f46e5;
+}
+
+input::placeholder {
+  color: #9ca3af !important;
+  -webkit-text-fill-color: #9ca3af !important;
+}
+
+/* ===== BOTÕES DO FORM ===== */
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  color: white !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  visibility: visible !important;
+  opacity: 1 !important;
+  white-space: nowrap;
+  transition: transform 0.2s, box-shadow 0.2s;
+  background: #4f46e5;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  opacity: 1 !important;
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.cancelar {
+  background: #64748b;
+  color: white !important;
+}
+
+/* ===== TABELA ===== */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: #f8fafc;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s;
+}
+
+tbody tr:last-child {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background: #f8fafc;
+}
+
+td {
+  padding: 13px 16px;
+  font-size: 0.9rem;
+  color: #333;
+  vertical-align: middle;
+}
+
+td:first-child {
+  width: 64px;
+  color: #9ca3af;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ===== BOTÕES DE AÇÃO NA TABELA ===== */
+.acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.acoes button {
+  padding: 8px 16px;
+  font-size: 0.82rem;
+}
+
+.edit {
+  background: #16a34a !important;
+  color: white !important;
+}
+
+.delete {
+  background: #dc2626 !important;
+  color: white !important;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-row td {
+  text-align: center;
+  padding: 40px;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 600px) {
+  .card-form {
+    padding: 16px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+  }
+
+  .form-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  input {
+    width: 100%;
+    min-width: unset;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  /* Tabela vira cards */
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody tr {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  td {
+    padding: 3px 0;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  td:nth-child(1)::before { content: 'ID:';   font-weight: 600; color: #6b7280; min-width: 52px; }
+  td:nth-child(2)::before { content: 'Nome:'; font-weight: 600; color: #6b7280; min-width: 52px; }
+
+  td:nth-child(3) {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f1f5f9 !important;
+  }
+
+  .acoes {
+    width: 100%;
+  }
+
+  .acoes button {
+    flex: 1;
+    width: auto;
+  }
+}
+
+/* ===== TABLET ===== */
+@media (min-width: 601px) and (max-width: 768px) {
+  .card-form {
+    padding: 20px 16px;
+  }
+
+  .acoes {
+    flex-direction: column;
+  }
+
+  .acoes button {
+    width: 100%;
+  }
+}

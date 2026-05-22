@@ -1,0 +1,398 @@
+/* ===== FUNDO NA TELA TODA ===== */
+:host {
+  display: block;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.checkout-wrapper {
+  background: #f5f5f5;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+/* ===== LAYOUT GRID ===== */
+.checkout-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.checkout-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.checkout-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===== CARDS BASE ===== */
+.card-entrega,
+.card-produtos,
+.card-resumo {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+
+/* ===== TÍTULOS ===== */
+.card-entrega h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: #111;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 20px;
+}
+
+/* ===== CARDS DE OPÇÃO ===== */
+.cards-container {
+  display: flex;
+  gap: 16px;
+}
+
+.option-card {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  border: 2px solid #e0e0e0;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color .2s;
+}
+
+.option-card:hover {
+  border-color: #aaa;
+}
+
+.option-card.selected {
+  border-color: #111;
+}
+
+.option-icon {
+  display: flex;
+  align-items: center;
+}
+
+.option-icon svg {
+  width: 26px;
+  height: 26px;
+  color: #333;
+}
+
+.option-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  line-height: 1.4;
+}
+
+.option-desc {
+  font-size: 12px;
+  color: #777;
+  line-height: 1.4;
+}
+
+.badge-gratis {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #222;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+
+/* ===== PRODUTOS ===== */
+.produtos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.exibir-detalhes {
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #333;
+}
+
+.produtos-lista {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.produto-thumb {
+  position: relative;
+  width: 60px;
+  margin-bottom: 10px;
+}
+
+.produto-thumb img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.badge-qty {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+/* ===== RESUMO ===== */
+.card-resumo {
+  position: sticky;
+  top: 20px;
+}
+
+.card-resumo h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 0 0 20px;
+  color: #111;
+}
+
+.linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 14px;
+}
+
+.total {
+  border-top: 1px solid #eee;
+  padding-top: 14px;
+  margin-top: 4px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #111;
+}
+
+.total-valor {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.total-valor strong {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.total-valor small {
+  font-size: 11px;
+  color: #777;
+  font-weight: 400;
+}
+
+/* ===== BOTÃO CONTINUAR ===== */
+.btn-continuar {
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px;
+  background: #d1d1d1;
+  color: #999;
+  border: none;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: not-allowed;
+  transition: background .2s, color .2s;
+}
+
+.btn-continuar.ativo {
+  background: #b5121b;
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn-continuar.ativo:hover {
+  background: #8e0e15;
+}
+
+.btn-voltar {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #222;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn-voltar:hover {
+  text-decoration: underline;
+}
+
+/* ===== CONTATO ===== */
+.card-contato {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: #efefef;
+  border-radius: 14px;
+}
+
+.contato-icon {
+  display: flex;
+  align-items: center;
+}
+
+.contato-icon svg {
+  width: 22px;
+  height: 22px;
+  color: #444;
+}
+
+.card-contato > div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.contato-label {
+  font-size: 12px;
+  color: #666;
+}
+
+.contato-numero {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+}
+
+.btn-alterar {
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: #111;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 900px) {
+  .checkout-wrapper {
+    padding: 20px 16px;
+  }
+
+  .checkout-container {
+    grid-template-columns: 1fr;
+  }
+
+  .card-resumo {
+    position: relative;
+    top: 0;
+  }
+
+  .cards-container {
+    flex-direction: column;
+  }
+}
+
+
+/* ===== Breadcrumb ===== */
+.breadcrumb {
+  padding: 12px 20px;
+  background: #f1f1f1;
+  font-size: 13px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.breadcrumb a {
+  color: #b5121b;
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.separator {
+  margin: 0 6px;
+  color: #999;
+}
+
+.current {
+  font-weight: 600;
+  color: #333;
+}
+
+
+
+@media (max-width: 400px) {
+  .breadcrumb {
+    font-size: 12px;
+    padding: 10px 14px;
+  }
+}
+
+.manutencao {
+  opacity: .7;
+  cursor: not-allowed;
+  position: relative;
+}
+
+.badge-manutencao {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #ff9800;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 4px 10px;
+}
+
+.alerta-entrega {
+  margin-bottom: 16px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #ffe5e5;
+  color: #b00020;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid #ffb3b3;
+}

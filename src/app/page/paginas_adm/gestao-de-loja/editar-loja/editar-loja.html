@@ -1,0 +1,68 @@
+<app-navbar-administrador></app-navbar-administrador>
+<app-sidebar></app-sidebar>
+
+<form (ngSubmit)="salvar()" class="card">
+
+  <h2>Detalhes da Loja</h2>
+
+  <button type="button" (click)="ativarEdicao()" *ngIf="!modoEdicao">
+    Deseja editar essa loja?
+  </button>
+
+  <div class="field">
+    <label>Nome</label>
+    <input type="text"
+           [(ngModel)]="loja.nomeLoja"
+           name="nome"
+           [disabled]="!modoEdicao">
+  </div>
+
+  <div class="field">
+    <label>CEP</label>
+    <input type="text"
+           [(ngModel)]="loja.cep"
+           name="cep"
+           [disabled]="!modoEdicao">
+  </div>
+
+  <div class="field">
+    <label>CNPJ</label>
+    <input type="text"
+           [(ngModel)]="loja.cpnj"
+           name="cnpj"
+           [disabled]="!modoEdicao">
+  </div>
+
+  <div class="field">
+    <label>Telefone</label>
+    <input type="text"
+           [(ngModel)]="loja.telefone"
+           name="telefone"
+           [disabled]="!modoEdicao">
+  </div>
+
+  <div class="field">
+    <label>Tipo Atendimento</label>
+    <select [(ngModel)]="loja.tipoAtendimento"
+            name="tipoAtendimento"
+            [disabled]="!modoEdicao">
+      <option value="ENTREGA">Entrega</option>
+      <option value="RETIRADA">Retirada</option>
+      <option value="AMBOS">Ambos</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Imagem URL</label>
+    <input type="text"
+           [(ngModel)]="loja.imagemUrl"
+           name="imagemUrl"
+           [disabled]="!modoEdicao">
+  </div>
+
+  <div class="actions" *ngIf="modoEdicao">
+    <button type="button" (click)="cancelar()">Cancelar</button>
+    <button type="submit">Salvar</button>
+  </div>
+
+</form>

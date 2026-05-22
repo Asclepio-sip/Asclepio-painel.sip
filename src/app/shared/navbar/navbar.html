@@ -1,0 +1,173 @@
+<nav class="navbar-promofarma">
+  LINHA SUPERIOR 
+  <div class="navbar-top">
+    <div class="container">
+         LOGO 
+      <a class="logo" routerLink="/">
+        <i data-lucide="plus" class="icon-plus"></i>
+        <span class="logo-text">PROMOFARMA</span>
+      </a>
+
+       BARRA DE PESQUISA 
+      <div class="search-bar">
+        <i data-lucide="search" class="search-icon"></i>
+        <input
+        type="text"
+        placeholder="Buscar medicamentos, cosméticos e muito mais..."
+        (input)="onSearch($event.target.value)"
+        >
+        <button class="search-btn">
+          <i data-lucide="search"></i>
+        </button>
+      </div>
+
+    AÇÕES 
+      <div class="actions">
+        
+         ADMIN / LOGI
+        @if (!authService.isAuthenticated()) {
+          <a routerLink="/login" class="action-item">
+            <i data-lucide="user-circle"></i>
+            <div class="action-text">
+              <small>Bem-vindo!</small>
+              <strong>Administração</strong>
+            </div>
+          </a>
+        }
+
+        @if (authService.isAuthenticated()) {
+          <button class="action-item" (click)="abrirLogout()">
+            <i data-lucide="user-circle"></i>
+            <div class="action-text">
+              <small>Olá, {{ authService.getUserName() }}</small>
+              <strong>Sair</strong>
+            </div>
+          </button>
+        }
+
+       CESTA
+<div class="action-item cart" (click)="abrirCarrinho()">
+  <i data-lucide="shopping-cart"></i>
+
+  <div class="action-text">
+    <small>Cesta</small>
+    <strong>
+    <!--  {{ cartService.totalValor() | currency:'BRL' }}-->
+    </strong>
+  </div>
+
+  @if (cartService.totalItens() > 0) {
+    <span class="badge">
+      {{ cartService.totalItens() }}
+    </span>
+  }
+</div>
+
+
+      </div>
+    </div>
+  </div>
+
+LINHA INFERIOR - CATEGORIAS 
+  <div class="navbar-bottom">
+    <div class="container">
+      <div class="categories">
+        
+        <div class="category" [class.active]="activeCategory === 'local'" (click)="setActive('local')">
+          <i data-lucide="map-pin"></i>
+          Onde estamos
+        </div>
+
+        <div class="category desktop" [class.active]="activeCategory === 'medicamentos'" (click)="setActive('medicamentos')">
+          <i data-lucide="pill"></i>
+          Medicamentos
+        </div>
+
+        <div class="category desktop" [class.active]="activeCategory === 'beleza'" (click)="setActive('beleza')">
+          <i data-lucide="sparkles"></i>
+          Beleza
+        </div>
+
+        <div class="category desktop" [class.active]="activeCategory === 'higiene'" (click)="setActive('higiene')">
+          <i data-lucide="droplet"></i>
+          Higiene
+        </div>
+
+        <div class="category desktop" [class.active]="activeCategory === 'infantil'" (click)="setActive('infantil')">
+          <i data-lucide="baby"></i>
+          Infantil
+        </div>
+
+        <div class="category desktop" [class.active]="activeCategory === 'vitaminas'" (click)="setActive('vitaminas')">
+          <i data-lucide="sun"></i>
+          Vitaminas
+        </div>
+
+        <div class="category mobile" (click)="toggleMenu()">
+          <i data-lucide="menu"></i>
+          Categorias
+        </div>
+
+        <button class="promo-btn desktop">
+          <i data-lucide="flame"></i>
+          Produtos em Promoção
+        </button>
+
+      </div>
+    </div>
+  </div>
+</nav>
+
+@if (showCart) {
+ <app-cart (close)="showCart = false"></app-cart>
+}
+
+ MENU MOBILE
+@if (showMenu) {
+  <div class="menu-backdrop" (click)="toggleMenu()">
+    <div class="menu-mobile" (click)="$event.stopPropagation()">
+      <div class="menu-header">
+        <h5>Categorias</h5>
+        <button (click)="toggleMenu()">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="menu-items">
+        <div class="menu-item"><i data-lucide="pill"></i> Medicamentos</div>
+        <div class="menu-item"><i data-lucide="sparkles"></i> Beleza</div>
+        <div class="menu-item"><i data-lucide="droplet"></i> Higiene</div>
+        <div class="menu-item"><i data-lucide="baby"></i> Infantil</div>
+        <div class="menu-item"><i data-lucide="sun"></i> Vitaminas</div>
+        <div class="menu-item"><i data-lucide="flame"></i> Promoçõessss</div>
+      </div>
+    </div>
+  </div>
+}
+
+ MODAL LOGOUT 
+@if (showLogoutModal) {
+  <div class="modal-backdrop" [class.closing]="closing">
+    <div class="modal">
+      <h5>Confirmar saída</h5>
+      <p>Tem certeza que deseja sair da administração?</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="cancelarLogout()">Cancelar</button>
+        <button class="btn-confirm" (click)="confirmarLogout()">Sair</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (toastMessage) {
+  <div class="toast-error">
+
+    <span class="msg">
+      {{ toastMessage }}
+    </span>
+
+    <button class="close" (click)="fecharToast()">
+      ×
+    </button>
+
+  </div>
+}

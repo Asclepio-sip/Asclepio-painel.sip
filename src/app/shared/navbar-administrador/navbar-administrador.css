@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+.navbar {
+  height: 64px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  font-family: 'Poppins', sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+}
+
+/* ===== LOGO ===== */
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  color:#dc2626; /* vermelho Promofarma */
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+
+/* ===== AÇÕES ===== */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ===== BOTÃO USUÁRIO ===== */
+.user-btn {
+  background: #f9fafb;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: default;
+}
+
+/* ===== BOTÃO SAIR ===== */
+.logout-btn {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width: 480px) {
+  .user-btn {
+    display: none;
+  }
+}

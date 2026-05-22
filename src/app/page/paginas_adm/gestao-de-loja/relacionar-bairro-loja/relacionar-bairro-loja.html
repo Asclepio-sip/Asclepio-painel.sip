@@ -1,0 +1,107 @@
+<app-navbar-administrador>
+</app-navbar-administrador>
+
+<app-sidebar>
+</app-sidebar>
+
+<div class="container">
+
+  <div class="card">
+
+    <h2>
+      Relacionar Bairro à Loja
+    </h2>
+
+    <div class="form-group">
+
+      <label>
+        Bairro
+      </label>
+
+      <select
+        [(ngModel)]="form.bairroId"
+      >
+        <option [value]="0">
+          Selecione
+        </option>
+
+        <option
+          *ngFor="let bairro of bairros"
+          [value]="bairro.id"
+        >
+          {{ bairro.nome }}
+        </option>
+
+      </select>
+
+    </div>
+
+    <div class="form-group">
+
+      <label>
+        Valor do Frete
+      </label>
+
+      <input
+        type="number"
+        [(ngModel)]="form.valorFrete"
+      />
+
+    </div>
+
+    <div class="acoes">
+
+      <button
+        class="btn-salvar"
+        (click)="salvar()"
+      >
+        Adicionar
+      </button>
+
+      <button
+        class="btn-voltar"
+        (click)="voltar()"
+      >
+        Voltar
+      </button>
+
+    </div>
+
+  </div>
+
+  <div class="lista">
+
+    <h3>
+      Bairros Relacionados
+    </h3>
+
+    <div
+      *ngFor="let item of bairrosRelacionados"
+      class="bairro-item"
+    >
+
+      <div>
+
+        <strong>
+          {{ getNomeBairro(item.bairroId) }}
+        </strong>
+
+        <p>
+          Frete:
+          R$ {{ item.valorFrete }}
+        </p>
+
+      </div>
+
+      <button
+        class="btn-delete"
+        (click)="deletar(item.id)"
+      >
+        Remover
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

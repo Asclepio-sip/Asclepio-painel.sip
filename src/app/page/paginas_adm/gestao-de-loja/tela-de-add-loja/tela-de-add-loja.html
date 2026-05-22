@@ -1,0 +1,190 @@
+<app-navbar-administrador></app-navbar-administrador>
+
+<app-sidebar></app-sidebar>
+
+<form (ngSubmit)="salvar()" class="card">
+
+  <h2>Cadastro de Loja</h2>
+
+  <p class="card-subtitle">
+    Preencha as informações abaixo para cadastrar uma nova loja.
+  </p>
+
+  <hr class="section-divider">
+
+  <!-- NOME -->
+
+  <div class="field">
+
+    <label for="nome">
+      Nome da Loja
+    </label>
+
+    <input
+      type="text"
+      [(ngModel)]="nomeLoja"
+      name="nomeLoja"
+      id="nome"
+      placeholder="Ex: Farmácia Central"
+    >
+
+    <span class="hint">
+      Digite o nome principal da loja.
+    </span>
+
+  </div>
+
+  <!-- CEP + CNPJ -->
+
+  <div class="field-row">
+
+    <div class="field">
+
+      <label for="cep">
+        CEP
+      </label>
+
+      <input
+        type="text"
+        [(ngModel)]="cep"
+        name="cep"
+        id="cep"
+        placeholder="54720-165"
+      >
+
+    </div>
+
+    <div class="field">
+
+      <label for="cnpj">
+        CNPJ
+      </label>
+
+      <input
+        type="text"
+        [(ngModel)]="cpnj"
+        name="cpnj"
+        id="cnpj"
+        placeholder="00.000.000/0000-00"
+      >
+
+    </div>
+
+  </div>
+
+  <!-- TELEFONE + TIPO -->
+
+  <div class="field-row">
+
+    <div class="field">
+
+      <label for="telefone">
+        Telefone
+      </label>
+
+      <input
+        type="text"
+        [(ngModel)]="telefone"
+        name="telefone"
+        id="telefone"
+        placeholder="81999999999"
+      >
+
+    </div>
+
+    <div class="field">
+
+      <label for="tipoAtendimento">
+        Tipo Atendimento
+      </label>
+
+      <div class="select-wrapper">
+
+        <select
+          [(ngModel)]="tipoAtendimento"
+          name="tipoAtendimento"
+          id="tipoAtendimento"
+        >
+
+          <option value="">
+            Selecione
+          </option>
+
+          <option value="ENTREGA">
+            Entrega
+          </option>
+
+          <option value="RETIRADA">
+            Retirada
+          </option>
+
+          <option value="AMBOS">
+            Ambos
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- FRETE GRATIS -->
+
+  <div class="field">
+
+    <label for="freteGratis">
+      Valor mínimo frete grátis
+    </label>
+
+    <input
+      type="number"
+      [(ngModel)]="valorMinimoFreteGratis"
+      name="valorMinimoFreteGratis"
+      id="freteGratis"
+      placeholder="0"
+    >
+
+  </div>
+
+  <!-- DESCRIÇÃO -->
+
+  <div class="field">
+
+    <label for="descricao">
+      Descrição
+    </label>
+
+    <textarea
+      [(ngModel)]="textoDescricao"
+      name="textoDescricao"
+      id="descricao"
+      rows="5"
+      placeholder="Descrição da loja..."
+    ></textarea>
+
+  </div>
+
+  <!-- BOTÕES -->
+
+  <div class="actions">
+
+    <button
+      type="button"
+      class="btn btn-cancel"
+      (click)="cancelar()"
+    >
+      Cancelar
+    </button>
+
+    <button
+      type="submit"
+      class="btn btn-save"
+    >
+      Salvar Loja
+    </button>
+
+  </div>
+
+</form>

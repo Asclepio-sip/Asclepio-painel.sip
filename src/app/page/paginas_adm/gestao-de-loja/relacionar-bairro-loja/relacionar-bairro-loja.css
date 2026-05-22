@@ -1,0 +1,63 @@
+.container {
+  margin-left: 270px;
+  padding: 30px;
+}
+
+.card,
+.lista {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.acoes {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-salvar,
+.btn-voltar,
+.btn-delete {
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn-salvar {
+  background: #111;
+  color: white;
+}
+
+.btn-voltar {
+  background: #ddd;
+}
+
+.bairro-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f5f5f5;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}

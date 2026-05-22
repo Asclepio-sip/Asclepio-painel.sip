@@ -1,0 +1,36 @@
+<app-navbar-administrador></app-navbar-administrador> 
+ <h2> </h2>
+
+  <h2>Usuários Cadastrados</h2>
+
+<div class="product-container">
+  
+  <div class="product-card">
+
+    <form>
+      <input
+        type="text"
+        placeholder="Login"
+        [(ngModel)]="login"
+        name="login"
+      />
+
+      <input
+        type="password"
+        placeholder="Senha"
+        [(ngModel)]="password"
+        name="password"
+      />
+
+      <select [(ngModel)]="role" name="role">
+        <option value="USER">Usuário</option>
+        <option value="ADMIN">Admin</option>
+      </select>
+
+      <button type="button" (click)="salvar()">
+        Criar
+      </button>
+    </form>
+
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<app-navbar-administrador></app-navbar-administrador>
+
+<div class="login-container">
+  <div class="login-card">
+    <h2>Login</h2>
+
+    <form (ngSubmit)="entrar()">
+      <input
+        type="text"
+        placeholder="Email"
+        [(ngModel)]="login"
+        name="login"
+        required
+      />
+
+      <input
+        type="password"
+        placeholder="Password"
+        [(ngModel)]="password"
+        name="password"
+        required
+      />
+
+      <button type="submit">Login</button>
+    </form>
+  </div>
+</div>

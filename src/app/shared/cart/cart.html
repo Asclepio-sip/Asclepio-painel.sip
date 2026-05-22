@@ -1,0 +1,133 @@
+<div class="cart-backdrop" (click)="fechar()">
+  <div class="cart-drawer"
+       (click)="$event.stopPropagation()">
+
+    <header>
+      <h3>Cesta</h3>
+
+      <button (click)="fechar()">
+        ×
+      </button>
+    </header>
+
+    <div class="cart-items">
+
+      @if (cartService.cart$ | async; as items) {
+
+        @for (
+          item of items;
+          track item.produtoId
+        ) {
+
+          <div class="cart-item">
+
+            <img
+              [src]="
+                item.imagemBase64
+                  ? 'data:image/png;base64,' +
+                    item.imagemBase64
+                  : 'assets/sem-imagem.png'
+              "
+              [alt]="item.nomeProduto"
+            >
+
+            <div class="info">
+
+              <strong>
+                {{ item.nomeProduto }}
+              </strong>
+
+              <small class="loja">
+                 {{ item.nomeLoja }}
+              </small>
+
+              @if (item.variacao) {
+                <small class="variacao">
+                  {{ item.variacao }}
+                </small>
+              }
+
+              <div class="quantity">
+
+                <button
+                  (click)="diminuir(
+                    item.produtoId,
+                    item.lojaId
+                  )"
+                >
+                  −
+                </button>
+
+                <span class="qty">
+                  {{ item.quantidade }}
+                </span>
+
+                <button
+                  (click)="aumentar(
+                    item.produtoId,
+                    item.lojaId
+                  )"
+                >
+                  +
+                </button>
+
+              </div>
+            </div>
+
+            <div class="price">
+              {{
+                item.valorFinal *
+                item.quantidade
+                | currency:'BRL'
+              }}
+            </div>
+
+            <button
+              class="remove"
+              (click)="remover(
+                item.produtoId,
+                item.lojaId
+              )"
+            >
+              🗑
+            </button>
+
+          </div>
+
+        }
+
+      }
+
+    </div>
+
+    <footer>
+
+      <strong>
+        <span>Subtotal</span>
+
+        <span>
+          {{
+            cartService.totalValor()
+            | currency:'BRL'
+          }}
+        </span>
+      </strong>
+
+      <button
+        class="finish"
+        (click)="irParaLogin()"
+      >
+        Ir para cesta
+      </button>
+
+      <button
+        class="continue"
+        (click)="fechar()"
+      >
+        Continuar comprando
+      </button>
+
+    </footer>
+
+  </div>
+</div>

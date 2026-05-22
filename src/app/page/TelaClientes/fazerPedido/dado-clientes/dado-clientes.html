@@ -1,0 +1,242 @@
+<app-navbar-finalizar-pedido
+  [activeStep]="2">
+</app-navbar-finalizar-pedido>
+
+<div class="checkout-wrapper">
+  <div class="checkout-container">
+
+    <div class="checkout-left">
+
+      <div class="card-entrega">
+        <h2>
+          Como deseja continuar?
+        </h2>
+
+        <p class="subtitle">
+          Escolha a melhor forma para finalizar sua compra.
+        </p>
+@if (mensagemErro) {
+
+  <div class="alerta-entrega">
+    ⚠️ {{ mensagemErro }}
+  </div>
+
+}
+        <div class="cards-container">
+
+          <div
+            class="option-card"
+            [class.selected]="modoPedido === 'rapido'"
+            (click)="modoPedido = 'rapido'">
+
+            <span class="option-icon">
+              ⚡
+            </span>
+
+            <span class="option-label">
+              Pedido Rápido
+            </span>
+
+            <span class="option-desc">
+              Sem cadastro. Atualizações pelo WhatsApp.
+            </span>
+
+          </div>
+
+          <div
+            class="option-card manutencao">
+
+            <span class="badge-manutencao">
+              Em breve
+            </span>
+
+            <span class="option-icon">
+              🔒
+            </span>
+
+            <span class="option-label">
+              Fazer login
+            </span>
+
+            <span class="option-desc">
+              Em manutenção
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      @if (modoPedido === 'rapido') {
+
+        <div class="card-entrega">
+
+          <h2>
+            Como deseja a entrega?
+          </h2>
+
+          <p class="subtitle">
+            Forma de entrega definida pela farmácia
+          </p>
+
+          <div class="cards-container">
+
+           <div
+             class="option-card"
+             [class.selected]="tipoEntrega === 'ENTREGA'"
+             (click)="selecionarEntrega('ENTREGA')">
+
+              <span class="option-icon">
+                🚚
+              </span>
+
+              <span class="option-label">
+                Receber no endereço
+              </span>
+
+            </div>
+
+            <div
+               class="option-card"
+               [class.selected]="tipoEntrega === 'RETIRADA'"
+               (click)="selecionarEntrega('RETIRADA')">
+
+              <span class="badge-gratis">
+                Grátis
+              </span>
+
+              <span class="option-icon">
+                🏪
+              </span>
+
+              <span class="option-label">
+                Retirar na farmácia
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      }
+
+      <div class="card-produtos">
+
+        <div class="produtos-header">
+          <span>
+            Produtos:
+          </span>
+        </div>
+
+        <div class="produtos-lista">
+
+          @for (
+            item of cartService.cart$ | async;
+            track item.produtoId
+          ) {
+
+            <div class="produto-thumb">
+
+              <img
+                [src]="
+                  item.imagemBase64
+                    ? 'data:image/png;base64,' + item.imagemBase64
+                    : 'assets/sem-imagem.png'
+                "
+                [alt]="item.nomeProduto">
+
+              <span class="badge-qty">
+                {{ item.quantidade }} un.
+              </span>
+
+            </div>
+
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="checkout-right">
+
+      <div class="card-resumo">
+
+        <h3>
+          Resumo do pedido
+        </h3>
+
+        <div class="linha">
+
+          <span>
+            Subtotal
+            (
+            {{
+              (cartService.cart$ | async)?.length
+            }}
+            )
+          </span>
+
+          <span>
+            {{
+              cartService.totalValor()
+              | currency:'BRL'
+            }}
+          </span>
+
+        </div>
+
+        <div class="linha total">
+
+          <span>
+            Total a pagar
+          </span>
+
+          <div class="total-valor">
+
+            <strong>
+              {{
+                cartService.totalValor()
+                | currency:'BRL'
+              }}
+            </strong>
+
+            <small>
+              1x s/ juros de
+              {{
+                cartService.totalValor()
+                | currency:'BRL'
+              }}
+            </small>
+
+          </div>
+
+        </div>
+
+        <button
+          class="btn-continuar"
+          [class.ativo]="podeContinuar()"
+          [disabled]="!podeContinuar()"
+          (click)="irParaTelaDados()">
+
+          Continuar
+
+        </button>
+
+        <button
+          class="btn-voltar"
+          (click)="voltar()">
+
+          Voltar para a etapa anterior
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,79 @@
+<aside
+  class="sidebar"
+  [class.open]="isOpen"
+  (click)="$event.stopPropagation()">
+
+  <nav class="menu">
+
+    @if (authService.isAuthenticated()) {
+
+      <!-- CARD DO USUÁRIO (de ponta a ponta) -->
+      <div class="user-card">
+        <div class="user-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </div>
+        <div class="user-info">
+          <div class="user-title">Menu Administrativo</div>
+          <div class="user-role">{{ authService.getUserName() }}</div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO GESTÃO -->
+      @if (authService.isAdmin()) {
+        <div class="menu-section">
+          <div class="section-title">Gestão</div>
+          
+          <a routerLink="/AddUsuario" routerLinkActive="active">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            Usuários
+          </a>
+
+          <a routerLink="/products" routerLinkActive="active">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            Produtos
+          </a>
+          
+          <a routerLink="/pedido" routerLinkActive="active">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            Pedidos
+          </a>
+           <a routerLink="/loja" routerLinkActive="active">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            Gestao de Loja
+          </a>
+        </div>
+      }
+
+      <!-- RODAPÉ -->
+      <div class="menu-footer">
+        <div class="section-title">Sistema</div>
+        <button class="logout-btn" (click)="fecharSidebar()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Fechar menu
+        </button>
+      </div>
+
+    }
+
+  </nav>
+</aside>
+
+<!-- BOTÃO TOGGLE -->
+<button 
+  class="toggle-btn"
+  *ngIf="!isOpen"
+  (click)="abrirSidebar()">
+  ☰
+</button>
