@@ -20,6 +20,7 @@ import { AddFuncionarioLoja } from './page/paginas_adm/gestao-de-loja/add-funcio
 import { AddProdutoEstoqueLoja } from './page/paginas_adm/product/add-produto-estoque-loja/add-produto-estoque-loja';
 import { AddBairro } from './page/paginas_adm/gestao-de-loja/add-bairro/add-bairro';
 import { RelacionarBairroLoja } from './page/paginas_adm/gestao-de-loja/relacionar-bairro-loja/relacionar-bairro-loja';
+import { PermissionGroups } from './core/security/permission-groups';
 export const routes: Routes = [
   { path: '', component: TelaInicial , canActivate: [publicGuard] },
   { path: 'login', component: LoginComponent, canActivate: [publicGuard] },
@@ -36,11 +37,11 @@ export const routes: Routes = [
   { path: 'addloja/:id/funcionarios', component: AddFuncionarioLoja, canActivate: [authGuard] },
   { path: 'pedidos/:id',loadComponent: () =>import('./page/paginas_adm/detalhe-pedido/detalhe-pedido').then(m => m.DetalhePedido), canActivate: [authGuard] },
   { path: 'products', component: ProductListComponent, canActivate: [authGuard] },
-  { path: 'AddUsuario', component: AdminUsersComponent, canActivate: [adminGuard] },
-  { path: 'addProduto', component: TelaDeAddProduto, canActivate: [adminGuard]},
+  { path: 'AddUsuario', component: AdminUsersComponent, canActivate: [adminGuard], data: { permissions: PermissionGroups.usuarios } },
+  { path: 'addProduto', component: TelaDeAddProduto, canActivate: [adminGuard], data: { permissions: PermissionGroups.produtos }},
   { path: 'addestoque', component: AddProdutoEstoqueLoja, canActivate: [authGuard]},
-  { path: 'addCategoria', component: AddEditCartegoria, canActivate: [adminGuard]},
-  { path: 'add-bairro', component: AddBairro, canActivate: [adminGuard]},
+  { path: 'addCategoria', component: AddEditCartegoria, canActivate: [adminGuard], data: { permissions: PermissionGroups.produtos }},
+  { path: 'add-bairro', component: AddBairro, canActivate: [adminGuard], data: { permissions: PermissionGroups.lojas }},
   {path: 'loja/:id/bairros',loadComponent: () =>import('./page/paginas_adm/gestao-de-loja/relacionar-bairro-loja/relacionar-bairro-loja').then(m => m.RelacionarBairroLoja),canActivate: [authGuard]},
   { path: '**', redirectTo: '' }
 ];
