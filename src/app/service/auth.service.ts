@@ -24,7 +24,7 @@ export class AuthService {
       .post<{
         token: string
       }>(
-        `${this.API}/auth/login`,
+        `${this.API}/user/login`,
         {
           login,
           password
