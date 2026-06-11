@@ -19,6 +19,5 @@ export class TelaInicial {
 
   constructor(private productService: ProductService) {
     this.products$ = this.productService.products$;
-    this.productService.loadPublicProducts();
   }
 }

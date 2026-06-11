@@ -20,39 +20,29 @@
         </div>
       </div>
 
-      <!-- SEÇÃO GESTÃO -->
-      @if (authService.isAdmin()) {
-        <div class="menu-section">
-          <div class="section-title">Gestão</div>
-          
-          <a routerLink="/AddUsuario" routerLinkActive="active">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            Usuários
-          </a>
+@if (authService.hasAnyPermission(authService.PERMISSIONS.USUARIO)) {
+  <a routerLink="/AddUsuario" routerLinkActive="active">
+    Usuários
+  </a>
+}
 
-          <a routerLink="/products" routerLinkActive="active">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            Produtos
-          </a>
-          
-          <a routerLink="/pedido" routerLinkActive="active">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            Pedidos
-          </a>
-           <a routerLink="/loja" routerLinkActive="active">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-            Gestao de Loja
-          </a>
-        </div>
-      }
+@if (authService.hasAnyPermission(authService.PERMISSIONS.PRODUTO)) {
+  <a routerLink="/products" routerLinkActive="active">
+    Produtos
+  </a>
+}
+
+@if (authService.hasAnyPermission(authService.PERMISSIONS.PEDIDO)) {
+  <a routerLink="/pedido" routerLinkActive="active">
+    Pedidos
+  </a>
+}
+
+@if (authService.hasAnyPermission(authService.PERMISSIONS.LOJA)) {
+  <a routerLink="/loja" routerLinkActive="active">
+    Gestão de Loja
+  </a>
+}
 
       <!-- RODAPÉ -->
       <div class="menu-footer">

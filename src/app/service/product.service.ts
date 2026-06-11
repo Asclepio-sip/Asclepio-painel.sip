@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { Categoria } from './categoria.service';
 
 /* =========================
    DTOs (BACKEND MAPPED)
@@ -59,8 +60,6 @@ export class ProductService {
   private API =
     `${environment.apiUrl}/products`;
 
-  private API_PUBLICA =
-    `${environment.apiUrl}/productsPublico`;
 
   totalPages = 0;
   totalElements = 0;
@@ -213,62 +212,18 @@ export class ProductService {
     );
   }
 
-  /* =========================
-     API PÚBLICA
-  ========================= */
 
-  loadPublicProducts() {
-
-    this.http
-      .get<PageResponse<any>>(
-        this.API
-      )
-      .pipe(
-
-        map(response =>
-
-          response.content.map(
-            p => ({
-
-              id: p.id,
-              name:
-                p.nomeProduto,
-
-              variacao:
-                p.variacao,
-
-              imagemBase64:
-                p.imagemUrl,
-
-              categoriaNome:
-                p.categoriaNome
-                || '',
-
-              precoVenda:
-                p.precoVenda
-
-            })
-          )
-        )
-      )
-      .subscribe(products => {
-
-        this.productsSubject
-          .next(products);
-
-        console.log(
-          'Produtos carregados:',
-          products
-        );
-      });
-  }
 
   getCategorias() {
 
     return this.http.get<
-      string[]
+      Categoria[]
     >(
-      `${this.API_PUBLICA}/categorias`
+      `${environment.apiUrl}/categorias`
+    ).pipe(
+      map(categorias =>
+        categorias.map(categoria => categoria.nomeCategoria)
+      )
     );
   }
 }

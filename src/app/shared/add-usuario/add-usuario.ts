@@ -20,19 +20,19 @@ export class AddUsuario {
 
   constructor(private authService: AuthService) {}
 
-  salvar() {
-    this.authService.register(this.login, this.password, this.role)
-      .subscribe({
-        next: () => {
-          alert('Usuário criado com sucesso!');
-          this.login = '';
-          this.password = '';
-          this.role = 'USER';
-        },
-        error: err => {
-          alert(err.error || 'Erro ao criar usuário');
-        }
-      });
-  }
+  // salvar() {
+  //   this.authService.register(this.login, this.password, this.role)
+  //     .subscribe({
+  //       next: () => {
+  //         alert('Usuário criado com sucesso!');
+  //         this.login = '';
+  //         this.password = '';
+  //         this.role = 'USER';
+  //       },
+  //       error: err => {
+  //         alert(err.error || 'Erro ao criar usuário');
+  //       }
+  //     });
+  // }
 
 }
