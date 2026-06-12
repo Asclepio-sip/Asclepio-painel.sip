@@ -99,6 +99,14 @@ h2 {
   color: #c2185b;
 }
 
+.permission-list {
+  display: inline-block;
+  max-width: 320px;
+  color: #555;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .btn-edit {
   display: inline-flex;
   align-items: center;
@@ -278,6 +286,48 @@ h2 {
 
 .form-group input::placeholder {
   color: #aaa;
+}
+
+.permission-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.permission-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background: #fafafa;
+  cursor: pointer;
+}
+
+.permission-option input {
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+}
+
+.permission-option span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.permission-option strong {
+  color: #333;
+  font-size: 14px;
+}
+
+.permission-option small {
+  color: #777;
+  font-size: 12px;
 }
 
 .modal-footer {
