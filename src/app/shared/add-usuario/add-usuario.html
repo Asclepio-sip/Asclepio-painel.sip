@@ -1,36 +1,113 @@
-<app-navbar-administrador></app-navbar-administrador> 
- <h2> </h2>
+<app-navbar-administrador></app-navbar-administrador>
 
-  <h2>Usuários Cadastrados</h2>
+<h2>Usuarios e permissoes</h2>
 
 <div class="product-container">
-  
   <div class="product-card">
+    <div class="create-layout">
+      <form class="create-form">
+        <div class="form-title">
+          <h3>Criar usuario</h3>
+          <p>Escolha uma role e ajuste as permissoes se precisar.</p>
+        </div>
 
-    <form>
-      <input
-        type="text"
-        placeholder="Login"
-        [(ngModel)]="login"
-        name="login"
-      />
+        <label class="field">
+          <span>Login</span>
+          <input
+            type="text"
+            placeholder="Ex: suporte1"
+            [(ngModel)]="login"
+            name="login"
+          />
+        </label>
 
-      <input
-        type="password"
-        placeholder="Senha"
-        [(ngModel)]="password"
-        name="password"
-      />
+        <label class="field">
+          <span>Senha</span>
+          <input
+            type="password"
+            placeholder="Digite a senha"
+            [(ngModel)]="password"
+            name="password"
+          />
+        </label>
 
-      <select [(ngModel)]="role" name="role">
-        <option value="USER">Usuário</option>
-        <option value="ADMIN">Admin</option>
-      </select>
+        <label class="field">
+          <span>Role</span>
+          <select [(ngModel)]="roleId" name="roleId" (ngModelChange)="onRoleChange()">
+            <option value="">Selecione uma role</option>
+            <option *ngFor="let role of roles" [value]="role.id">
+              {{ role.nome }}
+            </option>
+          </select>
+        </label>
 
-      <!-- <button type="button" (click)="salvar()">
-        Criar
-      </button> -->
-    </form>
+        <button type="button" (click)="salvar()" [disabled]="salvando">
+          {{ salvando ? 'Criando...' : 'Criar' }}
+        </button>
+      </form>
 
+      <div class="permissions-panel">
+        <div class="permissions-header">
+          <div>
+            <h3>Permissoes da role</h3>
+            <p>{{ selectedPermissionIds.length }} de {{ getTotalPermissoes() }} selecionadas</p>
+          </div>
+
+          <label class="select-all">
+            <input
+              type="checkbox"
+              [checked]="isTudoSelecionado()"
+              (change)="toggleTodasPermissoes($event)"
+            />
+            Marcar tudo
+          </label>
+        </div>
+
+        <div class="permissions-table-wrap">
+          <table class="permissions-table">
+            <thead>
+              <tr>
+                <th>Modulo</th>
+                <th *ngFor="let action of permissionActions">{{ action.label }}</th>
+                <th>Linha</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let group of permissionGroups">
+                <td class="module-cell">{{ group.recurso }}</td>
+
+                <td *ngFor="let action of permissionActions">
+                  <ng-container *ngIf="getPermission(group, action.key) as permission; else noPermission">
+                    <label class="check-cell" [title]="permission.descricao">
+                      <input
+                        type="checkbox"
+                        [checked]="isPermissionSelected(permission.id)"
+                        (change)="togglePermission(permission.id, $event)"
+                      />
+                    </label>
+                  </ng-container>
+
+                  <ng-template #noPermission>
+                    <span class="empty-permission">-</span>
+                  </ng-template>
+                </td>
+
+                <td>
+                  <label class="check-cell row-check" title="Marcar todas as permissoes desta linha">
+                    <input
+                      type="checkbox"
+                      [checked]="isGrupoSelecionado(group)"
+                      [indeterminate]="isGrupoParcial(group)"
+                      (change)="toggleGrupo(group, $event)"
+                    />
+                  </label>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
