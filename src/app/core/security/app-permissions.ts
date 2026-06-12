@@ -1,55 +1,72 @@
 export const AppPermissions = {
 
   Produto: {
-    read: 'PRODUTO_READ',
-    create: 'PRODUTO_CREATE',
-    update: 'PRODUTO_UPDATE',
-    delete: 'PRODUTO_DELETE',
-
-    legacyRead: 'PRODUCT_READ',
-    legacyCreate: 'PRODUCT_CREATE',
-    legacyUpdate: 'PRODUCT_UPDATE',
-    legacyDelete: 'PRODUCT_DELETE',
+    read: 'VerProduto',
+    create: 'CriarProduto',
+    update: 'EditarProduto',
+    delete: 'ExcluirProduto',
   },
 
   Estoque: {
-    read: 'ESTOQUE_READ',
-    create: 'ESTOQUE_CREATE',
-    update: 'ESTOQUE_UPDATE',
-    delete: 'ESTOQUE_DELETE',
-    promo: 'ESTOQUE_PROMO',
+    read: 'VerEstoque',
+    create: 'CriarEstoque',
+    update: 'EditarEstoque',
+    delete: 'ExcluirEstoque',
+    promo: 'PromocaoEstoque',
   },
 
   Loja: {
-    read: 'LOJA_READ',
-    create: 'LOJA_CREATE',
-    update: 'LOJA_UPDATE',
-    delete: 'LOJA_DELETE',
+    read: 'VerLoja',
+    create: 'CriarLoja',
+    update: 'EditarLoja',
+    delete: 'ExcluirLoja',
+  },
+
+  Bairro: {
+    read: 'VerBairro',
+    create: 'CriarBairro',
+    update: 'EditarBairro',
+    delete: 'ExcluirBairro',
+  },
+
+  LojaBairro: {
+    read: 'VerLojaBairro',
+    create: 'CriarLojaBairro',
+    update: 'EditarLojaBairro',
+    delete: 'ExcluirLojaBairro',
   },
 
   Pedido: {
-    read: 'PEDIDO_READ',
-    create: 'PEDIDO_CREATE',
-    update: 'PEDIDO_UPDATE',
-    delete: 'PEDIDO_DELETE',
+    read: 'VerPedido',
+    create: 'CriarPedido',
+    update: 'EditarPedido',
+    delete: 'ExcluirPedido',
   },
 
   Usuario: {
-    read: 'USUARIO_READ',
-    create: 'USUARIO_CREATE',
-    update: 'USUARIO_UPDATE',
-    delete: 'USUARIO_DELETE',
+    read: 'VerUsuario',
+    create: 'CriarUsuario',
+    update: 'EditarUsuario',
+    delete: 'ExcluirUsuario',
   },
 
   Categoria: {
-    read: 'CATEGORIA_READ',
-    create: 'CATEGORIA_CREATE',
-    update: 'CATEGORIA_UPDATE',
-    delete: 'CATEGORIA_DELETE',
+    read: 'VerCategoria',
+    create: 'CriarCategoria',
+    update: 'EditarCategoria',
+    delete: 'ExcluirCategoria',
+  },
+
+  User: {
+    read: 'VerUser',
+    create: 'CriarUser',
+    update: 'EditarUser',
+    delete: 'ExcluirUser',
   },
 
   Sistema: {
-    permissionsRead: 'PERMISSIONS_READ',
+    permissionsRead: 'VerPermissoes',
+    roleRead: 'VerRole',
   }
 
 } as const;

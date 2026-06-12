@@ -4,7 +4,10 @@ export const PermissionGroups = {
 
   produtos: [
     AppPermissions.Produto.read,
-    AppPermissions.Produto.legacyRead,
+  ],
+
+  estoque: [
+    AppPermissions.Estoque.read,
   ],
 
   pedidos: [
@@ -13,19 +16,45 @@ export const PermissionGroups = {
 
   usuarios: [
     AppPermissions.Usuario.read,
+    AppPermissions.User.read,
   ],
 
   lojas: [
     AppPermissions.Loja.read,
   ],
 
+  categorias: [
+    AppPermissions.Categoria.read,
+  ],
+
+  bairros: [
+    AppPermissions.Bairro.read,
+  ],
+
+  lojaBairros: [
+    AppPermissions.LojaBairro.read,
+  ],
+
+  roles: [
+    AppPermissions.Sistema.roleRead,
+  ],
+
+  permissoes: [
+    AppPermissions.Sistema.permissionsRead,
+  ],
+
   gestao: [
     AppPermissions.Produto.read,
-    AppPermissions.Produto.legacyRead,
+    AppPermissions.Estoque.read,
     AppPermissions.Pedido.read,
     AppPermissions.Usuario.read,
+    AppPermissions.User.read,
     AppPermissions.Loja.read,
-    AppPermissions.Estoque.read,
+    AppPermissions.Categoria.read,
+    AppPermissions.Bairro.read,
+    AppPermissions.LojaBairro.read,
+    AppPermissions.Sistema.permissionsRead,
+    AppPermissions.Sistema.roleRead,
   ]
 
 } as const;
