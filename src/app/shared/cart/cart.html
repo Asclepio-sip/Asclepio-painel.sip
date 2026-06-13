@@ -16,7 +16,7 @@
 
         @for (
           item of items;
-          track item.produtoId
+          track item.variacaoId
         ) {
 
           <div class="cart-item">
@@ -41,9 +41,9 @@
                  {{ item.nomeLoja }}
               </small>
 
-              @if (item.variacao) {
+              @if (item.nomeVariacao) {
                 <small class="variacao">
-                  {{ item.variacao }}
+                  {{ item.nomeVariacao }}
                 </small>
               }
 
@@ -51,7 +51,7 @@
 
                 <button
                   (click)="diminuir(
-                    item.produtoId,
+                    item.variacaoId,
                     item.lojaId
                   )"
                 >
@@ -64,7 +64,7 @@
 
                 <button
                   (click)="aumentar(
-                    item.produtoId,
+                    item.variacaoId,
                     item.lojaId
                   )"
                 >
@@ -85,7 +85,7 @@
             <button
               class="remove"
               (click)="remover(
-                item.produtoId,
+                item.variacaoId,
                 item.lojaId
               )"
             >

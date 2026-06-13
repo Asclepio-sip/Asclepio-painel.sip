@@ -18,7 +18,7 @@
 
     <div class="products">
 
-      @for (p of produtos; track p.id) {
+      @for (p of produtos; track p.variacaoId) {
 
         <div class="product-card">
 
@@ -55,10 +55,10 @@
               <small class="store-name">
               {{ p.Entregar }}
             </small>
-          @if (p.variacao) {
+          @if (p.nomeVariacao) {
 
             <span class="variation">
-              {{ p.variacao }}
+              {{ p.nomeVariacao }}
             </span>
 
           }

@@ -27,9 +27,12 @@
     <div class="table-header">
       <div>Imagem</div>
       <div>Produto</div>
+      <div>Variação</div>
       <div>Loja</div>
-      <div>Estoque</div>
+      <div>Quantidade</div>
       <div>Preço</div>
+      <div>Desconto</div>
+      <div>Preço final</div>
       <div>Ações</div>
     </div>
 
@@ -39,9 +42,12 @@
       </div>
 
       <div class="col-name">{{ p.nomeProduto }}</div>
+      <div>{{ p.nomeVariacao }}</div>
       <div class="col-store">{{ p.nomeLoja }}</div>
       <div class="col-stock">{{ p.quantidade }}</div>
-      <div class="col-price">R$ {{ p.valorFinal }}</div>
+      <div>{{ p.precoVenda | currency:'BRL' }}</div>
+      <div>{{ p.percentualDesconto || 0 }}%</div>
+      <div class="col-price">{{ p.valorFinal | currency:'BRL' }}</div>
 
       <div class="col-actions">
         <button class="btn-minus" type="button" (click)="diminuirEstoque(p)">-</button>

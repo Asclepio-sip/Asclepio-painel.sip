@@ -3,7 +3,6 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
-import { forkJoin } from 'rxjs';
 
 import { ProductService } from '../../../service/product.service';
 import { NavbarAdministradorComponent } from '../../../shared/navbar-administrador/navbar-administrador';
@@ -23,21 +22,14 @@ import { NavbarAdministradorComponent } from '../../../shared/navbar-administrad
 })
 export class TelaDeAddProduto implements OnInit {
 
-  name!: string;
-  categoriaSelecionada!: string;
+  name = '';
+  categoriaSelecionada = '';
   categorias: string[] = [];
 
-  imagemBase64!: string;
-  previewImagem!: string;
+  imagemBase64 = '';
+  previewImagem = '';
 
   dropdownAberto = false;
-
-  variacoes: {
-    nome: string;
-    precoVenda: number;
-  }[] = [
-    { nome: '', precoVenda: 0 }
-  ];
 
   constructor(
     private productService: ProductService,
@@ -53,10 +45,6 @@ export class TelaDeAddProduto implements OnInit {
       }
     });
   }
-
-  // =========================
-  // Upload de imagem
-  // =========================
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
@@ -75,47 +63,34 @@ export class TelaDeAddProduto implements OnInit {
     }
   }
 
- private convertToBase64(file: File) {
+  private convertToBase64(file: File) {
+    const img = new Image();
+    const reader = new FileReader();
 
-  const img = new Image();
+    reader.onload = (e: any) => {
+      img.src = e.target.result;
 
-  const reader = new FileReader();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxWidth = 800;
+        const scale = maxWidth / img.width;
 
-  reader.onload = (e: any) => {
+        canvas.width = maxWidth;
+        canvas.height = img.height * scale;
 
-    img.src = e.target.result;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
-    img.onload = () => {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      const canvas = document.createElement('canvas');
-
-      const MAX_WIDTH = 800;
-      const scale = MAX_WIDTH / img.width;
-
-      canvas.width = MAX_WIDTH;
-      canvas.height = img.height * scale;
-
-      const ctx = canvas.getContext('2d');
-
-      if (!ctx) return;
-
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      // CONVERTE PARA WEBP + COMPRESSÃO
-      const webpBase64 = canvas.toDataURL('image/webp', 0.7);
-
-      this.previewImagem = webpBase64;
-
-      // remove "data:image/webp;base64,"
-      this.imagemBase64 = webpBase64.split(',')[1];
+        const webpBase64 = canvas.toDataURL('image/webp', 0.7);
+        this.previewImagem = webpBase64;
+        this.imagemBase64 = webpBase64.split(',')[1];
+      };
     };
-  };
 
-  reader.readAsDataURL(file);
-}
-  // =========================
-  // Dropdown categoria
-  // =========================
+    reader.readAsDataURL(file);
+  }
 
   toggleDropdown() {
     this.dropdownAberto = !this.dropdownAberto;
@@ -138,59 +113,27 @@ export class TelaDeAddProduto implements OnInit {
     this.dropdownAberto = false;
   }
 
-  // =========================
-  // Variações
-  // =========================
-
-  adicionarVariacao() {
-    this.variacoes.push({ nome: '', precoVenda: 0 });
-  }
-
-  removerVariacao(index: number) {
-    if (this.variacoes.length > 1) {
-      this.variacoes.splice(index, 1);
-    }
-  }
-
-  trackByIndex(index: number): number {
-    return index;
-  }
-
-  // =========================
-  // Salvar
-  // =========================
-
   salvar() {
-
-    if (!this.name?.trim() ||
-        !this.categoriaSelecionada ||
-        !this.imagemBase64) {
-
-      Swal.fire('Atenção', 'Preencha todos os campos obrigatórios.', 'warning');
+    if (!this.name.trim() || !this.categoriaSelecionada || !this.imagemBase64) {
+      Swal.fire('Atencao', 'Preencha todos os campos obrigatorios.', 'warning');
       return;
     }
 
-    for (const v of this.variacoes) {
-      if (!v.nome.trim() ) {
-        Swal.fire('Erro', 'Preencha corretamente as variações.', 'warning');
-        return;
-      }
-    }
-
-    const requests = this.variacoes.map(v =>
-      this.productService.addProduct({
-        name: this.name.trim(),
-        variacao: v.nome.trim(),
-        categoriaNome: this.categoriaSelecionada,
-        precoVenda: v.precoVenda,
-        imagemBase64: this.imagemBase64
-      })
-    );
-
-    forkJoin(requests).subscribe({
-      next: () => {
+    this.productService.addProduct({
+      name: this.name.trim(),
+      categoriaNome: this.categoriaSelecionada,
+      imagemBase64: this.imagemBase64
+    }).subscribe({
+      next: (produto) => {
         Swal.fire('Sucesso', 'Produto cadastrado!', 'success')
-          .then(() => this.router.navigate(['/products']));
+          .then(() => {
+            if (produto?.id) {
+              this.router.navigate(['/products', produto.id, 'variacoes']);
+              return;
+            }
+
+            this.router.navigate(['/variacoes']);
+          });
       },
       error: () => {
         Swal.fire('Erro', 'Erro ao salvar produto.', 'error');

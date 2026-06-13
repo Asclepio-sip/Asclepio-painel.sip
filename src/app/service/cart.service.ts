@@ -5,12 +5,13 @@ import { Estoque } from './estoque.service';
 
 export interface CartItem {
   produtoId: number;
+  variacaoId: number;
   lojaId: number;
   nomeLoja: string;
 
   nomeProduto: string;
   imagemBase64?: string;
-  variacao?: string;
+  nomeVariacao: string;
 
   precoVenda: number;
   valorFinal: number;
@@ -72,7 +73,7 @@ add(produto: Estoque) {
 
   const existente = this.items.find(
     i =>
-      i.produtoId === produto.produtoId &&
+      i.variacaoId === produto.variacaoId &&
       i.lojaId === produto.lojaId
   );
 
@@ -81,12 +82,13 @@ add(produto: Estoque) {
   } else {
     this.items.push({
       produtoId: produto.produtoId,
+      variacaoId: produto.variacaoId,
       lojaId: produto.lojaId,
       nomeLoja: produto.nomeLoja,
 
       nomeProduto: produto.nomeProduto,
       imagemBase64: produto.imagemBase64,
-      variacao: produto.variacao,
+      nomeVariacao: produto.nomeVariacao,
 
       precoVenda: produto.precoVenda,
       valorFinal: produto.valorFinal,
@@ -99,10 +101,10 @@ add(produto: Estoque) {
 
   this.cartSubject.next([...this.items]);
 }
-remove(produtoId: number, lojaId: number) {
+remove(variacaoId: number, lojaId: number) {
 
   this.items = this.items.filter(
-    i => !(i.produtoId === produtoId && i.lojaId === lojaId)
+    i => !(i.variacaoId === variacaoId && i.lojaId === lojaId)
   );
 
   if (this.items.length === 0) {
@@ -112,11 +114,11 @@ remove(produtoId: number, lojaId: number) {
   this.cartSubject.next([...this.items]);
 }
 
-  aumentar(produtoId: number, lojaId: number) {
+  aumentar(variacaoId: number, lojaId: number) {
 
     const item = this.items.find(
       i =>
-        i.produtoId === produtoId &&
+        i.variacaoId === variacaoId &&
         i.lojaId === lojaId
     );
 
@@ -127,11 +129,11 @@ remove(produtoId: number, lojaId: number) {
     this.cartSubject.next([...this.items]);
   }
 
-  diminuir(produtoId: number, lojaId: number) {
+  diminuir(variacaoId: number, lojaId: number) {
 
     const item = this.items.find(
       i =>
-        i.produtoId === produtoId &&
+        i.variacaoId === variacaoId &&
         i.lojaId === lojaId
     );
 
@@ -141,7 +143,7 @@ remove(produtoId: number, lojaId: number) {
 
     if (item.quantidade <= 0) {
 
-      this.remove(produtoId, lojaId);
+      this.remove(variacaoId, lojaId);
       return;
 
     }
@@ -175,8 +177,15 @@ remove(produtoId: number, lojaId: number) {
   }
 
 
-  getItems(): CartItem[] {
+getItems(): CartItem[] {
   return this.items;
+}
+
+getPedidoItems() {
+  return this.items.map(item => ({
+    variacaoId: item.variacaoId,
+    quantidade: item.quantidade
+  }));
 }
 
 clear() {

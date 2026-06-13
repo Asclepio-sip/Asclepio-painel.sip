@@ -7,6 +7,15 @@ import { environment } from '../../environments/environment';
 export interface Categoria {
   id: number;
   nomeCategoria: string;
+  descricao?: string;
+  categoriaPaiId?: number | null;
+  categoriaPai?: Categoria | null;
+}
+
+export interface CategoriaRequest {
+  nomeCategoria: string;
+  descricao?: string;
+  categoriaPaiId?: number | null;
 }
 
 @Injectable({
@@ -29,24 +38,22 @@ export class CategoriaService {
     >(this.apiUrl);
   }
 
-  criar(
-    nomeCategoria: string
-  ) {
+  criar(categoria: CategoriaRequest) {
 
     return this.http.post(
       this.apiUrl,
-      { nomeCategoria }
+      categoria
     );
   }
 
   atualizar(
     id: number,
-    nomeCategoria: string
+    categoria: CategoriaRequest
   ) {
 
     return this.http.put(
       `${this.apiUrl}/${id}`,
-      { nomeCategoria }
+      categoria
     );
   }
 

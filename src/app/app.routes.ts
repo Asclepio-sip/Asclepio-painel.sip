@@ -34,6 +34,8 @@ export const routes: Routes = [
   { path: 'addloja/:id/funcionarios', component: AddFuncionarioLoja, canActivate: [authGuard] },
   { path: 'pedidos/:id',loadComponent: () =>import('./page/detalhe-pedido/detalhe-pedido').then(m => m.DetalhePedido), canActivate: [authGuard] },
   { path: 'products', component: ProductListComponent, canActivate: [authGuard] },
+  { path: 'variacoes', loadComponent: () => import('./page/product/variacoes-lista/variacoes-lista').then(m => m.VariacoesLista), canActivate: [adminGuard], data: { permissions: PermissionGroups.produtos }},
+  { path: 'products/:id/variacoes', loadComponent: () => import('./page/product/produto-variacoes/produto-variacoes').then(m => m.ProdutoVariacoes), canActivate: [adminGuard], data: { permissions: PermissionGroups.produtos }},
   { path: 'AddUsuario', component: AdminUsersComponent, canActivate: [adminGuard], data: { permissions: PermissionGroups.usuarios } },
   { path: 'addProduto', component: TelaDeAddProduto, canActivate: [adminGuard], data: { permissions: PermissionGroups.produtos }},
   { path: 'addestoque', component: AddProdutoEstoqueLoja, canActivate: [adminGuard], data: { permissions: PermissionGroups.estoque }},

@@ -1,0 +1,63 @@
+<app-navbar-administrador></app-navbar-administrador>
+<app-sidebar></app-sidebar>
+
+<div class="page-wrapper">
+  <div class="card">
+    <div class="header-row">
+      <div>
+        <h2 class="title">Variações do Produto</h2>
+        <p *ngIf="produto">{{ produto.name }}</p>
+      </div>
+
+      <button class="btn secondary" type="button" [routerLink]="['/products']">
+        Voltar
+      </button>
+    </div>
+
+    <form class="variation-form" (ngSubmit)="salvar()">
+      <label>
+        Nome da variação
+        <input
+          type="text"
+          placeholder="10 comprimidos"
+          [(ngModel)]="nomeVariacao"
+          name="nomeVariacao">
+      </label>
+
+      <label>
+        Código de barras
+        <input
+          type="text"
+          placeholder="789123456789"
+          [(ngModel)]="codigoBarras"
+          name="codigoBarras">
+      </label>
+
+      <label class="checkbox-field">
+        <input
+          type="checkbox"
+          [(ngModel)]="ativo"
+          name="ativo">
+        Ativa
+      </label>
+
+      <button class="btn primary" type="submit">
+        Salvar
+      </button>
+    </form>
+  </div>
+
+  <div class="product-table">
+    <div class="variacoes-header">
+      <div>Variação</div>
+      <div>Código de barras</div>
+      <div>Status</div>
+    </div>
+
+    <div class="variacoes-row" *ngFor="let variacao of variacoes">
+      <div>{{ variacao.nomeVariacao }}</div>
+      <div>{{ variacao.codigoBarras || '-' }}</div>
+      <div>{{ variacao.ativo ? 'Ativa' : 'Inativa' }}</div>
+    </div>
+  </div>
+</div>
