@@ -2,138 +2,107 @@
 <app-sidebar></app-sidebar>
 
 <div class="page-wrapper">
+  <div class="card">
+    <h2 class="card-title">Adicionar Produto ao Estoque</h2>
 
-<div class="card">
+    <form (ngSubmit)="salvar()">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Selecionar Loja</label>
+          <select [(ngModel)]="lojaSelecionada" name="loja">
+            <option [ngValue]="undefined">Selecione uma loja</option>
+            <option *ngFor="let loja of lojas" [ngValue]="loja">
+              {{ loja.nomeLoja }}
+            </option>
+          </select>
+        </div>
 
-<h2 class="card-title">
-Adicionar Produto ao Estoque
-</h2>
+        <div class="form-group">
+          <label>Pesquisar Produto</label>
+          <input
+            type="text"
+            placeholder="Digite o nome do produto..."
+            [(ngModel)]="buscaProduto"
+            name="buscaProduto">
+        </div>
+      </div>
 
-<form (ngSubmit)="salvar()">
-    
-<div class="form-row">
+      <p class="section-label">Produtos</p>
 
-<!-- LOJA -->
+      <div class="produtos-grid">
+        <div
+          class="produto-card"
+          *ngFor="let p of produtosFiltrados()"
+          (click)="selecionarProduto(p)"
+          [class.selected]="produtoSelecionado?.id === p.id">
 
-<div class="form-group">
+          <img
+            *ngIf="p.imagemBase64"
+            [src]="'data:image/webp;base64,' + p.imagemBase64"
+            loading="lazy"
+            decoding="async">
 
-<label>Selecionar Loja</label>
+          <p class="produto-nome">{{ p.name }}</p>
+        </div>
+      </div>
 
-<select [(ngModel)]="lojaSelecionada" name="loja">
+      <div *ngIf="produtoSelecionado" class="variacoes-container">
+        <h3 class="variacoes-title">Controle de Estoque</h3>
 
-<option [ngValue]="undefined">
-Selecione uma loja
-</option>
+        <div class="estoque-form-grid">
+          <div class="form-group">
+            <label>Variação</label>
+            <select [(ngModel)]="variacaoSelecionada" name="variacao">
+              <option [ngValue]="undefined">
+                {{ carregandoVariacoes ? 'Carregando variações...' : 'Selecione uma variação' }}
+              </option>
+              <option *ngFor="let v of produtoSelecionado.variacoes" [ngValue]="v">
+                {{ v.nomeVariacao }}
+              </option>
+            </select>
+            <small *ngIf="!carregandoVariacoes && produtoSelecionado.variacoes.length === 0">
+              Nenhuma variação cadastrada para este produto.
+            </small>
+          </div>
 
-<option *ngFor="let loja of lojas" [ngValue]="loja">
-{{ loja.nomeLoja }}
-</option>
+          <div class="form-group">
+            <label>Quantidade</label>
+            <input
+              type="number"
+              placeholder="0"
+              [(ngModel)]="quantidade"
+              name="quantidade">
+          </div>
 
-</select>
+          <div class="form-group">
+            <label>Preço</label>
+            <input
+              type="number"
+              placeholder="0.00"
+              step="0.01"
+              [(ngModel)]="precoVenda"
+              name="precoVenda">
+          </div>
 
-</div>
+          <div class="form-group">
+            <label>Desconto (%)</label>
+            <input
+              type="number"
+              placeholder="0"
+              min="0"
+              max="100"
+              step="0.01"
+              [(ngModel)]="percentualDesconto"
+              name="percentualDesconto">
+          </div>
+        </div>
+      </div>
 
-
-<!-- PESQUISAR PRODUTO -->
-
-<div class="form-group">
-
-<label>Pesquisar Produto</label>
-
-<input
-type="text"
-placeholder="Digite o nome do produto..."
-[(ngModel)]="buscaProduto"
-name="buscaProduto"
-/>
-
-</div>
-
-</div>
-<!-- PRODUTOS -->
-
-<p class="section-label">Produtos</p>
-
-<div class="produtos-grid">
-
-<div
-class="produto-card"
-*ngFor="let p of produtosFiltrados()"
-(click)="selecionarProduto(p)"
-[class.selected]="produtoSelecionado?.name === p.name"
->
-
-<img
-*ngIf="p.variacoes[0].imagemBase64"
-[src]="'data:image/webp;base64,' + p.variacoes[0].imagemBase64"
-loading="lazy"
-decoding="async"
-/>
-
-<p class="produto-nome">{{ p.name }}</p>
-
-</div>
-
-</div>
-
-
-<!-- VARIAÇÕES -->
-
-<div *ngIf="produtoSelecionado" class="variacoes-container">
-
-<h3 class="variacoes-title">
-Controle de Estoque
-</h3>
-
-<div class="variacoes-header">
-
-<span>Variação</span>
-<span>Quantidade</span>
-<span>Preço de Venda</span>
-
-</div>
-
-<div
-class="variacao-row"
-*ngFor="let v of produtoSelecionado.variacoes"
->
-
-<span class="variacao-nome">
-{{ v.variacao }}
-</span>
-
-<input
-type="number"
-placeholder="0"
-[(ngModel)]="v.quantidade"
-name="quantidade{{v.id}}"
-/>
-
-<input
-type="number"
-placeholder="0.00"
-step="0.01"
-[(ngModel)]="v.precoVenda"
-name="preco{{v.id}}"
-/>
-
-</div>
-
-</div>
-
-
-<!-- BOTÃO -->
-
-<div class="button-group">
-
-<button type="submit" class="btn primary">
-Salvar Estoque
-</button>
-
-</div>
-
-</form>
-
-</div>
-
+      <div class="button-group">
+        <button type="submit" class="btn primary">
+          Salvar Estoque
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

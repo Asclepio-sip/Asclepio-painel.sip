@@ -9,55 +9,56 @@
 
       <div class="form-grid">
 
-        <!-- Nome -->
         <div class="form-group full">
           <label>Nome do Produto</label>
-          <input type="text"
-                 [(ngModel)]="name"
-                 name="name"
-                 required
-                 autocomplete="off">
+          <input
+            type="text"
+            [(ngModel)]="name"
+            name="name"
+            required
+            autocomplete="off">
         </div>
 
-        <!-- Categoria -->
         <div class="form-group">
           <label>Categoria</label>
 
           <div class="custom-select" [class.open]="dropdownAberto">
-            <button type="button"
-                    class="custom-select__trigger"
-                    (click)="toggleDropdown()">
-
-              {{ categoriaSelecionada || 'Selecione uma categoria' }} 
-
+            <button
+              type="button"
+              class="custom-select__trigger"
+              (click)="toggleDropdown()">
+              {{ categoriaSelecionada || 'Selecione uma categoria' }}
             </button>
 
             <ul *ngIf="dropdownAberto" class="custom-select__list">
-              <li *ngFor="let cat of categorias"
-                  (click)="selecionarCategoria(cat)">
+              <li
+                *ngFor="let cat of categorias"
+                (click)="selecionarCategoria(cat)">
                 {{ cat }}
               </li>
             </ul>
           </div>
         </div>
 
-        <!-- Upload Imagem -->
         <div class="form-group full">
           <label>Imagem do Produto</label>
 
-          <div class="upload-box"
-               (dragover)="onDragOver($event)"
-               (drop)="onDrop($event)">
+          <div
+            class="upload-box"
+            (dragover)="onDragOver($event)"
+            (drop)="onDrop($event)">
 
-            <input type="file"
-                   accept="image/*"
-                   (change)="onFileSelected($event)"
-                   hidden
-                   #fileInput>
+            <input
+              type="file"
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              hidden
+              #fileInput>
 
-            <button type="button"
-                    class="btn secondary"
-                    (click)="fileInput.click()">
+            <button
+              type="button"
+              class="btn secondary"
+              (click)="fileInput.click()">
               Selecionar Imagem
             </button>
 
@@ -65,52 +66,26 @@
               Arraste a imagem aqui ou clique para selecionar
             </p>
 
-            <img *ngIf="previewImagem"
-                [src]="previewImagem"
-                class="preview-img"
-                loading="lazy"
-                decoding="async">
+            <img
+              *ngIf="previewImagem"
+              [src]="previewImagem"
+              class="preview-img"
+              loading="lazy"
+              decoding="async">
           </div>
         </div>
 
       </div>
 
-      <hr class="section-divider">
-
-      <!-- Variações -->
-      <p class="section-label">Variações</p>
-
-      <div *ngFor="let v of variacoes; let i = index; trackBy: trackByIndex"
-           class="variacao-row">
-
-        <input type="text"
-               placeholder="Ex: 500mg"
-               [(ngModel)]="variacoes[i].nome"
-               [name]="'variacao' + i">
-
-        <button type="button"
-                class="btn danger-sm"
-                (click)="removerVariacao(i)">
-          Remover
-        </button>
-
-      </div>
-
-      <button type="button"
-              class="btn success"
-              (click)="adicionarVariacao()">
-        Adicionar Variação
-      </button>
-
       <div class="button-group">
-        <button type="button"
-                class="btn secondary"
-                [routerLink]="['/produtos']">
+        <button
+          type="button"
+          class="btn secondary"
+          [routerLink]="['/products']">
           Cancelar
         </button>
 
-        <button type="submit"
-                class="btn primary">
+        <button type="submit" class="btn primary">
           Salvar Produto
         </button>
       </div>

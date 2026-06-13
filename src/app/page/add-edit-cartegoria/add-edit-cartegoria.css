@@ -40,17 +40,31 @@
 
 /* ===== FORM BOX ===== */
 .form-box {
-  display: flex;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
   margin-bottom: 28px;
-  flex-wrap: wrap;
-  align-items: center;
+  align-items: end;
+}
+
+.form-box .full {
+  grid-column: 1 / -1;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #374151;
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
 /* ===== INPUT ===== */
-input {
-  flex: 1;
-  min-width: 160px;
+input,
+textarea,
+select {
+  width: 100%;
   padding: 12px 14px;
   border-radius: 8px;
   border: 1px solid #ccc;
@@ -64,13 +78,26 @@ input {
   transition: border-color 0.2s;
 }
 
-input:focus {
+textarea {
+  resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
   border-color: #4f46e5;
 }
 
-input::placeholder {
+input::placeholder,
+textarea::placeholder {
   color: #9ca3af !important;
   -webkit-text-fill-color: #9ca3af !important;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 /* ===== BOTÕES DO FORM ===== */
@@ -207,13 +234,11 @@ td:first-child {
   }
 
   .form-box {
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: 1fr;
   }
 
-  input {
-    width: 100%;
-    min-width: unset;
+  .form-box .full {
+    grid-column: auto;
   }
 
   button {
@@ -249,8 +274,9 @@ td:first-child {
 
   td:nth-child(1)::before { content: 'ID:';   font-weight: 600; color: #6b7280; min-width: 52px; }
   td:nth-child(2)::before { content: 'Nome:'; font-weight: 600; color: #6b7280; min-width: 52px; }
+  td:nth-child(3)::before { content: 'Tipo:'; font-weight: 600; color: #6b7280; min-width: 52px; }
 
-  td:nth-child(3) {
+  td:nth-child(4) {
     margin-top: 10px;
     padding-top: 10px;
     border-top: 1px solid #f1f5f9 !important;
