@@ -209,12 +209,28 @@ h2 {
 }
 
 .check-cell {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 26px;
   height: 26px;
   cursor: pointer;
+}
+
+.check-cell input:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.inherited-label {
+  position: absolute;
+  top: 23px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #66777d;
+  font-size: 9px;
+  font-weight: 600;
 }
 
 .row-check {

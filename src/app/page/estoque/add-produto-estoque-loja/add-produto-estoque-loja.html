@@ -1,0 +1,139 @@
+<app-navbar-administrador></app-navbar-administrador>
+<app-sidebar></app-sidebar>
+
+<div class="page-wrapper">
+
+<div class="card">
+
+<h2 class="card-title">
+Adicionar Produto ao Estoque
+</h2>
+
+<form (ngSubmit)="salvar()">
+    
+<div class="form-row">
+
+<!-- LOJA -->
+
+<div class="form-group">
+
+<label>Selecionar Loja</label>
+
+<select [(ngModel)]="lojaSelecionada" name="loja">
+
+<option [ngValue]="undefined">
+Selecione uma loja
+</option>
+
+<option *ngFor="let loja of lojas" [ngValue]="loja">
+{{ loja.nomeLoja }}
+</option>
+
+</select>
+
+</div>
+
+
+<!-- PESQUISAR PRODUTO -->
+
+<div class="form-group">
+
+<label>Pesquisar Produto</label>
+
+<input
+type="text"
+placeholder="Digite o nome do produto..."
+[(ngModel)]="buscaProduto"
+name="buscaProduto"
+/>
+
+</div>
+
+</div>
+<!-- PRODUTOS -->
+
+<p class="section-label">Produtos</p>
+
+<div class="produtos-grid">
+
+<div
+class="produto-card"
+*ngFor="let p of produtosFiltrados()"
+(click)="selecionarProduto(p)"
+[class.selected]="produtoSelecionado?.name === p.name"
+>
+
+<img
+*ngIf="p.variacoes[0].imagemBase64"
+[src]="'data:image/webp;base64,' + p.variacoes[0].imagemBase64"
+loading="lazy"
+decoding="async"
+/>
+
+<p class="produto-nome">{{ p.name }}</p>
+
+</div>
+
+</div>
+
+
+<!-- VARIAÇÕES -->
+
+<div *ngIf="produtoSelecionado" class="variacoes-container">
+
+<h3 class="variacoes-title">
+Controle de Estoque
+</h3>
+
+<div class="variacoes-header">
+
+<span>Variação</span>
+<span>Quantidade</span>
+<span>Preço de Venda</span>
+
+</div>
+
+<div
+class="variacao-row"
+*ngFor="let v of produtoSelecionado.variacoes"
+>
+
+<span class="variacao-nome">
+{{ v.variacao }}
+</span>
+
+<input
+type="number"
+placeholder="0"
+[(ngModel)]="v.quantidade"
+name="quantidade{{v.id}}"
+/>
+
+<input
+type="number"
+placeholder="0.00"
+step="0.01"
+[(ngModel)]="v.precoVenda"
+name="preco{{v.id}}"
+/>
+
+</div>
+
+</div>
+
+
+<!-- BOTÃO -->
+
+<div class="button-group">
+
+<button type="submit" class="btn primary">
+Salvar Estoque
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>

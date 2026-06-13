@@ -1,0 +1,83 @@
+<app-navbar-administrador></app-navbar-administrador>
+<app-sidebar></app-sidebar>
+
+<div class="page-wrapper">
+  <div class="card">
+    <h2 class="title">Atualizar Estoque</h2>
+
+    <div class="top-controls">
+      <select
+        class="loja-select"
+        [(ngModel)]="lojaSelecionada"
+        (ngModelChange)="selecionarLoja($event)"
+        name="lojaFiltro">
+        <option value="">Todas as lojas</option>
+        <option *ngFor="let l of lojas" [value]="l.nomeLoja">
+          {{ l.nomeLoja }}
+        </option>
+      </select>
+
+      <button class="btn show-all" type="button" (click)="mostrarTudo()">
+        Mostrar tudo
+      </button>
+    </div>
+  </div>
+
+  <div class="product-table">
+    <div class="table-header">
+      <div>Imagem</div>
+      <div>Produto</div>
+      <div>Loja</div>
+      <div>Estoque</div>
+      <div>Preço</div>
+      <div>Ações</div>
+    </div>
+
+    <div class="table-row" *ngFor="let p of produtosFiltrados">
+      <div class="col-image">
+        <img [src]="'data:image/webp;base64,' + p.imagemBase64">
+      </div>
+
+      <div class="col-name">{{ p.nomeProduto }}</div>
+      <div class="col-store">{{ p.nomeLoja }}</div>
+      <div class="col-stock">{{ p.quantidade }}</div>
+      <div class="col-price">R$ {{ p.valorFinal }}</div>
+
+      <div class="col-actions">
+        <button class="btn-minus" type="button" (click)="diminuirEstoque(p)">-</button>
+        <span class="stock-number">{{ p.quantidade }}</span>
+        <button class="btn-plus" type="button" (click)="aumentarEstoque(p)">+</button>
+
+        <button
+          class="btn-update"
+          type="button"
+          *ngIf="estoqueAlterado(p)"
+          (click)="atualizarEstoque(p)">
+          Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagination">
+    <button
+      class="btn-page"
+      type="button"
+      (click)="paginaAnteriorEstoque()"
+      [disabled]="paginaAtualEstoque === 0">
+      Anterior
+    </button>
+
+    <span class="page-info">
+      Página {{ paginaAtualEstoque + 1 }} de {{ totalPaginasEstoque || 1 }}
+    </span>
+
+    <button
+      class="btn-page"
+      type="button"
+      (click)="proximaPaginaEstoque()"
+      [disabled]="paginaAtualEstoque >= totalPaginasEstoque - 1">
+      Próxima
+    </button>
+  </div>
+</div>

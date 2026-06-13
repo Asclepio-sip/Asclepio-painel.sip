@@ -1,0 +1,59 @@
+<app-navbar-administrador></app-navbar-administrador>
+<app-sidebar></app-sidebar>
+
+<div class="page-wrapper">
+  <div class="card">
+    <h2 class="title">Gerenciamento de Produtos</h2>
+
+    <div class="action-buttons">
+      <button class="btn primary" [routerLink]="['/addProduto']">
+        Novo Produto
+      </button>
+
+      <button class="btn secondary" [routerLink]="['/addCategoria']">
+        Nova Categoria
+      </button>
+    </div>
+  </div>
+
+  <div class="product-table">
+    <div class="produtos-header">
+      <div>Imagem</div>
+      <div>Produto</div>
+      <div>Variação</div>
+      <div>Categoria</div>
+    </div>
+
+    <div class="produtos-row" *ngFor="let p of todosProdutos">
+      <div class="col-image">
+        <img [src]="'data:image/png;base64,' + p.imagemBase64">
+      </div>
+
+      <div class="col-name">{{ p.name }}</div>
+      <div>{{ p.variacao }}</div>
+      <div>{{ p.categoriaNome }}</div>
+    </div>
+  </div>
+
+  <div class="pagination">
+    <button
+      class="btn-page"
+      type="button"
+      (click)="paginaAnteriorProduto()"
+      [disabled]="paginaAtualProduto === 0">
+      Anterior
+    </button>
+
+    <span class="page-info">
+      Página {{ paginaAtualProduto + 1 }} de {{ totalPaginasProduto || 1 }}
+    </span>
+
+    <button
+      class="btn-page"
+      type="button"
+      (click)="proximaPaginaProduto()"
+      [disabled]="paginaAtualProduto >= totalPaginasProduto - 1">
+      Próxima
+    </button>
+  </div>
+</div>
