@@ -5,16 +5,17 @@ import { environment } from '../../environments/environment';
 
 export interface ItemPedido {
   produtoId: number;
- nomeProduto: string;
-variacao: string;
-imagemBase64: string;
-categoria: string;
-
-preco: number;
-quantidade: number;
-
-subtotal?: number;
-percentualDesconto?: number;
+  variacaoId: number;
+  nomeProduto: string;
+  variacao: string;
+  imagemUrl: string;
+  imagemBase64?: string;
+  categoria: string;
+  precoUnitario: number;
+  preco?: number;
+  quantidade: number;
+  subtotal?: number;
+  percentualDesconto?: number;
 }
 export interface Pedido {
 

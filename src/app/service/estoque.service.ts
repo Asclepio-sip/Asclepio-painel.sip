@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface EstoqueRequest {
-  produtoId: number;
+  variacaoId: number;
   lojaID: number;
   nomeLoja?: string;
   nomeProduto?: string;
   quantidade: number;
   precoVenda: number;
+  percentualDesconto?: number;
 }
 
 export interface Estoque {
@@ -21,6 +23,8 @@ export interface Estoque {
 
   produtoId: number;
   nomeProduto: string;
+  variacaoId: number;
+  nomeVariacao: string;
 
   imagemBase64: string;
 
@@ -31,9 +35,6 @@ export interface Estoque {
   percentualDesconto: number;
 
   valorFinal: number;
-
-  variacao: string;
-
   Entregar: string;
 }
 
@@ -82,6 +83,11 @@ export class EstoqueService {
     return this.http.get<PageResponse<Estoque>>(
       `${this.api}/relatorio`,
       { params }
+    ).pipe(
+      map(response => ({
+        ...response,
+        content: response.content.map(item => this.normalizarEstoque(item))
+      }))
     );
   }
 
@@ -117,6 +123,8 @@ export class EstoqueService {
     return this.http.get<Estoque[]>(
       `${this.api}/filtro`,
       { params }
+    ).pipe(
+      map(estoques => estoques.map(item => this.normalizarEstoque(item)))
     );
   }
 
@@ -129,5 +137,33 @@ export class EstoqueService {
     `${this.api}`,
     data
   );
+}
+
+private normalizarEstoque(item: any): Estoque {
+  return {
+    ...item,
+    nomeProduto:
+      item.nomeProduto ??
+      item.produto?.name ??
+      item.produtoVariacao?.produto?.name ??
+      '',
+    produtoId:
+      item.produtoId ??
+      item.produto?.id ??
+      item.produtoVariacao?.produto?.id ??
+      0,
+    variacaoId:
+      item.variacaoId ??
+      item.produtoVariacao?.id ??
+      0,
+    nomeVariacao:
+      item.nomeVariacao ??
+      item.variacao ??
+      item.Variacao ??
+      item.produtoVariacao?.nomeVariacao ??
+      item.produtoVariacao?.Variacao ??
+      item.produtoVariacao?.nome ??
+      ''
+  };
 }
 }

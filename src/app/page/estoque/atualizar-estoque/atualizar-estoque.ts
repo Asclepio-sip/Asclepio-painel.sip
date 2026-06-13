@@ -113,7 +113,7 @@ export class AtualizarEstoque implements OnInit {
   atualizarEstoque(p: Estoque) {
     this.estoqueService
       .atualizarEstoque({
-        produtoId: p.produtoId,
+        variacaoId: p.variacaoId,
         lojaID: p.lojaId,
         quantidade: p.quantidade
       })

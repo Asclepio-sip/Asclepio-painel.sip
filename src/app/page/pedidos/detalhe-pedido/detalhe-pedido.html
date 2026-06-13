@@ -152,6 +152,9 @@ class="produto-img"
               
               <td>
                 {{ item.nomeProduto }}
+                <small class="produto-variacao" *ngIf="item.variacao">
+                  {{ item.variacao }}
+                </small>
               </td>
 
               <td>
@@ -159,16 +162,16 @@ class="produto-img"
               </td>
 
               <td>
-                {{ item.preco| currency:'BRL' }}
+                {{ item.precoUnitario| currency:'BRL' }}
               </td>
 
               
               <td>
-                {{ item.percentualDesconto| currency:'BRL' }}
+                {{ item.percentualDesconto || 0 }}%
               </td>
 
               <td>
-  {{ calcularSubtotal(item) | currency:'BRL' }}
+  {{ (item.subtotal ?? calcularSubtotal(item)) | currency:'BRL' }}
 </td>
 
             </tr>

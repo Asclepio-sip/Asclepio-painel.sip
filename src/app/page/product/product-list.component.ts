@@ -39,8 +39,8 @@ export class ProductListComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.todosProdutos = res.content;
-          this.paginaAtualProduto = res.page.number;
-          this.totalPaginasProduto = res.page.totalPages;
+          this.paginaAtualProduto = res.page?.number ?? res.number ?? page;
+          this.totalPaginasProduto = res.page?.totalPages ?? res.totalPages ?? 0;
           this.cdr.detectChanges();
         },
         error: (err) => {

@@ -20,23 +20,23 @@ export class Cart {
     this.close.emit();
   }
 
-remover(produtoId: number, lojaId: number) {
+remover(variacaoId: number, lojaId: number) {
   this.cartService.remove(
-    produtoId,
+    variacaoId,
     lojaId
   );
 }
 
-aumentar(produtoId: number, lojaId: number) {
+aumentar(variacaoId: number, lojaId: number) {
   this.cartService.aumentar(
-    produtoId,
+    variacaoId,
     lojaId
   );
 }
 
-diminuir(produtoId: number, lojaId: number) {
+diminuir(variacaoId: number, lojaId: number) {
   this.cartService.diminuir(
-    produtoId,
+    variacaoId,
     lojaId
   );
 }

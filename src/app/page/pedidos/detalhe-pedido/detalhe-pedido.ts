@@ -101,11 +101,23 @@ ngOnInit() {
             res.freteGratis,
 
           itens: (res.itens ?? []).map((item: any) => ({
+            produtoId:
+              item.produtoId ?? 0,
+
+            variacaoId:
+              item.variacaoId ?? 0,
+
             nomeProduto:
               item.nomeProduto,
 
+            variacao:
+              item.variacao ?? item.nomeVariacao ?? '',
+
             quantidade:
               item.quantidade,
+
+            precoUnitario:
+              item.precoUnitario,
 
             preco:
               item.precoUnitario,
@@ -118,13 +130,16 @@ ngOnInit() {
 
               
 
-imagemBase64:
-item.imagemBase64
-? `data:image/png;base64,${item.imagemBase64}`
-: '',
-            variacao: '',
-            categoria: '',
-            produtoId: 0
+            imagemUrl:
+              item.imagemUrl ??
+              (item.imagemBase64 ? `data:image/png;base64,${item.imagemBase64}` : ''),
+
+            imagemBase64:
+              item.imagemUrl ??
+              (item.imagemBase64 ? `data:image/png;base64,${item.imagemBase64}` : ''),
+
+            categoria:
+              item.categoria ?? ''
           }))
         };
 
@@ -169,6 +184,6 @@ calcularTotal(): number {
 
 
   calcularSubtotal(item: any): number {
-  return (item.preco ?? 0) * (item.quantidade ?? 0);
+  return (item.precoUnitario ?? item.preco ?? 0) * (item.quantidade ?? 0);
 }
 }

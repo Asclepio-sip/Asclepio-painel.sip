@@ -2,24 +2,11 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-import { NavbarAdministradorComponent } from "../../../shared/navbar-administrador/navbar-administrador";
-import { SidebarComponent } from "../../../shared/sidebar/sidebar.component";
+import { NavbarAdministradorComponent } from '../../../shared/navbar-administrador/navbar-administrador';
+import { SidebarComponent } from '../../../shared/sidebar/sidebar.component';
 import { EstoqueService, EstoqueRequest } from '../../../service/estoque.service';
-import { ProductService, Product } from '../../../service/product.service';
-import { LojaService,Loja } from '../../../service/loja/loja.service';
-
-interface ProdutoGrupo {
-  name: string;
-  variacoes: ProdutoComEstoque[];
-}
-
-/**
- * NÃO estende Product com conflito de tipo opcional
- */
-interface ProdutoComEstoque extends Product {
-  quantidade: number;
-  precoVenda: number;
-}
+import { ProductService, Product, ProdutoVariacao } from '../../../service/product.service';
+import { LojaService, Loja } from '../../../service/loja/loja.service';
 
 @Component({
   selector: 'app-add-produto-estoque-loja',
@@ -35,13 +22,18 @@ interface ProdutoComEstoque extends Product {
 })
 export class AddProdutoEstoqueLoja implements OnInit {
 
-  produtosAgrupados: ProdutoGrupo[] = [];
+  produtos: Product[] = [];
   lojas: Loja[] = [];
 
-  produtoSelecionado?: ProdutoGrupo;
+  produtoSelecionado?: Product;
+  variacaoSelecionada?: ProdutoVariacao;
   lojaSelecionada?: Loja;
+  carregandoVariacoes = false;
 
-  buscaProduto = "";
+  buscaProduto = '';
+  quantidade = 0;
+  precoVenda = 0;
+  percentualDesconto = 0;
 
   constructor(
     private produtoService: ProductService,
@@ -55,42 +47,14 @@ export class AddProdutoEstoqueLoja implements OnInit {
     this.carregarLojas();
   }
 
-carregarProdutos() {
-
-  this.produtoService
-    .loadProducts()
-    .subscribe(response => {
-
-      const produtos = response.content;
-
-      const mapa = new Map<string, ProdutoComEstoque[]>();
-
-      produtos.forEach((p: Product) => {
-
-        const produto: ProdutoComEstoque = {
-          ...p,
-          quantidade: 0,
-          precoVenda: p.precoVenda
-        };
-
-        if (!mapa.has(p.name)) {
-          mapa.set(p.name, []);
-        }
-
-        mapa.get(p.name)!.push(produto);
+  carregarProdutos() {
+    this.produtoService
+      .loadProducts()
+      .subscribe(response => {
+        this.produtos = response.content;
+        this.cdr.detectChanges();
       });
-
-      this.produtosAgrupados =
-        Array.from(mapa.entries()).map(
-          ([name, variacoes]) => ({
-            name,
-            variacoes
-          })
-        );
-
-      this.cdr.detectChanges();
-    });
-}
+  }
 
   carregarLojas() {
     this.lojaService.listar().subscribe((lojas: Loja[]) => {
@@ -99,49 +63,89 @@ carregarProdutos() {
     });
   }
 
-  selecionarProduto(produto: ProdutoGrupo) {
-    this.produtoSelecionado = produto;
+  selecionarProduto(produto: Product) {
+    this.produtoSelecionado = {
+      ...produto,
+      variacoes: []
+    };
+    this.variacaoSelecionada = undefined;
+    this.carregandoVariacoes = true;
+
+    this.produtoService.listarVariacoes(produto.id).subscribe({
+      next: variacoes => {
+        this.produtoSelecionado = {
+          ...produto,
+          variacoes
+        };
+        this.carregandoVariacoes = false;
+        this.cdr.detectChanges();
+      },
+      error: err => {
+        console.error('Erro ao carregar variacoes do produto', err);
+        this.carregandoVariacoes = false;
+        alert('Erro ao carregar as variacoes do produto');
+        this.cdr.detectChanges();
+      }
+    });
   }
 
-  produtosFiltrados(): ProdutoGrupo[] {
-
+  produtosFiltrados(): Product[] {
     if (!this.buscaProduto) {
-      return this.produtosAgrupados;
+      return this.produtos;
     }
 
-    return this.produtosAgrupados.filter((p: ProdutoGrupo) =>
+    return this.produtos.filter((p: Product) =>
       p.name.toLowerCase().includes(this.buscaProduto.toLowerCase())
     );
   }
 
   salvar() {
+    if (!this.lojaSelecionada) {
+      alert('Selecione uma loja');
+      return;
+    }
 
     if (!this.produtoSelecionado) {
-      alert("Selecione um produto");
+      alert('Selecione um produto');
       return;
     }
 
-    if (!this.lojaSelecionada) {
-      alert("Selecione uma loja");
+    if (!this.variacaoSelecionada) {
+      alert('Selecione uma variacao');
       return;
     }
 
-    this.produtoSelecionado.variacoes.forEach((v: ProdutoComEstoque) => {
+    if (!this.quantidade || !this.precoVenda) {
+      alert('Informe quantidade e preco');
+      return;
+    }
 
-      if (!v.quantidade || !v.precoVenda) return;
+    const data: EstoqueRequest = {
+      variacaoId: this.variacaoSelecionada.id,
+      lojaID: this.lojaSelecionada.id!,
+      nomeLoja: this.lojaSelecionada.nomeLoja,
+      nomeProduto: this.produtoSelecionado.name,
+      quantidade: this.quantidade,
+      precoVenda: this.precoVenda,
+      percentualDesconto: this.percentualDesconto || 0
+    };
 
-      const data: EstoqueRequest = {
-        produtoId: v.id,
-        lojaID: this.lojaSelecionada!.id!,
-        nomeLoja: this.lojaSelecionada!.nomeLoja,
-        nomeProduto: v.name,
-        quantidade: v.quantidade,
-        precoVenda: v.precoVenda
-      };
-
-      this.estoqueService.salvar(data).subscribe();
+    this.estoqueService.salvar(data).subscribe({
+      next: () => {
+        alert('Estoque cadastrado!');
+        this.resetForm();
+      },
+      error: err => {
+        console.error('Erro ao cadastrar estoque', err);
+        alert('Erro ao cadastrar estoque');
+      }
     });
+  }
 
-    alert("Estoque cadastrado!");
+  resetForm() {
+    this.variacaoSelecionada = undefined;
+    this.quantidade = 0;
+    this.precoVenda = 0;
+    this.percentualDesconto = 0;
   }
 }

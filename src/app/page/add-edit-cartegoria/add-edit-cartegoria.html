@@ -1,45 +1,69 @@
 <app-navbar-administrador></app-navbar-administrador>
 <app-sidebar></app-sidebar>
+
 <div class="card-form">
   <div class="card">
 
-    <h2 class="card-title">Gerenciar Categorias</h2>
+    <h2 class="card-title">{{ editandoId ? 'Editar Categoria' : 'Nova Categoria' }}</h2>
 
-    <!-- FORM -->
     <div class="form-box">
-      <input
-        type="text"
-        placeholder="Nome da categoria"
-        [(ngModel)]="nomeCategoria">
+      <label>
+        Nome
+        <input
+          type="text"
+          placeholder="Analgésicos"
+          [(ngModel)]="nomeCategoria">
+      </label>
 
-      <button (click)="salvar()">
-        {{ editandoId ? 'Atualizar' : 'Criar' }}
-      </button>
+      <label class="full">
+        Descrição
+        <textarea
+          rows="3"
+          placeholder="Remédios para dor e febre"
+          [(ngModel)]="descricao"></textarea>
+      </label>
 
-      <button *ngIf="editandoId" class="cancelar" (click)="resetForm()">
-        Cancelar
-      </button>
+      <label>
+        Categoria pai
+        <select [(ngModel)]="categoriaPaiId">
+          <option [ngValue]="null">Categoria principal</option>
+          <option *ngFor="let cat of categoriasPai" [ngValue]="cat.id">
+            {{ cat.nomeCategoria }}
+          </option>
+        </select>
+      </label>
+
+      <div class="form-actions">
+        <button (click)="salvar()">
+          {{ editandoId ? 'Atualizar' : 'Salvar' }}
+        </button>
+
+        <button *ngIf="editandoId" class="cancelar" (click)="resetForm()">
+          Cancelar
+        </button>
+      </div>
     </div>
 
-    <!-- TABELA -->
     <div class="table-wrapper">
       <table>
         <thead>
           <tr>
             <th>ID</th>
             <th>Nome</th>
+            <th>Tipo</th>
             <th>Ações</th>
           </tr>
         </thead>
 
         <tbody>
           <tr *ngIf="categorias.length === 0" class="empty-row">
-            <td colspan="3">Nenhuma categoria cadastrada.</td>
+            <td colspan="4">Nenhuma categoria cadastrada.</td>
           </tr>
 
           <tr *ngFor="let cat of categorias">
             <td>{{ cat.id }}</td>
             <td>{{ cat.nomeCategoria }}</td>
+            <td>{{ nomeCategoriaPai(cat) }}</td>
             <td>
               <div class="acoes">
                 <button class="edit" (click)="editar(cat)">Editar</button>

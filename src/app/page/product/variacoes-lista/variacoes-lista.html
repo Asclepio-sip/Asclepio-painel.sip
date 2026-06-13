@@ -3,46 +3,32 @@
 
 <div class="page-wrapper">
   <div class="card">
-    <h2 class="title">Gerenciamento de Produtos</h2>
-
-    <div class="action-buttons">
-      <button class="btn primary" [routerLink]="['/addProduto']">
-        Novo Produto
-      </button>
-
-      <button class="btn secondary" [routerLink]="['/addCategoria']">
-        Nova Categoria
-      </button>
-    </div>
+    <h2 class="title">Variações</h2>
   </div>
 
   <div class="product-table">
     <div class="produtos-header">
       <div>Imagem</div>
       <div>Produto</div>
-      <div>Variações</div>
       <div>Categoria</div>
+      <div>Variações</div>
       <div>Ações</div>
     </div>
 
-    <div class="produtos-row" *ngFor="let p of todosProdutos">
+    <div class="produtos-row" *ngFor="let p of produtos">
       <div class="col-image">
         <img [src]="'data:image/png;base64,' + p.imagemBase64">
       </div>
 
       <div class="col-name">{{ p.name }}</div>
-      <div>
-        <span *ngFor="let v of p.variacoes; let last = last">
-          {{ v.nomeVariacao }}<span *ngIf="!last">, </span>
-        </span>
-      </div>
       <div>{{ p.categoria?.nomeCategoria || p.categoriaNome }}</div>
+      <div>{{ p.variacoes.length || 0 }}</div>
       <div>
         <button
-          class="btn secondary"
+          class="btn primary"
           type="button"
           [routerLink]="['/products', p.id, 'variacoes']">
-          Variações
+          Abrir
         </button>
       </div>
     </div>
@@ -52,20 +38,20 @@
     <button
       class="btn-page"
       type="button"
-      (click)="paginaAnteriorProduto()"
-      [disabled]="paginaAtualProduto === 0">
+      (click)="paginaAnterior()"
+      [disabled]="paginaAtual === 0">
       Anterior
     </button>
 
     <span class="page-info">
-      Página {{ paginaAtualProduto + 1 }} de {{ totalPaginasProduto || 1 }}
+      Página {{ paginaAtual + 1 }} de {{ totalPaginas || 1 }}
     </span>
 
     <button
       class="btn-page"
       type="button"
-      (click)="proximaPaginaProduto()"
-      [disabled]="paginaAtualProduto >= totalPaginasProduto - 1">
+      (click)="proximaPagina()"
+      [disabled]="paginaAtual >= totalPaginas - 1">
       Próxima
     </button>
   </div>
