@@ -1,0 +1,50 @@
+.fazer-pedido-page {
+  min-height: calc(100vh - 120px);
+  padding: 32px clamp(20px, 4vw, 56px);
+  background: #f7f8fa;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1180px;
+  margin: 0 auto 24px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #16181d;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.page-header p {
+  margin: 8px 0 0;
+  color: #667085;
+  font-size: 15px;
+}
+
+.products-panel {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e6e8ec;
+  border-radius: 8px;
+}
+
+@media (max-width: 720px) {
+  .fazer-pedido-page {
+    padding: 24px 14px;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+  }
+
+  .products-panel {
+    padding: 16px;
+  }
+}

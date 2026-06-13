@@ -1,0 +1,305 @@
+<app-navbar-administrador></app-navbar-administrador>
+<app-sidebar></app-sidebar>
+
+<div id="pedido-pdf" class="page" *ngIf="pedido">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <h1>
+        Pedido #{{ pedido.id }}
+        <span class="badge-status">{{ pedido.statusDoPedido }}</span>
+      </h1>
+      <p class="page-meta">
+        Realizado em {{ pedido.criado| date:'dd/MM/yyyy HH:mm' }}
+      </p>
+    </div>
+  </div>
+
+  <div class="layout-grid">
+
+    <!-- ESQUERDA -->
+    <div class="col-left">
+
+      <!-- CLIENTE -->
+      <div class="card">
+        <h2>
+          <span class="card-icon pink">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+              viewBox="0 0 24 24" fill="none" stroke="#db2777"
+              stroke-width="2">
+              <circle cx="12" cy="8" r="5"/>
+              <path d="M20 21a8 8 0 1 0-16 0"/>
+            </svg>
+          </span>
+          Informações do Cliente
+        </h2>
+
+        
+
+        
+        <div class="info-field">
+          <div class="info-label">Nome</div>
+          <div class="info-value">
+            {{ pedido.cliente }}
+          </div>
+        </div>
+
+        <div class="info-field" *ngIf="pedido.email">
+          <div class="info-label">Email</div>
+          <div class="info-value">
+            {{ pedido.email }}
+          </div>
+        </div>
+
+        <div class="info-field">
+          <div class="info-label">Telefone</div>
+          <div class="info-value">
+            {{ pedido.telefone }}
+          </div>
+        </div>
+
+        <div class="info-field">
+          <div class="info-label">Bairro</div>
+          <div class="info-value">
+            {{ pedido.bairro }}
+          </div>
+        </div>
+
+        <div class="info-field" *ngIf="pedido.endereco">
+          <div class="info-label">Endereço</div>
+          <div class="info-value">
+            {{ pedido.endereco }}
+          </div>
+        </div>
+
+        <div class="info-field" *ngIf="pedido.complemento">
+          <div class="info-label">Complemento</div>
+          <div class="info-value">
+            {{ pedido.complemento }}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PAGAMENTO -->
+      <div class="card">
+        <h2>
+          <span class="card-icon blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+              viewBox="0 0 24 24" fill="none" stroke="#2563eb"
+              stroke-width="2">
+              <rect width="20" height="14" x="2" y="5" rx="2"/>
+              <line x1="2" x2="22" y1="10" y2="10"/>
+            </svg>
+          </span>
+          Logística e Pagamento
+        </h2>
+
+        <div class="info-field">
+          <div class="info-label">Tipo de Entrega</div>
+          <div class="info-value">
+            {{ pedido.tipoEntrega }}
+          </div>
+        </div>
+
+        <div class="info-field">
+          <div class="info-label">Status</div>
+          <div class="info-value">
+            {{ pedido.statusDoPedido }}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DIREITA -->
+    <div class="col-right">
+
+      <!-- ITENS -->
+      <div class="card">
+        <div class="itens-header">
+          <h2>
+            Itens do Pedido
+          </h2>
+
+          <span class="badge-count">
+  {{ pedido.itens.length || 0 }} itens
+</span>
+        </div>
+
+        <table class="itens-table">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>QTD</th>
+               <th>Unidade</th>
+              <th>Preço </th>
+              <th>Desconto</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+
+          <tbody>
+         <tr *ngFor="let item of pedido.itens">
+
+<img
+*ngIf="item.imagemBase64"
+[src]="item.imagemBase64"
+class="produto-img"
+/>
+
+              
+              <td>
+                {{ item.nomeProduto }}
+              </td>
+
+              <td>
+                {{ item.quantidade }}
+              </td>
+
+              <td>
+                {{ item.preco| currency:'BRL' }}
+              </td>
+
+              
+              <td>
+                {{ item.percentualDesconto| currency:'BRL' }}
+              </td>
+
+              <td>
+  {{ calcularSubtotal(item) | currency:'BRL' }}
+</td>
+
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="totais">
+
+          <div class="totais-row">
+            <span>Produtos</span>
+
+            <span>
+              {{ pedido.totalProdutos | currency:'BRL' }}
+            </span>
+          </div>
+
+          <div class="totais-row entrega">
+            <span>Frete</span>
+
+            <span>
+              <ng-container *ngIf="pedido.freteGratis">
+                Grátis
+              </ng-container>
+
+              <ng-container *ngIf="!pedido.freteGratis">
+                {{ pedido.valorFrete | currency:'BRL' }}
+              </ng-container>
+            </span>
+          </div>
+
+          <div class="totais-final">
+            <span class="label">
+              Total do Pedido
+            </span>
+
+            <span class="valor">
+              {{ pedido.totalComFrete| currency:'BRL' }}
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- OBSERVAÇÃO -->
+      <div class="card" *ngIf="pedido.observacao">
+
+        <h2>
+          Observações do Cliente
+        </h2>
+
+        <div class="observacao-box">
+          <div>
+            <h3>Observações</h3>
+
+            <p>
+              "{{ pedido.observacao }}"
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTÓRICO -->
+      <div class="card">
+
+        <h2>
+          Histórico do Pedido
+        </h2>
+
+        <div class="historico-list">
+
+          <div
+            class="historico-item"
+            *ngFor="let etapa of statusEtapas; let last = last"
+            [class.ativo]="isEtapaAtiva(etapa.key)"
+          >
+
+            <div class="historico-dot-wrap">
+              <div class="historico-dot"></div>
+
+              <div
+                class="historico-linha"
+                *ngIf="!last"
+              ></div>
+            </div>
+
+            <div class="historico-content">
+              <div class="historico-titulo">
+                {{ etapa.label }}
+              </div>
+
+              <div
+  class="historico-descricao"
+  *ngIf="isEtapaAtiva(etapa.key)"
+>
+  Status atual:
+  {{ etapa.key }}
+</div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- AÇÕES -->
+  <div class="actions">
+
+    <button
+      class="btn-voltar"
+      (click)="voltar()"
+    >
+      Voltar
+    </button>
+
+    <button
+      class="btn-pdf"
+      (click)="gerarPDF()"
+    >
+      Gerar PDF
+    </button>
+
+    <button
+      class="btn-whatsapp"
+      (click)="falarWhatsApp()"
+    >
+      Falar no WhatsApp
+    </button>
+
+  </div>
+
+</div>

@@ -49,8 +49,8 @@
       <div class="permissions-panel">
         <div class="permissions-header">
           <div>
-            <h3>Permissoes da role</h3>
-            <p>{{ selectedPermissionIds.length }} de {{ getTotalPermissoes() }} selecionadas</p>
+            <h3>Permissoes</h3>
+            <p>{{ getTotalSelecionadas() }} de {{ getTotalPermissoes() }} selecionadas</p>
           </div>
 
           <label class="select-all">
@@ -83,8 +83,12 @@
                       <input
                         type="checkbox"
                         [checked]="isPermissionSelected(permission.id)"
+                        [disabled]="isRolePermission(permission.id)"
                         (change)="togglePermission(permission.id, $event)"
                       />
+                      <span *ngIf="isRolePermission(permission.id)" class="inherited-label">
+                        role
+                      </span>
                     </label>
                   </ng-container>
 

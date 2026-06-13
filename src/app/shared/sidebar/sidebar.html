@@ -32,10 +32,54 @@
   </a>
 }
 
-@if (authService.hasAnyPermission(authService.PERMISSIONS.PEDIDO)) {
-  <a routerLink="/pedido" routerLinkActive="active">
-    Pedidos
-  </a>
+@if (authService.hasAnyPermission(estoquePermissions)) {
+  <button
+    type="button"
+    class="submenu-toggle"
+    [class.open]="estoqueOpen"
+    (click)="toggleEstoque()">
+    <span>Estoque</span>
+    <span class="chevron">v</span>
+  </button>
+
+  @if (estoqueOpen) {
+    <div class="submenu">
+      <a routerLink="/addestoque" routerLinkActive="active" class="submenu-link">
+        Novo Estoque
+      </a>
+
+      <a routerLink="/atualizar-estoque" routerLinkActive="active" class="submenu-link">
+        Atualizar Estoque
+      </a>
+
+      <a routerLink="/relatorio-estoque" routerLinkActive="active" class="submenu-link">
+        Relatorio de Estoque
+      </a>
+    </div>
+  }
+}
+
+@if (authService.hasAnyPermission(pedidoPermissions)) {
+  <button
+    type="button"
+    class="submenu-toggle"
+    [class.open]="pedidoOpen"
+    (click)="togglePedido()">
+    <span>Pedidos</span>
+    <span class="chevron">v</span>
+  </button>
+
+  @if (pedidoOpen) {
+    <div class="submenu">
+      <a routerLink="/pedido" routerLinkActive="active" class="submenu-link">
+        Painel de Pedidos
+      </a>
+
+      <a routerLink="/fazer-pedido" routerLinkActive="active" class="submenu-link">
+        Fazer Pedido
+      </a>
+    </div>
+  }
 }
 
 @if (authService.hasAnyPermission(authService.PERMISSIONS.LOJA)) {

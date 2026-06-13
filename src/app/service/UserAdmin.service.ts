@@ -13,6 +13,8 @@ export interface User {
   roleId?: string;
   roleName?: string;
   permissions?: Permission[];
+  permissionsExtras?: Permission[];
+  permissionExtras?: Permission[];
   permissionIds?: string[];
 }
 
@@ -117,12 +119,15 @@ export class UserAdminService {
 
   private normalizarUsuario(user: User): User {
     const rolePermissions = Array.isArray(user.role) ? user.role : [];
+    const extraPermissions = user.permissionsExtras ?? user.permissionExtras ?? [];
+    const permissions = user.permissions ?? rolePermissions;
 
     return {
       ...user,
       login: user.login ?? user.username ?? user.email ?? 'Sem login',
-      permissions: user.permissions ?? rolePermissions,
-      permissionIds: user.permissionIds ?? rolePermissions.map(permission => permission.id)
+      permissions,
+      permissionsExtras: extraPermissions,
+      permissionIds: user.permissionIds ?? extraPermissions.map(permission => permission.id)
     };
   }
 }

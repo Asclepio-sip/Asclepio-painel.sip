@@ -1,0 +1,162 @@
+<app-navbar-administrador></app-navbar-administrador>
+<app-sidebar></app-sidebar>
+
+<main class="relatorio-page">
+  <section class="header">
+    <div>
+      <h1>Relatorio de Estoque</h1>
+      <p>Historico de movimentacoes: criacao, atualizacao, entrada, saida por pedido, promocao e exclusao.</p>
+    </div>
+
+    <button class="btn primary" type="button" (click)="buscar()">
+      Atualizar
+    </button>
+  </section>
+
+  <section class="filters">
+    <label>
+      Loja
+      <select [(ngModel)]="filtros.lojaId">
+        <option [ngValue]="null">Todas as lojas</option>
+        <option *ngFor="let loja of lojas" [ngValue]="loja.id">
+          {{ loja.nomeLoja }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Nome do produto
+      <input type="text" [(ngModel)]="filtros.nomeProduto" placeholder="Buscar produto">
+    </label>
+
+    <label>
+      Usuario
+      <input type="text" [(ngModel)]="filtros.usuario" placeholder="Buscar usuario">
+    </label>
+
+    <label>
+      Tipo
+      <select [(ngModel)]="filtros.tipo">
+        <option value="">Todos</option>
+        <option *ngFor="let tipo of tipos" [value]="tipo">
+          {{ rotuloTipo(tipo) }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Data inicial
+      <input type="date" [(ngModel)]="filtros.dataInicio">
+    </label>
+
+    <label>
+      Data final
+      <input type="date" [(ngModel)]="filtros.dataFim">
+    </label>
+
+    <div class="period-shortcuts">
+      <span>Período rápido</span>
+      <div class="period-buttons">
+        <button
+          *ngFor="let periodo of periodos"
+          class="period-btn"
+          type="button"
+          [class.active]="periodoSelecionado === periodo.value"
+          (click)="aplicarPeriodo(periodo.value)">
+          {{ periodo.label }}
+        </button>
+      </div>
+    </div>
+
+    <label>
+      Por pagina
+      <select [(ngModel)]="filtros.size">
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+        <option [ngValue]="50">50</option>
+      </select>
+    </label>
+
+    <div class="filter-actions">
+      <button class="btn primary" type="button" (click)="buscar()">Filtrar</button>
+      <button class="btn ghost" type="button" (click)="limparFiltros()">Limpar</button>
+    </div>
+  </section>
+
+  <section class="table-panel">
+    <div class="table-summary">
+      <strong>{{ totalElementos }}</strong>
+      movimentacoes encontradas
+    </div>
+
+    <div *ngIf="erro" class="alert">
+      {{ erro }}
+    </div>
+
+    <div *ngIf="carregando" class="loading">
+      Carregando movimentacoes...
+    </div>
+
+    <div class="table-wrapper" *ngIf="!carregando">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Produto</th>
+            <th>Loja</th>
+            <th>Usuario</th>
+            <th>Qtd.</th>
+            <th>Preco</th>
+            <th>Desconto</th>
+            <th>Obs.</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngIf="movimentacoes.length === 0">
+            <td colspan="9" class="empty">Nenhuma movimentacao encontrada.</td>
+          </tr>
+
+          <tr *ngFor="let item of movimentacoes">
+            <td>{{ formatarData(item.criadoEm) }}</td>
+            <td>
+              <span class="badge">{{ rotuloTipo(item.tipo) }}</span>
+            </td>
+            <td>
+              <strong>{{ item.nomeProduto }}</strong>
+              <small>ID {{ item.produtoId }} | Estoque {{ item.estoqueId }}</small>
+            </td>
+            <td>
+              {{ item.nomeLoja }}
+              <small>ID {{ item.lojaId }}</small>
+            </td>
+            <td>{{ item.usuario || '-' }}</td>
+            <td>{{ formatarValor(item.quantidadeAntes) }} -> {{ formatarValor(item.quantidadeDepois) }}</td>
+            <td>{{ formatarMoeda(item.precoAntes) }} -> {{ formatarMoeda(item.precoDepois) }}</td>
+            <td>{{ formatarValor(item.descontoAntes) }} -> {{ formatarValor(item.descontoDepois) }}</td>
+            <td>{{ item.observacao || '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <button class="btn ghost" type="button" (click)="paginaAnterior()" [disabled]="paginaAtual === 0">
+        Anterior
+      </button>
+
+      <span>
+        Pagina {{ paginaAtual + 1 }} de {{ totalPaginas || 1 }}
+      </span>
+
+      <button
+        class="btn ghost"
+        type="button"
+        (click)="proximaPagina()"
+        [disabled]="paginaAtual >= totalPaginas - 1">
+        Proxima
+      </button>
+    </div>
+  </section>
+</main>
