@@ -144,6 +144,44 @@
   color: #111827;
 }
 
+.submenu-toggle {
+  justify-content: space-between;
+}
+
+.submenu-toggle .chevron {
+  margin-left: auto;
+  color: #6b7280;
+  font-size: 18px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.submenu-toggle.open .chevron {
+  transform: rotate(180deg);
+}
+
+.submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: -2px 0 8px 12px;
+  padding-left: 12px;
+  border-left: 2px solid #e5e7eb;
+}
+
+.menu a.submenu-link {
+  min-height: 38px;
+  padding: 10px 12px;
+  margin-bottom: 0;
+  color: #5f6b7a;
+  font-size: 13px;
+}
+
+.menu a.submenu-link.active {
+  background: #eef2ff;
+  color: #1f2937;
+}
+
 /* ===== SEÇÃO SISTEMA ===== */
 .menu-footer {
   margin-top: auto;

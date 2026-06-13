@@ -6,10 +6,10 @@ import { PermissionGroups } from '../core/security/permission-groups';
 
 interface JwtPayload {
   sub: string;
-  role?: string;
-  permissions?: string[];
-  authorities?: string[];
-  roles?: string[];
+  role?: unknown;
+  permissions?: unknown[];
+  authorities?: unknown[];
+  roles?: unknown[];
   exp?: number;
 }
 
@@ -21,6 +21,7 @@ export class AuthService {
   private API = environment.apiUrl;
   readonly PERMISSIONS = {
     PRODUTO: PermissionGroups.produtos,
+    ESTOQUE: PermissionGroups.estoque,
     PEDIDO: PermissionGroups.pedidos,
     USUARIO: PermissionGroups.usuarios,
     LOJA: PermissionGroups.lojas,
@@ -80,16 +81,23 @@ export class AuthService {
   }
 
   getRole(): string | null {
-    return this.getPayload()?.role ?? null;
+    const role = this.getPayload()?.role;
+
+    return typeof role === 'string' ? role : null;
   }
 
   getPermissions(): string[] {
     const payload = this.getPayload();
 
+    if (!payload) {
+      return [];
+    }
+
     return [
-      ...(payload?.permissions ?? []),
-      ...(payload?.authorities ?? []),
-      ...(payload?.roles ?? []),
+      ...this.normalizarPermissoes(payload.permissions),
+      ...this.normalizarPermissoes(payload.authorities),
+      ...this.normalizarPermissoes(payload.roles),
+      ...this.normalizarPermissoes(payload.role),
     ];
   }
 
@@ -108,6 +116,42 @@ export class AuthService {
     );
   }
 
+  hasEstoquePermission(): boolean {
+    return this.hasAnyPermission(PermissionGroups.estoque);
+  }
 
+
+
+  private normalizarPermissoes(value: unknown): string[] {
+    if (!value) {
+      return [];
+    }
+
+    if (typeof value === 'string') {
+      return [value];
+    }
+
+    if (Array.isArray(value)) {
+      return value.flatMap(item => this.normalizarPermissoes(item));
+    }
+
+    if (typeof value === 'object') {
+      const permission = value as {
+        nome?: unknown;
+        name?: unknown;
+        authority?: unknown;
+        permission?: unknown;
+      };
+
+      return [
+        permission.nome,
+        permission.name,
+        permission.authority,
+        permission.permission,
+      ].filter((item): item is string => typeof item === 'string');
+    }
+
+    return [];
+  }
 
 };

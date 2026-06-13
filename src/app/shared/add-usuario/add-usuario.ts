@@ -3,6 +3,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NavbarAdministradorComponent } from '../navbar-administrador/navbar-administrador';
 import { Permission, Role, UserAdminService } from '../../service/UserAdmin.service';
+import { of, switchMap } from 'rxjs';
 
 type PermissionAction = 'VIEW' | 'CREATE' | 'UPDATE' | 'DELETE';
 
@@ -29,6 +30,7 @@ export class AddUsuario implements OnInit {
   permissions: Permission[] = [];
   permissionGroups: PermissionGroup[] = [];
   selectedPermissionIds: string[] = [];
+  rolePermissionIds: string[] = [];
   salvando = false;
 
   permissionActions: { key: PermissionAction; label: string }[] = [
@@ -96,7 +98,24 @@ export class AddUsuario implements OnInit {
       password: this.password,
       roleId: this.roleId,
       permissionIds: this.selectedPermissionIds
-    }).subscribe({
+    }).pipe(
+      switchMap(() =>
+        this.userService.listarUsuarios(0, 1000)
+      ),
+      switchMap(users => {
+        const usuarioCriado = users.find(user => user.login === this.login);
+
+        if (!usuarioCriado || this.selectedPermissionIds.length === 0) {
+          return of(null);
+        }
+
+        return this.userService.atualizarUsuario(usuarioCriado.id, {
+          login: this.login,
+          roleId: this.roleId,
+          permissionIds: this.selectedPermissionIds
+        });
+      })
+    ).subscribe({
       next: () => {
         alert('Usuario criado com sucesso!');
         this.login = '';
@@ -118,10 +137,19 @@ export class AddUsuario implements OnInit {
   }
 
   isPermissionSelected(permissionId: string) {
-    return this.selectedPermissionIds.includes(permissionId);
+    return this.isRolePermission(permissionId) ||
+      this.selectedPermissionIds.includes(permissionId);
+  }
+
+  isRolePermission(permissionId: string) {
+    return this.rolePermissionIds.includes(permissionId);
   }
 
   togglePermission(permissionId: string, event: Event) {
+    if (this.isRolePermission(permissionId)) {
+      return;
+    }
+
     const checked = (event.target as HTMLInputElement).checked;
 
     if (checked) {
@@ -134,7 +162,8 @@ export class AddUsuario implements OnInit {
 
   toggleGrupo(group: PermissionGroup, event: Event) {
     const checked = (event.target as HTMLInputElement).checked;
-    const ids = this.getGroupPermissionIds(group);
+    const ids = this.getGroupPermissionIds(group)
+      .filter(id => !this.isRolePermission(id));
 
     if (checked) {
       this.selectedPermissionIds = [...new Set([...this.selectedPermissionIds, ...ids])];
@@ -146,9 +175,12 @@ export class AddUsuario implements OnInit {
 
   toggleTodasPermissoes(event: Event) {
     const checked = (event.target as HTMLInputElement).checked;
+    const extraIds = this.permissions
+      .map(permission => permission.id)
+      .filter(id => !this.isRolePermission(id));
 
     if (checked) {
-      this.selectedPermissionIds = this.permissions.map(permission => permission.id);
+      this.selectedPermissionIds = extraIds;
       return;
     }
 
@@ -158,28 +190,38 @@ export class AddUsuario implements OnInit {
   isGrupoSelecionado(group: PermissionGroup) {
     const ids = this.getGroupPermissionIds(group);
 
-    return ids.length > 0 && ids.every(id => this.selectedPermissionIds.includes(id));
+    return ids.length > 0 && ids.every(id => this.isPermissionSelected(id));
   }
 
   isGrupoParcial(group: PermissionGroup) {
     const ids = this.getGroupPermissionIds(group);
 
-    return ids.some(id => this.selectedPermissionIds.includes(id)) && !this.isGrupoSelecionado(group);
+    return ids.some(id => this.isPermissionSelected(id)) && !this.isGrupoSelecionado(group);
   }
 
   isTudoSelecionado() {
     return this.permissions.length > 0 &&
-      this.permissions.every(permission => this.selectedPermissionIds.includes(permission.id));
+      this.permissions.every(permission => this.isPermissionSelected(permission.id));
   }
 
   getTotalPermissoes() {
     return this.permissions.length;
   }
 
+  getTotalSelecionadas() {
+    return new Set([
+      ...this.rolePermissionIds,
+      ...this.selectedPermissionIds
+    ]).size;
+  }
+
   private aplicarPermissoesDaRole() {
     const role = this.roles.find(item => item.id === this.roleId);
+    const roleIds = role?.permissions?.map(permission => permission.id) ?? [];
 
-    this.selectedPermissionIds = role?.permissions?.map(permission => permission.id) ?? [];
+    this.rolePermissionIds = roleIds;
+    this.selectedPermissionIds =
+      this.selectedPermissionIds.filter(id => !roleIds.includes(id));
   }
 
   private agruparPermissoes(permissions: Permission[]) {

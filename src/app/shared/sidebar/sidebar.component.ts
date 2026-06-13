@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../service/auth.service';
+import { PermissionGroups } from '../../core/security/permission-groups';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,11 +14,21 @@ import { AuthService } from '../../service/auth.service';
 export class SidebarComponent {
 
   isOpen = false;
+  estoqueOpen = false;
+  estoquePermissions = PermissionGroups.estoque;
+  pedidoOpen = false;
+  pedidoPermissions = PermissionGroups.pedidos;
 
   showLogoutModal = false;
   closing = false;
 
-  constructor(public authService: AuthService) {}
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ) {
+    this.estoqueOpen = this.isEstoqueRoute();
+    this.pedidoOpen = this.isPedidoRoute();
+  }
 
   abrirSidebar() {
     this.isOpen = true;
@@ -25,6 +36,30 @@ export class SidebarComponent {
 
   fecharSidebar() {
     this.isOpen = false;
+  }
+
+  toggleEstoque() {
+    this.estoqueOpen = !this.estoqueOpen;
+  }
+
+  togglePedido() {
+    this.pedidoOpen = !this.pedidoOpen;
+  }
+
+  private isEstoqueRoute() {
+    return [
+      '/addestoque',
+      '/atualizar-estoque',
+      '/relatorio-estoque'
+    ].some(route => this.router.url.startsWith(route));
+  }
+
+  private isPedidoRoute() {
+    return [
+      '/pedido',
+      '/pedidos',
+      '/fazer-pedido'
+    ].some(route => this.router.url.startsWith(route));
   }
 
   abrirLogout() {

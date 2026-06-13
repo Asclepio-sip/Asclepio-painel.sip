@@ -23,14 +23,12 @@ export class PermissionService {
         atob(token.split('.')[1])
       );
 
-      // O backend pode retornar em diferentes formatos:
-      // authorities, permissions, roles, etc
-      return (
-        payload.authorities ||
-        payload.permissions ||
-        payload.roles ||
-        []
-      );
+      return [
+        ...this.normalizarPermissoes(payload.authorities),
+        ...this.normalizarPermissoes(payload.permissions),
+        ...this.normalizarPermissoes(payload.roles),
+        ...this.normalizarPermissoes(payload.role),
+      ];
     } catch {
       return [];
     }
@@ -75,5 +73,37 @@ export class PermissionService {
 
   canDeleteProduct(): boolean {
     return this.hasPermission('PRODUCT_DELETE');
+  }
+
+  private normalizarPermissoes(value: unknown): string[] {
+    if (!value) {
+      return [];
+    }
+
+    if (typeof value === 'string') {
+      return [value];
+    }
+
+    if (Array.isArray(value)) {
+      return value.flatMap(item => this.normalizarPermissoes(item));
+    }
+
+    if (typeof value === 'object') {
+      const permission = value as {
+        nome?: unknown;
+        name?: unknown;
+        authority?: unknown;
+        permission?: unknown;
+      };
+
+      return [
+        permission.nome,
+        permission.name,
+        permission.authority,
+        permission.permission,
+      ].filter((item): item is string => typeof item === 'string');
+    }
+
+    return [];
   }
 }
