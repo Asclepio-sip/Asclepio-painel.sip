@@ -1,190 +1,180 @@
-<app-navbar-administrador></app-navbar-administrador>
+<div class="add-loja-container">
 
-<app-sidebar></app-sidebar>
-
-<form (ngSubmit)="salvar()" class="card">
-
-  <h2>Cadastro de Loja</h2>
-
-  <p class="card-subtitle">
-    Preencha as informações abaixo para cadastrar uma nova loja.
-  </p>
-
-  <hr class="section-divider">
-
-  <!-- NOME -->
-
-  <div class="field">
-
-    <label for="nome">
-      Nome da Loja
-    </label>
-
-    <input
-      type="text"
-      [(ngModel)]="nomeLoja"
-      name="nomeLoja"
-      id="nome"
-      placeholder="Ex: Farmácia Central"
-    >
-
-    <span class="hint">
-      Digite o nome principal da loja.
-    </span>
-
+  <!-- Cabecalho -->
+  <div class="page-header">
+    <div class="header-left">
+      <p class="breadcrumb">ADMIN / GESTAO DE LOJA / <span>NOVA LOJA</span></p>
+      <h1 class="page-title">Cadastro de Loja</h1>
+      <p class="page-subtitle">Preencha os dados abaixo para cadastrar uma nova loja na plataforma.</p>
+    </div>
+    <button type="button" class="btn-back" (click)="cancelar()">
+      <svg width="15" height="15" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+      Voltar
+    </button>
   </div>
 
-  <!-- CEP + CNPJ -->
+  <form (ngSubmit)="salvar()">
+    <div class="form-layout">
 
-  <div class="field-row">
+      <!-- Coluna principal -->
+      <div class="main-col">
 
-    <div class="field">
+        <!-- Card: Informacoes basicas -->
+        <div class="form-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="19" height="19" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C5794E">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">Informacoes da Loja</h3>
+              <p class="card-subtitle">Nome, contato e identificacao fiscal</p>
+            </div>
+          </div>
 
-      <label for="cep">
-        CEP
-      </label>
+          <div class="card-body">
 
-      <input
-        type="text"
-        [(ngModel)]="cep"
-        name="cep"
-        id="cep"
-        placeholder="54720-165"
-      >
+            <div class="form-group full">
+              <label class="form-label">Nome da Loja <span class="required">*</span></label>
+              <input class="form-input" type="text" [(ngModel)]="nomeLoja" name="nomeLoja" required placeholder="Ex: Farmacia Central" />
+              <span class="form-hint">Nome que sera exibido para os clientes.</span>
+            </div>
 
-    </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">CEP <span class="required">*</span></label>
+                <div class="input-icon-wrap">
+                  <svg width="15" height="15" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <input class="form-input" type="text" [(ngModel)]="cep" name="cep" required placeholder="00000-000" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">CNPJ</label>
+                <div class="input-icon-wrap">
+                  <svg width="15" height="15" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
+                  <input class="form-input" type="text" [(ngModel)]="cpnj" name="cpnj" placeholder="00.000.000/0000-00" />
+                </div>
+              </div>
+            </div>
 
-    <div class="field">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Telefone <span class="required">*</span></label>
+                <div class="input-icon-wrap">
+                  <svg width="15" height="15" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                  </svg>
+                  <input class="form-input" type="text" [(ngModel)]="telefone" name="telefone" required placeholder="(81) 99999-9999" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tipo de Atendimento <span class="required">*</span></label>
+                <select class="form-input" [(ngModel)]="tipoAtendimento" name="tipoAtendimento" required>
+                  <option value="">Selecione...</option>
+                  <option value="DELIVERY">Delivery</option>
+                  <option value="RETIRADA">Retirada</option>
+                  <option value="AMBOS">Ambos</option>
+                </select>
+              </div>
+            </div>
 
-      <label for="cnpj">
-        CNPJ
-      </label>
+          </div>
+        </div>
 
-      <input
-        type="text"
-        [(ngModel)]="cpnj"
-        name="cpnj"
-        id="cnpj"
-        placeholder="00.000.000/0000-00"
-      >
+        <!-- Card: Entrega e descricao -->
+        <div class="form-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="19" height="19" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C5794E">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17H5a2 2 0 01-2-2V7a2 2 0 012-2h11l4 4v6a2 2 0 01-2 2h-1m-10 0a2 2 0 104 0m6 0a2 2 0 104 0"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">Entrega e Descricao</h3>
+              <p class="card-subtitle">Politica de frete e descricao da loja</p>
+            </div>
+          </div>
 
-    </div>
+          <div class="card-body">
 
-  </div>
+            <div class="form-group">
+              <label class="form-label">Valor minimo para frete gratis (R$)</label>
+              <div class="input-icon-wrap">
+                <svg width="15" height="15" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <input class="form-input" type="number" [(ngModel)]="valorMinimoFreteGratis" name="valorMinimoFreteGratis" placeholder="Ex: 50.00" step="0.01" min="0" />
+              </div>
+              <span class="form-hint">Deixe em branco se nao oferecer frete gratis.</span>
+            </div>
 
-  <!-- TELEFONE + TIPO -->
+            <div class="form-group">
+              <label class="form-label">Descricao da Loja</label>
+              <textarea class="form-input form-textarea" [(ngModel)]="textoDescricao" name="textoDescricao" rows="4" placeholder="Fale sobre a loja, servicos, diferenciais..."></textarea>
+            </div>
 
-  <div class="field-row">
+          </div>
+        </div>
 
-    <div class="field">
+      </div>
 
-      <label for="telefone">
-        Telefone
-      </label>
+      <!-- Painel lateral de acoes -->
+      <div class="side-col">
+        <div class="action-card">
+          <h3 class="action-card-title">Publicar Loja</h3>
+          <div class="action-card-body">
 
-      <input
-        type="text"
-        [(ngModel)]="telefone"
-        name="telefone"
-        id="telefone"
-        placeholder="81999999999"
-      >
+            <div class="status-info">
+              <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <div>
+                <span class="status-label">CAMPOS OBRIGATORIOS</span>
+                <div class="progress-row">
+                  <div class="progress-bar">
+                    <div class="progress-fill"
+                      [style.width.%]="((nomeLoja ? 1:0) + (cep ? 1:0) + (telefone ? 1:0) + (tipoAtendimento ? 1:0)) / 4 * 100">
+                    </div>
+                  </div>
+                  <span class="progress-count">{{ (nomeLoja ? 1:0) + (cep ? 1:0) + (telefone ? 1:0) + (tipoAtendimento ? 1:0) }}/4</span>
+                </div>
+              </div>
+            </div>
 
-    </div>
+            <button type="submit" class="btn-save">
+              <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+              </svg>
+              Salvar Loja
+            </button>
+            <button type="button" class="btn-cancel" (click)="cancelar()">Cancelar</button>
 
-    <div class="field">
+          </div>
+        </div>
 
-      <label for="tipoAtendimento">
-        Tipo Atendimento
-      </label>
-
-      <div class="select-wrapper">
-
-        <select
-          [(ngModel)]="tipoAtendimento"
-          name="tipoAtendimento"
-          id="tipoAtendimento"
-        >
-
-          <option value="">
-            Selecione
-          </option>
-
-          <option value="ENTREGA">
-            Entrega
-          </option>
-
-          <option value="RETIRADA">
-            Retirada
-          </option>
-
-          <option value="AMBOS">
-            Ambos
-          </option>
-
-        </select>
+        <!-- Card de dica -->
+        <div class="tip-card">
+          <div class="tip-icon">
+            <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C5794E">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+          </div>
+          <div>
+            <span class="tip-label">DICA</span>
+            <p class="tip-text">Lojas com descricao detalhada e tipo de atendimento correto recebem mais pedidos.</p>
+          </div>
+        </div>
 
       </div>
 
     </div>
+  </form>
 
-  </div>
-
-  <!-- FRETE GRATIS -->
-
-  <div class="field">
-
-    <label for="freteGratis">
-      Valor mínimo frete grátis
-    </label>
-
-    <input
-      type="number"
-      [(ngModel)]="valorMinimoFreteGratis"
-      name="valorMinimoFreteGratis"
-      id="freteGratis"
-      placeholder="0"
-    >
-
-  </div>
-
-  <!-- DESCRIÇÃO -->
-
-  <div class="field">
-
-    <label for="descricao">
-      Descrição
-    </label>
-
-    <textarea
-      [(ngModel)]="textoDescricao"
-      name="textoDescricao"
-      id="descricao"
-      rows="5"
-      placeholder="Descrição da loja..."
-    ></textarea>
-
-  </div>
-
-  <!-- BOTÕES -->
-
-  <div class="actions">
-
-    <button
-      type="button"
-      class="btn btn-cancel"
-      (click)="cancelar()"
-    >
-      Cancelar
-    </button>
-
-    <button
-      type="submit"
-      class="btn btn-save"
-    >
-      Salvar Loja
-    </button>
-
-  </div>
-
-</form>
+</div>

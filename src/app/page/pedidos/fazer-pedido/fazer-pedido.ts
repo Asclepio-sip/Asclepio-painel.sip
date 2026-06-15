@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { Navbar } from '../../../shared/navbar/navbar';
 import { SidebarComponent } from '../../../shared/sidebar/sidebar.component';
 import { ListaDeProduto } from '../../../shared/lista-de-produto/lista-de-produto';

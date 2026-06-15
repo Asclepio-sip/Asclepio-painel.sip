@@ -1,89 +1,138 @@
-<app-navbar-administrador></app-navbar-administrador>
-<app-sidebar></app-sidebar>
+<div class="estoque-container">
 
-<div class="page-wrapper">
-  <div class="card">
-    <h2 class="title">Atualizar Estoque</h2>
-
-    <div class="top-controls">
-      <select
-        class="loja-select"
-        [(ngModel)]="lojaSelecionada"
-        (ngModelChange)="selecionarLoja($event)"
-        name="lojaFiltro">
+  <!-- Cabecalho -->
+  <div class="page-header">
+    <div class="header-left">
+      <p class="breadcrumb">ADMIN / ESTOQUE / <span>ATUALIZAR ESTOQUE</span></p>
+      <h1 class="page-title">Atualizar Estoque</h1>
+    </div>
+    <div class="header-actions">
+      <select class="select-loja" [(ngModel)]="lojaSelecionada" (ngModelChange)="selecionarLoja($event)" name="lojaFiltro">
         <option value="">Todas as lojas</option>
-        <option *ngFor="let l of lojas" [value]="l.nomeLoja">
-          {{ l.nomeLoja }}
-        </option>
+        <option *ngFor="let l of lojas" [value]="l.nomeLoja">{{ l.nomeLoja }}</option>
       </select>
-
-      <button class="btn show-all" type="button" (click)="mostrarTudo()">
+      <button class="btn-secondary" type="button" (click)="mostrarTudo()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+        </svg>
         Mostrar tudo
       </button>
     </div>
   </div>
 
-  <div class="product-table">
-    <div class="table-header">
-      <div>Imagem</div>
-      <div>Produto</div>
-      <div>Variação</div>
-      <div>Loja</div>
-      <div>Quantidade</div>
-      <div>Preço</div>
-      <div>Desconto</div>
-      <div>Preço final</div>
-      <div>Ações</div>
+  <!-- Tabela -->
+  <div class="table-card">
+    <div class="table-card-header">
+      <div>
+        <h3 class="table-card-title">Itens em Estoque</h3>
+        <p class="table-card-sub">{{ produtosFiltrados.length }} item(ns) encontrado(s)</p>
+      </div>
     </div>
 
-    <div class="table-row" *ngFor="let p of produtosFiltrados">
-      <div class="col-image">
-        <img [src]="'data:image/webp;base64,' + p.imagemBase64">
-      </div>
+    <div class="table-scroll">
+      <table class="estoque-table">
+        <thead>
+          <tr>
+            <th>Produto</th>
+            <th>Variacao</th>
+            <th>Loja</th>
+            <th>Preco</th>
+            <th>Desconto</th>
+            <th>Preco Final</th>
+            <th class="th-center">Quantidade</th>
+            <th class="th-actions">Acoes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="estoque-row" *ngFor="let p of produtosFiltrados">
 
-      <div class="col-name">{{ p.nomeProduto }}</div>
-      <div>{{ p.nomeVariacao }}</div>
-      <div class="col-store">{{ p.nomeLoja }}</div>
-      <div class="col-stock">{{ p.quantidade }}</div>
-      <div>{{ p.precoVenda | currency:'BRL' }}</div>
-      <div>{{ p.percentualDesconto || 0 }}%</div>
-      <div class="col-price">{{ p.valorFinal | currency:'BRL' }}</div>
+            <td class="td-produto">
+              <div class="produto-img-wrap">
+                <img *ngIf="p.imagemBase64" [src]="'data:image/webp;base64,' + p.imagemBase64" loading="lazy" />
+                <div *ngIf="!p.imagemBase64" class="produto-img-placeholder">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+              </div>
+              <span class="produto-nome">{{ p.nomeProduto }}</span>
+            </td>
 
-      <div class="col-actions">
-        <button class="btn-minus" type="button" (click)="diminuirEstoque(p)">-</button>
-        <span class="stock-number">{{ p.quantidade }}</span>
-        <button class="btn-plus" type="button" (click)="aumentarEstoque(p)">+</button>
+            <td><span class="variacao-tag">{{ p.nomeVariacao }}</span></td>
 
-        <button
-          class="btn-update"
-          type="button"
-          *ngIf="estoqueAlterado(p)"
-          (click)="atualizarEstoque(p)">
-          Salvar
+            <td class="td-loja">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+              {{ p.nomeLoja }}
+            </td>
+
+            <td class="td-preco">{{ p.precoVenda | currency:'BRL' }}</td>
+
+            <td>
+              <span class="desconto-badge" *ngIf="p.percentualDesconto > 0">-{{ p.percentualDesconto }}%</span>
+              <span class="sem-desconto" *ngIf="!p.percentualDesconto || p.percentualDesconto === 0">&mdash;</span>
+            </td>
+
+            <td class="td-final">{{ p.valorFinal | currency:'BRL' }}</td>
+
+            <td class="td-qty">
+              <div class="qty-control">
+                <button class="btn-qty" type="button" (click)="diminuirEstoque(p)">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                  </svg>
+                </button>
+                <span class="qty-value" [class.changed]="estoqueAlterado(p)">{{ p.quantidade }}</span>
+                <button class="btn-qty" type="button" (click)="aumentarEstoque(p)">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                </button>
+              </div>
+            </td>
+
+            <td class="td-actions">
+              <button class="btn-save" type="button" *ngIf="estoqueAlterado(p)" (click)="atualizarEstoque(p)">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Salvar
+              </button>
+              <span class="no-change" *ngIf="!estoqueAlterado(p)">&mdash;</span>
+            </td>
+
+          </tr>
+          <tr *ngIf="produtosFiltrados.length === 0">
+            <td colspan="8" class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+              </svg>
+              <p>Nenhum item no estoque</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginacao -->
+    <div class="table-footer">
+      <span class="footer-info">Pagina <strong>{{ paginaAtualEstoque + 1 }}</strong> de <strong>{{ totalPaginasEstoque || 1 }}</strong></span>
+      <div class="pagination">
+        <button class="btn-page" type="button" (click)="paginaAnteriorEstoque()" [disabled]="paginaAtualEstoque === 0">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Anterior
+        </button>
+        <button class="btn-page" type="button" (click)="proximaPaginaEstoque()" [disabled]="paginaAtualEstoque >= totalPaginasEstoque - 1">
+          Proxima
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
         </button>
       </div>
     </div>
   </div>
 
-  <div class="pagination">
-    <button
-      class="btn-page"
-      type="button"
-      (click)="paginaAnteriorEstoque()"
-      [disabled]="paginaAtualEstoque === 0">
-      Anterior
-    </button>
-
-    <span class="page-info">
-      Página {{ paginaAtualEstoque + 1 }} de {{ totalPaginasEstoque || 1 }}
-    </span>
-
-    <button
-      class="btn-page"
-      type="button"
-      (click)="proximaPaginaEstoque()"
-      [disabled]="paginaAtualEstoque >= totalPaginasEstoque - 1">
-      Próxima
-    </button>
-  </div>
 </div>

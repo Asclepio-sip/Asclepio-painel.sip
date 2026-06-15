@@ -1,125 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-* {
-  font-family: 'Poppins', sans-serif;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
-/* ===== MENU AÇÕES ===== */
-.action-bar {
-  width: 900px;
-  margin: 30px auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.page-wrapper {
-  background-color: #f4f6f8;
-  min-height: 100vh;
-}
-.action-bar input {
-  width: 320px;
-  padding: 10px 16px;
-  border-radius: 20px;
-  border: 1px solid #ddd;
-}
+.gestao-container { font-family: 'Poppins', sans-serif; padding: 32px 36px; background: #f4f6f8; min-height: 100vh; }
 
-/* ===== BOTÕES ===== */
-.actions {
-  display: flex;
-  gap: 12px;
-}
+.page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+.breadcrumb { font-size: 11px; font-weight: 600; color: #9ca3af; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+.breadcrumb span { color: #C5794E; }
+.page-title { font-size: 26px; font-weight: 700; color: #111827; margin: 0; }
 
-/* ============ menu de acao ====== */
+.header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
-/* Container geral */
-.card-form {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-background-color: #f4f6f8;
-}
+.search-box { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 9px 14px; transition: border-color .2s; }
+.search-box:focus-within { border-color: #C5794E; box-shadow: 0 0 0 3px rgba(197,121,78,.07); }
+.search-box svg { width: 15px; height: 15px; color: #9ca3af; flex-shrink: 0; }
+.search-box input { border: none; outline: none; font-size: 13.5px; font-family: 'Poppins', sans-serif; color: #111827; width: 200px; background: transparent; }
+.search-box input::placeholder { color: #9ca3af; }
 
-/* Card */
-.card {
-  width: 100%;
-  max-width: 900px;
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
+.btn-primary { display: inline-flex; align-items: center; gap: 7px; padding: 10px 18px; background: #C5794E; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: background .2s; white-space: nowrap; }
+.btn-primary svg { width: 15px; height: 15px; }
+.btn-primary:hover { background: #a8622d; }
 
-/* Título */
-.card-title {
-  margin-bottom: 20px;
-  font-size: 1.4rem;
-  color: #333;
-}
+.btn-secondary { display: inline-flex; align-items: center; gap: 7px; padding: 10px 18px; background: #fff; color: #374151; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all .2s; white-space: nowrap; }
+.btn-secondary svg { width: 15px; height: 15px; }
+.btn-secondary:hover { border-color: #C5794E; color: #C5794E; }
 
-/* Campo de busca */
-.search-box input {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  outline: none;
-}
-
-.search-box input:focus {
-  border-color: #4f46e5;
-}
-
-/* Botões */
-.action-buttons {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.btn {
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-}
-
-/* Variações */
-.primary {
-  background: #4f46e5;
-  color: white;
-}
-
-.secondary {
-  background: #64748b;
-  color: white;
-}
-
-.success {
-  background: #16a34a;
-  color: white;
-}
-
-.danger {
-  background: #dc2626;
-  color: white;
-}
-
-/* Responsivo */
-@media (max-width: 600px) {
-  .card {
-    padding: 16px;
-  }
-
-  .card-title {
-    font-size: 1.2rem;
-  }
-}
+@media (max-width: 700px) { .gestao-container { padding: 20px 16px; } .page-header { flex-direction: column; align-items: flex-start; } }

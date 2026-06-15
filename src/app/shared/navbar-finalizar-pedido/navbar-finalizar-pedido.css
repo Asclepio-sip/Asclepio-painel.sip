@@ -23,7 +23,7 @@
 .logo {
   font-size: 20px;
   font-weight: 700;
-  color: #dc2626;
+  color: #C5794E;
   cursor: pointer;
   letter-spacing: -0.5px;
   transition: 0.2s ease;
@@ -78,13 +78,13 @@
 
 /* Step ativo */
 .step.active .circle {
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
-  border-color: #dc2626;
+  background: linear-gradient(135deg, #C5794E, #a8622d);
+  border-color: #C5794E;
   color: #fff;
 }
 
 .step.active span {
-  color: #dc2626;
+  color: #C5794E;
   font-weight: 600;
 }
 
@@ -99,7 +99,7 @@
   border-radius: 14px;
   cursor: pointer;
   background: linear-gradient(135deg, #fff1f2, #ffe4e6);
-  border: 1px solid #fecaca;
+  border: 1px solid #f0cdb0;
   transition: all 0.25s ease;
 }
 
@@ -108,7 +108,7 @@
 .cart-box i {
   width: 24px;
   height: 24px;
-  color: #dc2626;
+  color: #C5794E;
 }
 
 .cart-info {
@@ -133,7 +133,7 @@
   position: absolute;
   top: -6px;
   right: -6px;
-  background: #dc2626;
+  background: #C5794E;
   color: #ffffff;
   font-size: 11px;
   font-weight: 700;
@@ -141,7 +141,7 @@
   padding: 4px 8px;
   min-width: 22px;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+  box-shadow: 0 4px 12px rgba(197,121,78, 0.4);
   animation: pulse 1.5s infinite;
 }
 

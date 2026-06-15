@@ -134,7 +134,7 @@
 /* BOTÃO PRINCIPAL */
 .cart-drawer footer .finish {
   width: 100%;
-  background: #b91c1c;
+  background: #a8622d;
   color: #fff;
   border: none;
   padding: 14px;
@@ -145,7 +145,7 @@
 }
 
 .cart-drawer footer .finish:hover {
-  background: #991b1b;
+  background: #8B4E25;
 }
 
 /* BOTÃO SECUNDÁRIO */

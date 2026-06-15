@@ -1,18 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-
-import {
-  Bairro,
-  BairroService
-} from '../../../service/loja/bairro.service';
-
-import { NavbarAdministradorComponent }
-from "../../../shared/navbar-administrador/navbar-administrador";
-
-import { SidebarComponent }
-from '../../../shared/sidebar/sidebar.component';
+import { Bairro, BairroService } from '../../../service/loja/bairro.service';
+import { NavbarAdministradorComponent } from "../../../shared/navbar-administrador/navbar-administrador";
+import { SidebarComponent } from '../../../shared/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-add-bairro',
@@ -38,7 +30,8 @@ export class AddBairro implements OnInit {
   carregando = false;
 
   constructor(
-    private bairroService: BairroService
+    private bairroService: BairroService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -62,6 +55,7 @@ export class AddBairro implements OnInit {
         this.bairros = [...dados];
 
         this.carregando = false;
+        this.cdr.detectChanges();
       },
 
       error: (err) => {

@@ -1,196 +1,191 @@
-<app-navbar-administrador></app-navbar-administrador>
-<app-sidebar></app-sidebar>
+<div class="pedidos-container">
 
-<div class="page">
-
-  <!-- HEADER -->
-  <div class="header">
-    <div>
-      <h1>Painel de Pedidos</h1>
-      <p>Gerencie e atualize o status dos pedidos da farmácia de forma eficiente.</p>
+  <!-- Cabecalho -->
+  <div class="page-header">
+    <div class="header-left">
+      <p class="breadcrumb">ADMIN / <span>PEDIDOS</span></p>
+      <h1 class="page-title">Painel de Pedidos</h1>
     </div>
-    <div class="actions">
-      <div class="search-wrapper">
-        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    <div class="header-actions">
+      <div class="search-box">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 0 5 11a6 6 0 0 0 12 0z"/>
         </svg>
-        <input
-          type="text"
-          placeholder="Buscar pedido ou cliente..."
-          [(ngModel)]="busca"
-          (ngModelChange)="onBuscaChange()"
-        >
+        <input type="text" placeholder="Buscar pedido ou cliente..." [(ngModel)]="busca" (ngModelChange)="onBuscaChange()" />
       </div>
-      <button class="export" (click)="exportarRelatorio()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="7 10 12 15 17 10"/>
-          <line x1="12" y1="15" x2="12" y2="3"/>
+      <button class="btn-export" (click)="exportarRelatorio()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/>
         </svg>
-        Exportar Relatório
+        Exportar
       </button>
     </div>
   </div>
 
-  <!-- CARDS -->
-  <div class="cards">
+  <!-- Cards de status -->
+  <div class="status-cards">
 
-    <div class="card novos" [class.active]="filtroAtivo === 'AGUARDANDO'" (click)="filtrar('AGUARDANDO')">
-      <div class="card-header">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        <span class="card-label">Aguardando</span>
+    <div class="status-card aguardando" [class.ativo]="filtroAtivo === 'AGUARDANDO'" (click)="filtrar('AGUARDANDO')">
+      <div class="status-card-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
       </div>
-      <div class="card-count">
-        <strong>{{ contadores.novosHoje }}</strong>
-        <span>pedidos</span>
+      <div class="status-card-info">
+        <span class="status-card-value">{{ contadores.novosHoje }}</span>
+        <span class="status-card-label">Aguardando</span>
       </div>
-      <p class="card-desc">Aguardando confirmação do cliente.</p>
     </div>
 
-    <div class="card pendente" [class.active]="filtroAtivo === 'SEPARACAO'" (click)="filtrar('SEPARACAO')">
-      <div class="card-header">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <span class="card-label">Separação</span>
+    <div class="status-card separacao" [class.ativo]="filtroAtivo === 'SEPARACAO'" (click)="filtrar('SEPARACAO')">
+      <div class="status-card-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+        </svg>
       </div>
-      <div class="card-count">
-        <strong>{{ contadores.pendentes }}</strong>
-        <span>pedidos</span>
+      <div class="status-card-info">
+        <span class="status-card-value">{{ contadores.pendentes }}</span>
+        <span class="status-card-label">Separacao</span>
       </div>
-      <p class="card-desc">Processo de separação do pedido.</p>
     </div>
 
-    <div class="card transito" [class.active]="filtroAtivo === 'EM_TRANSITO'" (click)="filtrar('EM_TRANSITO')">
-      <div class="card-header">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        <span class="card-label">Em Trânsito</span>
+    <div class="status-card transito" [class.ativo]="filtroAtivo === 'EM_TRANSITO'" (click)="filtrar('EM_TRANSITO')">
+      <div class="status-card-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17H5a2 2 0 01-2-2V7a2 2 0 012-2h11l4 4v6a2 2 0 01-2 2h-1m-10 0a2 2 0 104 0m6 0a2 2 0 104 0"/>
+        </svg>
       </div>
-      <div class="card-count">
-        <strong>{{ contadores.emTransito }}</strong>
-        <span>pedidos</span>
+      <div class="status-card-info">
+        <span class="status-card-value">{{ contadores.emTransito }}</span>
+        <span class="status-card-label">Em Transito</span>
       </div>
-      <p class="card-desc">Saíram para entrega hoje.</p>
     </div>
 
-    <div class="card finalizado" [class.active]="filtroAtivo === 'CONCLUIDO'" (click)="filtrar('CONCLUIDO')">
-      <div class="card-header">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        <span class="card-label">Concluído</span>
+    <div class="status-card concluido" [class.ativo]="filtroAtivo === 'CONCLUIDO'" (click)="filtrar('CONCLUIDO')">
+      <div class="status-card-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
       </div>
-      <div class="card-count">
-        <strong>{{ contadores.finalizados }}</strong>
-        <span>pedidos</span>
+      <div class="status-card-info">
+        <span class="status-card-value">{{ contadores.finalizados }}</span>
+        <span class="status-card-label">Concluido</span>
       </div>
-      <p class="card-desc">Entregas finalizadas com sucesso.</p>
     </div>
 
-    <div class="card todos" [class.active]="filtroAtivo === 'todos'" (click)="filtrar('todos')">
-      <div class="card-header">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        <span class="card-label">Todos</span>
+    <div class="status-card cancelado" [class.ativo]="filtroAtivo === 'CANCELADO'" (click)="filtrar('CANCELADO')">
+      <div class="status-card-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
       </div>
-      <div class="card-count">
-        <strong>{{ totalTodos }}</strong>
-        <span>pedidos</span>
+      <div class="status-card-info">
+        <span class="status-card-value">{{ contadores.cancelados }}</span>
+        <span class="status-card-label">Cancelado</span>
       </div>
-      <p class="card-desc">Total de pedidos registrados.</p>
     </div>
 
-    
-    <div class="card todos" [class.active]="filtroAtivo === 'CANCELADO'" (click)="filtrar('CANCELADO')">
-      <div class="card-header">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        <span class="card-label">Cancelado</span>
+    <div class="status-card todos" [class.ativo]="filtroAtivo === 'todos'" (click)="filtrar('todos')">
+      <div class="status-card-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+        </svg>
       </div>
-      <div class="card-count">
-        <strong>{{ contadores.cancelados }}</strong>
-        <span>pedidos</span>
+      <div class="status-card-info">
+        <span class="status-card-value">{{ totalTodos }}</span>
+        <span class="status-card-label">Todos</span>
       </div>
-      <p class="card-desc">Total de pedidos cancelados.</p>
     </div>
+
   </div>
 
-  <!-- TABLE -->
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th><input type="checkbox" (change)="selecionarTodos($event)"></th>
-          <th>N° Pedido</th>
-          <th>Cliente</th>
-          <th>Data</th>
-          <th>Status</th>
-          <th>Total</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let pedido of pedidosPaginados">
-          <td><input type="checkbox" [(ngModel)]="pedido.selecionado"></td>
-          <td class="pedido-id">#{{ pedido.id }}</td>
-          <td>
-            <div class="cliente-nome">{{ pedido.cliente }}</div>
-          </td>
-          <td>{{ pedido.criado | date:'dd/MM/yyyy HH:mm' }}</td>
-          <td>
-          <select
-  class="status-select"
-  [ngClass]="getStatusClass(pedido.statusDoPedido)"
-  [(ngModel)]="pedido.statusDoPedido"
-  (ngModelChange)="atualizarStatus(pedido)"
->
-<option value="AGUARDANDO">Aguardando</option>
-<option value="SEPARACAO">Separação</option>
-<option value="EM_TRANSITO">Em trânsito</option>
-<option value="CONCLUIDO">Concluído</option>
-<option value="CANCELADO">Cancelado</option>
-</select>
-          </td>
-            <td>{{ pedido.totalFinal | currency:'BRL':'symbol':'1.2-2' }}</td>
-          <td>
-            <div class="actions-cell">
-              <button class="btn-icon btn-ver" title="Ver detalhes" (click)="verDetalhes(pedido)">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
-              <button class="btn-icon btn-print" title="Imprimir" (click)="imprimir(pedido)">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="6 9 6 2 18 2 18 9"/>
-                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-                  <rect x="6" y="14" width="12" height="8"/>
-                </svg>
-              </button>
-            </div>
-          </td>
-        </tr>
-        <tr *ngIf="pedidosFiltrados.length === 0">
-          <td colspan="7" class="empty-state">Nenhum pedido encontrado.</td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Tabela -->
+  <div class="table-card">
 
-    <!-- FOOTER COM PAGINAÇÃO -->
-    <div class="table-footer">
-      <span>
-        Mostrando <strong>{{ inicioRegistro }}</strong> a <strong>{{ fimRegistro }}</strong>
-        de <strong>{{ totalRegistros }}</strong> pedidos registrados
-      </span>
-      <div class="pagination">
-        <button (click)="irParaPagina(paginaAtual - 1)" [disabled]="paginaAtual === 1">&#8592;</button>
-
-        <ng-container *ngFor="let p of paginas">
-          <button
-            *ngIf="p !== -1"
-            [class.active]="p === paginaAtual"
-            (click)="irParaPagina(p)"
-          >{{ p }}</button>
-          <span *ngIf="p === -1" class="ellipsis">...</span>
-        </ng-container>
-
-        <button (click)="irParaPagina(paginaAtual + 1)" [disabled]="paginaAtual === totalPaginas">&#8594;</button>
+    <div class="table-card-header">
+      <div>
+        <h3 class="table-card-title">Lista de Pedidos</h3>
+        <p class="table-card-sub">
+          {{ filtroAtivo === 'todos' ? 'Todos os pedidos' : filtroAtivo }} &mdash; {{ totalRegistros }} registro(s)
+        </p>
       </div>
     </div>
+
+    <div class="table-scroll">
+      <table class="pedidos-table">
+        <thead>
+          <tr>
+            <th class="th-check"><input type="checkbox" (change)="selecionarTodos($event)" /></th>
+            <th>N&deg; Pedido</th>
+            <th>Cliente</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th>Total</th>
+            <th class="th-actions">Acoes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pedido of pedidosPaginados" class="pedido-row">
+            <td class="td-check"><input type="checkbox" [(ngModel)]="pedido.selecionado" /></td>
+            <td class="td-id">
+              <span class="pedido-num">#{{ pedido.id }}</span>
+            </td>
+            <td class="td-cliente">
+              <div class="cliente-avatar">{{ pedido.cliente?.charAt(0)?.toUpperCase() }}</div>
+              <span class="cliente-nome">{{ pedido.cliente }}</span>
+            </td>
+            <td class="td-data">{{ pedido.criado | date:'dd/MM/yyyy' }}<br/><span class="td-hora">{{ pedido.criado | date:'HH:mm' }}</span></td>
+            <td class="td-status">
+              <select class="status-select" [ngClass]="getStatusClass(pedido.statusDoPedido)" [(ngModel)]="pedido.statusDoPedido" (ngModelChange)="atualizarStatus(pedido)">
+                <option value="AGUARDANDO">Aguardando</option>
+                <option value="SEPARACAO">Separacao</option>
+                <option value="EM_TRANSITO">Em transito</option>
+                <option value="CONCLUIDO">Concluido</option>
+                <option value="CANCELADO">Cancelado</option>
+              </select>
+            </td>
+            <td class="td-total">{{ pedido.totalFinal | currency:'BRL':'symbol':'1.2-2' }}</td>
+            <td class="td-actions">
+              <button class="btn-ver" title="Ver detalhes" (click)="verDetalhes(pedido)">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                Ver
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="pedidosFiltrados.length === 0">
+            <td colspan="7" class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              <p>Nenhum pedido encontrado</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginacao -->
+    <div class="table-footer">
+      <span class="footer-info">
+        Mostrando <strong>{{ inicioRegistro }}</strong>&ndash;<strong>{{ fimRegistro }}</strong> de <strong>{{ totalRegistros }}</strong> pedidos
+      </span>
+      <div class="pagination">
+        <button class="btn-page" (click)="irParaPagina(paginaAtual - 1)" [disabled]="paginaAtual === 1">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <ng-container *ngFor="let p of paginas">
+          <button *ngIf="p !== -1" class="btn-page" [class.active]="p === paginaAtual" (click)="irParaPagina(p)">{{ p }}</button>
+          <span *ngIf="p === -1" class="ellipsis">...</span>
+        </ng-container>
+        <button class="btn-page" (click)="irParaPagina(paginaAtual + 1)" [disabled]="paginaAtual === totalPaginas">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
   </div>
 
 </div>

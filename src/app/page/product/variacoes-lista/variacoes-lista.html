@@ -1,58 +1,81 @@
-<app-navbar-administrador></app-navbar-administrador>
-<app-sidebar></app-sidebar>
+<div class="variacoes-lista-container">
 
-<div class="page-wrapper">
-  <div class="card">
-    <h2 class="title">Variações</h2>
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <div class="breadcrumb">ADMIN / PRODUTOS / <span>VARIAÇÕES</span></div>
+      <h1 class="page-title">Variações de Produtos</h1>
+      <p class="page-subtitle">Selecione um produto para gerenciar suas variações</p>
+    </div>
   </div>
 
-  <div class="product-table">
-    <div class="produtos-header">
-      <div>Imagem</div>
-      <div>Produto</div>
-      <div>Categoria</div>
-      <div>Variações</div>
-      <div>Ações</div>
-    </div>
-
-    <div class="produtos-row" *ngFor="let p of produtos">
-      <div class="col-image">
-        <img [src]="'data:image/png;base64,' + p.imagemBase64">
+  <!-- Table Card -->
+  <div class="table-card">
+    <div class="card-header">
+      <div class="card-icon">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C5794E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       </div>
-
-      <div class="col-name">{{ p.name }}</div>
-      <div>{{ p.categoria?.nomeCategoria || p.categoriaNome }}</div>
-      <div>{{ p.variacoes.length || 0 }}</div>
       <div>
-        <button
-          class="btn primary"
-          type="button"
-          [routerLink]="['/products', p.id, 'variacoes']">
-          Abrir
-        </button>
+        <p class="card-title">Lista de Produtos</p>
+        <p class="card-subtitle">{{ produtos.length }} produto(s) carregado(s)</p>
       </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th style="width:70px">Imagem</th>
+            <th>Produto</th>
+            <th>Categoria</th>
+            <th style="text-align:center">Variações</th>
+            <th style="text-align:center">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of produtos">
+            <td>
+              <div class="product-thumb">
+                <img *ngIf="p.imagemBase64" [src]="'data:image/png;base64,' + p.imagemBase64" alt="Produto" />
+                <div *ngIf="!p.imagemBase64" class="thumb-placeholder">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="product-name">{{ p.name }}</span>
+            </td>
+            <td>
+              <span class="category-tag">{{ p.categoria?.nomeCategoria || p.categoriaNome || '—' }}</span>
+            </td>
+            <td style="text-align:center">
+              <span class="variation-count" [class.no-var]="(p.variacoes?.length || 0) === 0">
+                {{ p.variacoes?.length || 0 }}
+              </span>
+            </td>
+            <td style="text-align:center">
+              <button class="btn-manage" [routerLink]="['/products', p.id, 'variacoes']">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Gerenciar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button class="btn-page" (click)="paginaAnterior()" [disabled]="paginaAtual === 0">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        Anterior
+      </button>
+      <span class="page-info">Página {{ paginaAtual + 1 }} de {{ totalPaginas || 1 }}</span>
+      <button class="btn-page" (click)="proximaPagina()" [disabled]="paginaAtual >= totalPaginas - 1">
+        Próxima
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
     </div>
   </div>
 
-  <div class="pagination">
-    <button
-      class="btn-page"
-      type="button"
-      (click)="paginaAnterior()"
-      [disabled]="paginaAtual === 0">
-      Anterior
-    </button>
-
-    <span class="page-info">
-      Página {{ paginaAtual + 1 }} de {{ totalPaginas || 1 }}
-    </span>
-
-    <button
-      class="btn-page"
-      type="button"
-      (click)="proximaPagina()"
-      [disabled]="paginaAtual >= totalPaginas - 1">
-      Próxima
-    </button>
-  </div>
 </div>

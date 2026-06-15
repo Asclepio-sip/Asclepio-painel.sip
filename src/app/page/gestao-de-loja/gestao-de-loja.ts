@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
 import { NavbarAdministradorComponent } from "../../shared/navbar-administrador/navbar-administrador";
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { ProductService } from '../../service/product.service';
@@ -14,7 +14,7 @@ import { ListaDeLoja } from "./lista-de-loja/lista-de-loja";
 export class GestaoDeLoja {
 
 
-  // 🔹 FORM PRODUTO
+  // ðŸ”¹ FORM PRODUTO
   name = '';
   valor!: number;
   desconto = 0;
@@ -22,7 +22,7 @@ export class GestaoDeLoja {
   categoriaId!: number;
   temEmEstoque = true;
 
-  // 🔹 CONTROLE MODAIS
+  // ðŸ”¹ CONTROLE MODAIS
   showProductModal = false;
   showCategoryModal = false;
 
@@ -30,7 +30,7 @@ export class GestaoDeLoja {
 
 
   
-  // 🔥 MODAL PRODUTO
+  // ðŸ”¥ MODAL PRODUTO
   openProductModal() {
     this.showProductModal = true;
   }
@@ -39,7 +39,7 @@ export class GestaoDeLoja {
     this.showProductModal = false;
   }
 
-  // 🔥 MODAL CATEGORIA
+  // ðŸ”¥ MODAL CATEGORIA
   openCategoryModal() {
     this.showCategoryModal = true;
   }
@@ -48,7 +48,7 @@ export class GestaoDeLoja {
     this.showCategoryModal = false;
   }
 
-  // 🔍 PESQUISA
+  // ðŸ” PESQUISA
   onSearch(value: string) {
     this.productService.setSearch(value);
   }

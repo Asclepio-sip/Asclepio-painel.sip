@@ -1,85 +1,64 @@
-.lista-container {
-  width: 100%;
-  margin-top: 20px;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
+
+.table-card { background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.04); overflow: hidden; font-family: 'Poppins', sans-serif; }
+
+.table-card-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid #f3f4f6; }
+.table-card-title { font-size: 15px; font-weight: 600; color: #111827; margin: 0 0 2px; }
+.table-card-sub { font-size: 12px; color: #9ca3af; margin: 0; }
+
+.empty-state { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 56px 20px; color: #9ca3af; text-align: center; }
+.empty-state svg { width: 40px; height: 40px; color: #e5e7eb; }
+.empty-state p { font-size: 13.5px; margin: 0; }
+
+.table-scroll { overflow-x: auto; }
+
+.lojas-table { width: 100%; border-collapse: collapse; }
+.lojas-table thead tr { background: #f9fafb; border-bottom: 1.5px solid #f0f0f0; }
+.lojas-table th { padding: 12px 16px; font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: .07em; text-align: left; white-space: nowrap; }
+.th-actions { text-align: right; padding-right: 20px !important; }
+
+.loja-row { border-bottom: 1px solid #f3f4f6; transition: background .15s; }
+.loja-row:last-child { border-bottom: none; }
+.loja-row:hover { background: #fafafa; }
+.lojas-table td { padding: 14px 16px; vertical-align: middle; font-size: 13.5px; color: #374151; }
+
+.td-loja { display: flex; align-items: center; gap: 12px; min-width: 200px; }
+.loja-avatar { width: 40px; height: 40px; border-radius: 10px; background: #fdf6f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.loja-avatar svg { width: 18px; height: 18px; color: #C5794E; }
+.loja-nome { display: block; font-weight: 600; color: #111827; font-size: 13.5px; }
+.loja-cep { display: block; font-size: 11.5px; color: #9ca3af; margin-top: 1px; }
+
+.td-contato { white-space: nowrap; }
+.contato-tel { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #374151; }
+.contato-tel svg { width: 13px; height: 13px; color: #9ca3af; }
+.sem-contato { color: #d1d5db; }
+
+.tipo-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.tipo-delivery { background: #eff6ff; color: #2563eb; }
+.tipo-presencial { background: #f0fdf4; color: #16a34a; }
+.tipo-ambos { background: #faf5ff; color: #9333ea; }
+
+.td-frete { font-weight: 600; color: #111827; white-space: nowrap; }
+.sem-frete { color: #d1d5db; }
+
+.td-actions { text-align: right; padding-right: 20px; white-space: nowrap; }
+
+.btn-editar, .btn-funcionario, .btn-bairro {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 12px; border-radius: 7px;
+  font-size: 12px; font-weight: 600; font-family: 'Poppins', sans-serif;
+  cursor: pointer; transition: all .15s; margin-left: 6px; border: 1.5px solid;
 }
+.btn-editar { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+.btn-editar svg { width: 13px; height: 13px; }
+.btn-editar:hover { background: #16a34a; color: #fff; border-color: #16a34a; }
 
-.table-wrapper {
-  background: #fff;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow:
-    0 4px 16px rgba(0,0,0,.08);
-}
+.btn-funcionario { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
+.btn-funcionario svg { width: 13px; height: 13px; }
+.btn-funcionario:hover { background: #2563eb; color: #fff; border-color: #2563eb; }
 
-.lojas-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.lojas-table thead {
-  background: #f5f5f5;
-}
-
-.lojas-table th {
-  text-align: left;
-  padding: 18px;
-  font-size: 14px;
-  color: #555;
-}
-
-.lojas-table td {
-  padding: 18px;
-  border-top: 1px solid #eee;
-}
-
-.lojas-table tbody tr:hover {
-  background: #fafafa;
-}
-
-.acoes {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.editar {
-  background: #111;
-  color: white;
-}
-
-.funcionario {
-  background: #f0f0f0;
-}
-
-.bairro {
-  background: #e8f4ff;
-  color: #1565c0;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 40px;
-  background: white;
-  border-radius: 14px;
-  color: #999;
-}
-
-@media(max-width: 900px) {
-
-  .table-wrapper {
-    overflow-x: auto;
-  }
-
-  .lojas-table {
-    min-width: 800px;
-  }
-}
+.btn-bairro { background: #fdf6f0; color: #C5794E; border-color: #f0cdb0; }
+.btn-bairro svg { width: 13px; height: 13px; }
+.btn-bairro:hover { background: #C5794E; color: #fff; border-color: #C5794E; }

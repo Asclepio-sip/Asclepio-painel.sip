@@ -68,14 +68,14 @@
 }
 
 .icon-plus {
-  color: #dc2626;
+  color: #C5794E;
   width: 32px;
   height: 32px;
   stroke-width: 3;
 }
 
 .logo-text {
-  color: #dc2626;
+  color: #C5794E;
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.5px;
@@ -113,15 +113,15 @@
 
 .search-bar input:focus {
   outline: none;
-  border-color: #dc2626;
-  box-shadow: 0 0 0 4px rgba(220,38,38,0.08);
+  border-color: #C5794E;
+  box-shadow: 0 0 0 4px rgba(197,121,78,0.08);
   background: #fff;
 }
 
 .search-btn {
   position: absolute;
   right: 6px;
-  background: #dc2626;
+  background: #C5794E;
   color: #fff;
   border: none;
   border-radius: 20px;
@@ -136,7 +136,7 @@
 }
 
 .search-btn:hover {
-  background: #b91c1c;
+  background: #a8622d;
   transform: scale(1.05);
 }
 
@@ -173,7 +173,7 @@
 }
 
 .action-item i {
-  color: #dc2626;
+  color: #C5794E;
   width: 26px;
   height: 26px;
   flex-shrink: 0;
@@ -200,12 +200,12 @@
 /* CESTA */
 .cart {
   position: relative;
-  background: linear-gradient(135deg, #fef2f2, #fee2e2);
-  border: 1px solid #fecaca;
+  background: linear-gradient(135deg, #fdf6f0, #fee2e2);
+  border: 1px solid #f0cdb0;
 }
 
 .cart:hover {
-  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  background: linear-gradient(135deg, #fee2e2, #f0cdb0);
   transform: translateY(-2px);
 }
 
@@ -213,7 +213,7 @@
   position: absolute;
   top: 6px;
   right: 6px;
-  background: #dc2626;
+  background: #C5794E;
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -221,7 +221,7 @@
   padding: 3px 7px;
   min-width: 20px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(220,38,38,0.3);
+  box-shadow: 0 2px 8px rgba(197,121,78,0.3);
 }
 
 /* LINHA INFERIOR */
@@ -272,19 +272,19 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: #dc2626;
+  background: #C5794E;
   transform: scaleX(0);
   transition: transform 0.3s;
   border-radius: 3px 3px 0 0;
 }
 
 .category:hover {
-  color: #dc2626;
-  background: rgba(220,38,38,0.05);
+  color: #C5794E;
+  background: rgba(197,121,78,0.05);
 }
 
 .category.active {
-  color: #dc2626;
+  color: #C5794E;
   font-weight: 600;
 }
 
@@ -364,14 +364,14 @@
 }
 
 .menu-item:hover {
-  background: #fef2f2;
-  color: #dc2626;
+  background: #fdf6f0;
+  color: #C5794E;
 }
 
 .menu-item i {
   width: 20px;
   height: 20px;
-  color: #dc2626;
+  color: #C5794E;
 }
 
 .promo-btn {
@@ -475,12 +475,12 @@
 }
 
 .btn-confirm {
-  background: #dc2626;
+  background: #C5794E;
   color: #fff;
 }
 
 .btn-confirm:hover {
-  background: #b91c1c;
+  background: #a8622d;
   transform: translateY(-1px);
 }
 

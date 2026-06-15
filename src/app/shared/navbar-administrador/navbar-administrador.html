@@ -1,26 +1,25 @@
 <nav class="navbar">
-  <div class="logo" routerLink="/">
-   + PROMOFARMA
+  <div class="nav-left">
+    <a class="logo" routerLink="/">
+      <img src="logo-symbol.svg" alt="Asclepio" class="nav-logo-symbol" />
+      <div class="nav-brand-text">
+        <span class="nav-brand-name">ASCLEPIO</span>
+        <span class="nav-brand-sub">Painel Administrativo</span>
+      </div>
+    </a>
   </div>
 
   <div class="actions">
 
-    <!-- 🔓 NÃO LOGADO -->
     @if (!authService.isAuthenticated()) {
-      <a routerLink="/login" class="login-btn">
-        Login
-      </a>
+      <a routerLink="/login" class="login-btn">Login</a>
     }
 
-    <!-- 🔐 LOGADO -->
     @if (authService.isAuthenticated()) {
       <button class="user-btn">
         Olá, {{ authService.getUserName() || 'suporte' }}
       </button>
-
-      <button class="logout-btn" (click)="logout()">
-        Sair
-      </button>
+      <button class="logout-btn" (click)="logout()">Sair</button>
     }
 
   </div>

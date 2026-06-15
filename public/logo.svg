@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-label="Logo Asclepio">
+  <title>ASCLEPIO Logo</title>
+  <g transform="translate(0,-10)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M490 165 C490 145 505 132 524 132 L612 132 C634 132 648 146 648 166" stroke="#20272E" stroke-width="14"/>
+    <path d="M490 165 L490 310 C490 330 505 343 524 343 L546 343" stroke="#20272E" stroke-width="14"/>
+    <path d="M555 222 L638 174 L721 222 L721 309 L638 357 L555 309 Z" stroke="#C5794E" stroke-width="14"/>
+    <path d="M555 222 L638 270 L638 357" stroke="#C5794E" stroke-width="14"/>
+    <path d="M638 270 L721 222" stroke="#C5794E" stroke-width="14"/>
+    <path d="M592 201 L675 249" stroke="#C5794E" stroke-width="14"/>
+    <path d="M636 176 L707 217" stroke="#C5794E" stroke-width="14"/>
+    <path d="M555 222 L555 260" stroke="#C5794E" stroke-width="14"/>
+    <path d="M555 286 L555 309" stroke="#C5794E" stroke-width="14"/>
+    <path d="M708 232 L721 222" stroke="#C5794E" stroke-width="14"/>
+  </g>
+  <text x="600" y="455" text-anchor="middle" fill="#20272E" font-family="Montserrat, Poppins, Avenir Next, Arial, sans-serif" font-size="72" font-weight="400" letter-spacing="26">ASCLEPIO</text>
+</svg>

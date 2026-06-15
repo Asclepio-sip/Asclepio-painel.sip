@@ -13,7 +13,7 @@
         <i data-lucide="search" class="search-icon"></i>
         <input
         type="text"
-        placeholder="Buscar medicamentos, cosméticos e muito mais..."
+        placeholder="Buscar medicamentos, cosm?ticos e muito mais..."
         (input)="onSearch($event.target.value)"
         >
         <button class="search-btn">
@@ -21,7 +21,7 @@
         </button>
       </div>
 
-    AÇÕES 
+    A??ES 
       <div class="actions">
         
          ADMIN / LOGI
@@ -30,7 +30,7 @@
             <i data-lucide="user-circle"></i>
             <div class="action-text">
               <small>Bem-vindo!</small>
-              <strong>Administração</strong>
+              <strong>Administra??o</strong>
             </div>
           </a>
         }
@@ -39,7 +39,7 @@
           <button class="action-item" (click)="abrirLogout()">
             <i data-lucide="user-circle"></i>
             <div class="action-text">
-              <small>Olá, {{ authService.getUserName() }}</small>
+              <small>Ol?, {{ authService.getUserName() }}</small>
               <strong>Sair</strong>
             </div>
           </button>
@@ -110,7 +110,7 @@ LINHA INFERIOR - CATEGORIAS
 
         <button class="promo-btn desktop">
           <i data-lucide="flame"></i>
-          Produtos em Promoção
+          Produtos em Promo??o
         </button>
 
       </div>
@@ -138,7 +138,7 @@ LINHA INFERIOR - CATEGORIAS
         <div class="menu-item"><i data-lucide="droplet"></i> Higiene</div>
         <div class="menu-item"><i data-lucide="baby"></i> Infantil</div>
         <div class="menu-item"><i data-lucide="sun"></i> Vitaminas</div>
-        <div class="menu-item"><i data-lucide="flame"></i> Promoçõessss</div>
+        <div class="menu-item"><i data-lucide="flame"></i> Promo??essss</div>
       </div>
     </div>
   </div>
@@ -148,8 +148,8 @@ LINHA INFERIOR - CATEGORIAS
 @if (showLogoutModal) {
   <div class="modal-backdrop" [class.closing]="closing">
     <div class="modal">
-      <h5>Confirmar saída</h5>
-      <p>Tem certeza que deseja sair da administração?</p>
+      <h5>Confirmar sa?da</h5>
+      <p>Tem certeza que deseja sair da administra??o?</p>
       <div class="modal-actions">
         <button class="btn-cancel" (click)="cancelarLogout()">Cancelar</button>
         <button class="btn-confirm" (click)="confirmarLogout()">Sair</button>
@@ -166,7 +166,7 @@ LINHA INFERIOR - CATEGORIAS
     </span>
 
     <button class="close" (click)="fecharToast()">
-      ×
+      ?
     </button>
 
   </div>

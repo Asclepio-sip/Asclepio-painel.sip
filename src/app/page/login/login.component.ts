@@ -15,6 +15,7 @@ export class LoginComponent {
 
   login = '';
   password = '';
+  currentYear = new Date().getFullYear();
 
   constructor(
     private authService: AuthService,
