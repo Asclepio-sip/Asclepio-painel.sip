@@ -1,108 +1,201 @@
-<app-navbar-administrador></app-navbar-administrador>
-<app-sidebar></app-sidebar>
+<div class="estoque-container">
 
-<div class="page-wrapper">
-  <div class="card">
-    <h2 class="card-title">Adicionar Produto ao Estoque</h2>
-
-    <form (ngSubmit)="salvar()">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Selecionar Loja</label>
-          <select [(ngModel)]="lojaSelecionada" name="loja">
-            <option [ngValue]="undefined">Selecione uma loja</option>
-            <option *ngFor="let loja of lojas" [ngValue]="loja">
-              {{ loja.nomeLoja }}
-            </option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Pesquisar Produto</label>
-          <input
-            type="text"
-            placeholder="Digite o nome do produto..."
-            [(ngModel)]="buscaProduto"
-            name="buscaProduto">
-        </div>
-      </div>
-
-      <p class="section-label">Produtos</p>
-
-      <div class="produtos-grid">
-        <div
-          class="produto-card"
-          *ngFor="let p of produtosFiltrados()"
-          (click)="selecionarProduto(p)"
-          [class.selected]="produtoSelecionado?.id === p.id">
-
-          <img
-            *ngIf="p.imagemBase64"
-            [src]="'data:image/webp;base64,' + p.imagemBase64"
-            loading="lazy"
-            decoding="async">
-
-          <p class="produto-nome">{{ p.name }}</p>
-        </div>
-      </div>
-
-      <div *ngIf="produtoSelecionado" class="variacoes-container">
-        <h3 class="variacoes-title">Controle de Estoque</h3>
-
-        <div class="estoque-form-grid">
-          <div class="form-group">
-            <label>Variação</label>
-            <select [(ngModel)]="variacaoSelecionada" name="variacao">
-              <option [ngValue]="undefined">
-                {{ carregandoVariacoes ? 'Carregando variações...' : 'Selecione uma variação' }}
-              </option>
-              <option *ngFor="let v of produtoSelecionado.variacoes" [ngValue]="v">
-                {{ v.nomeVariacao }}
-              </option>
-            </select>
-            <small *ngIf="!carregandoVariacoes && produtoSelecionado.variacoes.length === 0">
-              Nenhuma variação cadastrada para este produto.
-            </small>
-          </div>
-
-          <div class="form-group">
-            <label>Quantidade</label>
-            <input
-              type="number"
-              placeholder="0"
-              [(ngModel)]="quantidade"
-              name="quantidade">
-          </div>
-
-          <div class="form-group">
-            <label>Preço</label>
-            <input
-              type="number"
-              placeholder="0.00"
-              step="0.01"
-              [(ngModel)]="precoVenda"
-              name="precoVenda">
-          </div>
-
-          <div class="form-group">
-            <label>Desconto (%)</label>
-            <input
-              type="number"
-              placeholder="0"
-              min="0"
-              max="100"
-              step="0.01"
-              [(ngModel)]="percentualDesconto"
-              name="percentualDesconto">
-          </div>
-        </div>
-      </div>
-
-      <div class="button-group">
-        <button type="submit" class="btn primary">
-          Salvar Estoque
-        </button>
-      </div>
-    </form>
+  <!-- Cabecalho -->
+  <div class="page-header">
+    <div class="header-left">
+      <p class="breadcrumb">ADMIN / ESTOQUE / <span>ADICIONAR PRODUTO</span></p>
+      <h1 class="page-title">Adicionar Produto ao Estoque</h1>
+    </div>
+    <a class="btn-back" routerLink="/estoque">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+      Voltar
+    </a>
   </div>
+
+  <form (ngSubmit)="salvar()">
+    <div class="form-layout">
+
+      <!-- Coluna esquerda: selecionar loja + buscar produto -->
+      <div class="main-col">
+
+        <!-- Card: Configuracao -->
+        <div class="form-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">Loja e Produto</h3>
+              <p class="card-subtitle">Selecione a loja e o produto para adicionar ao estoque</p>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Selecionar Loja</label>
+                <select class="form-input" [(ngModel)]="lojaSelecionada" name="loja">
+                  <option [ngValue]="undefined">Selecione uma loja</option>
+                  <option *ngFor="let loja of lojas" [ngValue]="loja">{{ loja.nomeLoja }}</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Pesquisar Produto</label>
+                <div class="search-box">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
+                  </svg>
+                  <input type="text" placeholder="Digite o nome do produto..." [(ngModel)]="buscaProduto" name="buscaProduto" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card: Grid de produtos -->
+        <div class="form-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">Selecionar Produto</h3>
+              <p class="card-subtitle">Clique no produto que deseja adicionar ao estoque</p>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="produtos-grid">
+              <div
+                class="produto-card"
+                *ngFor="let p of produtosFiltrados()"
+                (click)="selecionarProduto(p)"
+                [class.selected]="produtoSelecionado?.id === p.id">
+                <div class="produto-img-wrap">
+                  <img *ngIf="p.imagemBase64" [src]="'data:image/webp;base64,' + p.imagemBase64" loading="lazy" decoding="async" />
+                  <div *ngIf="!p.imagemBase64" class="produto-img-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                  </div>
+                  <div *ngIf="produtoSelecionado?.id === p.id" class="produto-check">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                    </svg>
+                  </div>
+                </div>
+                <p class="produto-nome">{{ p.name }}</p>
+              </div>
+
+              <div *ngIf="produtosFiltrados().length === 0" class="produtos-empty">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p>Nenhum produto encontrado</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Coluna direita: controle de estoque -->
+      <div class="side-col">
+        <div class="form-card sticky-card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title">Controle de Estoque</h3>
+              <p class="card-subtitle">{{ produtoSelecionado ? produtoSelecionado.name : 'Selecione um produto' }}</p>
+            </div>
+          </div>
+
+          <div class="card-body" *ngIf="!produtoSelecionado">
+            <div class="empty-side">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16l-4-4m0 0l4-4m-4 4h18"/>
+              </svg>
+              <p>Selecione um produto ao lado para configurar o estoque</p>
+            </div>
+          </div>
+
+          <div class="card-body" *ngIf="produtoSelecionado">
+            <div class="form-group">
+              <label class="form-label">Variacao</label>
+              <select class="form-input" [(ngModel)]="variacaoSelecionada" name="variacao">
+                <option [ngValue]="undefined">
+                  {{ carregandoVariacoes ? 'Carregando...' : 'Selecione uma variacao' }}
+                </option>
+                <option *ngFor="let v of produtoSelecionado.variacoes" [ngValue]="v">
+                  {{ v.nomeVariacao }}
+                </option>
+              </select>
+              <small class="form-hint" *ngIf="!carregandoVariacoes && produtoSelecionado.variacoes.length === 0">
+                Nenhuma variacao cadastrada para este produto.
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Quantidade</label>
+              <div class="input-with-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+                </svg>
+                <input class="form-input" type="number" placeholder="0" [(ngModel)]="quantidade" name="quantidade" min="0" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Preco de Venda (R$)</label>
+              <div class="input-with-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <input class="form-input" type="number" placeholder="0.00" step="0.01" [(ngModel)]="precoVenda" name="precoVenda" min="0" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Desconto (%)</label>
+              <div class="input-with-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M17 17h.01M7 7l10 10M7 17L17 7"/>
+                </svg>
+                <input class="form-input" type="number" placeholder="0" min="0" max="100" step="0.01" [(ngModel)]="percentualDesconto" name="percentualDesconto" />
+              </div>
+            </div>
+
+            <div class="preco-preview" *ngIf="precoVenda > 0">
+              <span class="preco-preview-label">Preco final</span>
+              <span class="preco-preview-value">
+                {{ (precoVenda * (1 - percentualDesconto / 100)) | currency:'BRL':'symbol':'1.2-2' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="card-footer" *ngIf="produtoSelecionado">
+            <button type="submit" class="btn-save">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              Salvar Estoque
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </form>
+
 </div>

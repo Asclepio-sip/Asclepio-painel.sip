@@ -1,6 +1,3 @@
-<app-navbar-administrador></app-navbar-administrador>
-<app-sidebar></app-sidebar>
-
 <div id="pedido-pdf" class="page" *ngIf="pedido">
 
   <!-- HEADER -->
@@ -32,7 +29,7 @@
               <path d="M20 21a8 8 0 1 0-16 0"/>
             </svg>
           </span>
-          Informações do Cliente
+          Informa??es do Cliente
         </h2>
 
         
@@ -67,7 +64,7 @@
         </div>
 
         <div class="info-field" *ngIf="pedido.endereco">
-          <div class="info-label">Endereço</div>
+          <div class="info-label">Endere?o</div>
           <div class="info-value">
             {{ pedido.endereco }}
           </div>
@@ -93,7 +90,7 @@
               <line x1="2" x2="22" y1="10" y2="10"/>
             </svg>
           </span>
-          Logística e Pagamento
+          Log?stica e Pagamento
         </h2>
 
         <div class="info-field">
@@ -134,7 +131,7 @@
               <th>Produto</th>
               <th>QTD</th>
                <th>Unidade</th>
-              <th>Preço </th>
+              <th>Pre?o </th>
               <th>Desconto</th>
               <th>Total</th>
             </tr>
@@ -193,7 +190,7 @@ class="produto-img"
 
             <span>
               <ng-container *ngIf="pedido.freteGratis">
-                Grátis
+                Gr?tis
               </ng-container>
 
               <ng-container *ngIf="!pedido.freteGratis">
@@ -215,16 +212,16 @@ class="produto-img"
         </div>
       </div>
 
-      <!-- OBSERVAÇÃO -->
+      <!-- OBSERVA??O -->
       <div class="card" *ngIf="pedido.observacao">
 
         <h2>
-          Observações do Cliente
+          Observa??es do Cliente
         </h2>
 
         <div class="observacao-box">
           <div>
-            <h3>Observações</h3>
+            <h3>Observa??es</h3>
 
             <p>
               "{{ pedido.observacao }}"
@@ -233,11 +230,11 @@ class="produto-img"
         </div>
       </div>
 
-      <!-- HISTÓRICO -->
+      <!-- HIST?RICO -->
       <div class="card">
 
         <h2>
-          Histórico do Pedido
+          Hist?rico do Pedido
         </h2>
 
         <div class="historico-list">
@@ -279,7 +276,7 @@ class="produto-img"
     </div>
   </div>
 
-  <!-- AÇÕES -->
+  <!-- A??ES -->
   <div class="actions">
 
     <button

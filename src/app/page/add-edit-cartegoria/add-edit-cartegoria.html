@@ -1,74 +1,102 @@
-<app-navbar-administrador></app-navbar-administrador>
-<app-sidebar></app-sidebar>
+<div class="cat-container">
 
-<div class="card-form">
-  <div class="card">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <p class="breadcrumb">ADMIN / PRODUTOS / <span>CATEGORIAS</span></p>
+      <h1 class="page-title">{{ editandoId ? 'Editar Categoria' : 'Categorias' }}</h1>
+    </div>
+  </div>
 
-    <h2 class="card-title">{{ editandoId ? 'Editar Categoria' : 'Nova Categoria' }}</h2>
+  <div class="content-grid">
 
-    <div class="form-box">
-      <label>
-        Nome
-        <input
-          type="text"
-          placeholder="Analgésicos"
-          [(ngModel)]="nomeCategoria">
-      </label>
+    <!-- Form card -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <div class="form-card-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 12h4m-4 5h10M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="form-card-title">{{ editandoId ? 'Editar Categoria' : 'Nova Categoria' }}</h3>
+          <p class="form-card-subtitle">Preencha os dados da categoria</p>
+        </div>
+      </div>
 
-      <label class="full">
-        Descrição
-        <textarea
-          rows="3"
-          placeholder="Remédios para dor e febre"
-          [(ngModel)]="descricao"></textarea>
-      </label>
+      <div class="form-body">
+        <div class="form-group">
+          <label class="form-label">Nome</label>
+          <input class="form-input" type="text" placeholder="Ex: Analgesicos" [(ngModel)]="nomeCategoria" />
+        </div>
 
-      <label>
-        Categoria pai
-        <select [(ngModel)]="categoriaPaiId">
-          <option [ngValue]="null">Categoria principal</option>
-          <option *ngFor="let cat of categoriasPai" [ngValue]="cat.id">
-            {{ cat.nomeCategoria }}
-          </option>
-        </select>
-      </label>
+        <div class="form-group">
+          <label class="form-label">Descricao</label>
+          <textarea class="form-input form-textarea" rows="3" placeholder="Descricao da categoria" [(ngModel)]="descricao"></textarea>
+        </div>
 
-      <div class="form-actions">
-        <button (click)="salvar()">
-          {{ editandoId ? 'Atualizar' : 'Salvar' }}
-        </button>
+        <div class="form-group">
+          <label class="form-label">Categoria pai</label>
+          <select class="form-input" [(ngModel)]="categoriaPaiId">
+            <option [ngValue]="null">Categoria principal</option>
+            <option *ngFor="let cat of categoriasPai" [ngValue]="cat.id">{{ cat.nomeCategoria }}</option>
+          </select>
+        </div>
 
-        <button *ngIf="editandoId" class="cancelar" (click)="resetForm()">
-          Cancelar
-        </button>
+        <div class="form-actions">
+          <button *ngIf="editandoId" class="btn-cancel" type="button" (click)="resetForm()">Cancelar</button>
+          <button class="btn-save" type="button" (click)="salvar()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            {{ editandoId ? 'Atualizar' : 'Salvar' }}
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="table-wrapper">
-      <table>
+    <!-- Table card -->
+    <div class="table-card">
+      <div class="table-card-header">
+        <h3 class="table-card-title">Categorias cadastradas</h3>
+        <span class="table-count">{{ categorias.length }} {{ categorias.length === 1 ? 'categoria' : 'categorias' }}</span>
+      </div>
+
+      <table class="cat-table">
         <thead>
           <tr>
             <th>ID</th>
             <th>Nome</th>
             <th>Tipo</th>
-            <th>Ações</th>
+            <th class="th-actions">Acoes</th>
           </tr>
         </thead>
-
         <tbody>
-          <tr *ngIf="categorias.length === 0" class="empty-row">
-            <td colspan="4">Nenhuma categoria cadastrada.</td>
+          <tr *ngIf="categorias.length === 0">
+            <td colspan="4" class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0l-4-4m4 4l-4 4"/>
+              </svg>
+              <p>Nenhuma categoria cadastrada</p>
+            </td>
           </tr>
-
-          <tr *ngFor="let cat of categorias">
-            <td>{{ cat.id }}</td>
-            <td>{{ cat.nomeCategoria }}</td>
-            <td>{{ nomeCategoriaPai(cat) }}</td>
-            <td>
-              <div class="acoes">
-                <button class="edit" (click)="editar(cat)">Editar</button>
-                <button class="delete" (click)="deletar(cat.id)">Deletar</button>
-              </div>
+          <tr *ngFor="let cat of categorias" class="cat-row">
+            <td class="td-id">{{ cat.id }}</td>
+            <td class="td-nome">{{ cat.nomeCategoria }}</td>
+            <td><span class="tipo-badge" [class.sub]="cat.categoriaPaiId">{{ nomeCategoriaPai(cat) }}</span></td>
+            <td class="td-actions">
+              <button class="btn-edit" type="button" (click)="editar(cat)">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                Editar
+              </button>
+              <button class="btn-delete" type="button" (click)="deletar(cat.id)">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+                Deletar
+              </button>
             </td>
           </tr>
         </tbody>

@@ -1,10 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Product, ProductService } from '../../service/product.service';
 import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { NavbarAdministradorComponent } from '../../shared/navbar-administrador/navbar-administrador';
+import { CategoriaService, Categoria } from '../../service/categoria.service';
 
 @Component({
   selector: 'app-products',
@@ -24,13 +25,29 @@ export class ProductListComponent implements OnInit {
   totalPaginasProduto = 0;
   todosProdutos: Product[] = [];
 
+  categoriaAtualId: number | null = null;
+  categoriaAtual: Categoria | null = null;
+  categorias: Categoria[] = [];
+
   constructor(
     private produtoService: ProductService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute,
+    private categoriaService: CategoriaService
   ) {}
 
   ngOnInit() {
-    this.carregarProdutos();
+    this.categoriaService.listar().subscribe({
+      next: cats => { this.categorias = cats; this.cdr.detectChanges(); },
+      error: () => {}
+    });
+
+    this.route.queryParams.subscribe(params => {
+      const id = params['categoriaId'] ? Number(params['categoriaId']) : null;
+      this.categoriaAtualId = id;
+      this.categoriaAtual = id ? (this.categorias.find(c => c.id === id) ?? null) : null;
+      this.carregarProdutos(0);
+    });
   }
 
   carregarProdutos(page: number = 0) {

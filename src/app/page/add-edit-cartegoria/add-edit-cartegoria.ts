@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+﻿import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NavbarAdministradorComponent } from '../../shared/navbar-administrador/navbar-administrador';
 import { CategoriaService, Categoria, CategoriaRequest } from '../../service/categoria.service';
 import { CommonModule } from '@angular/common';

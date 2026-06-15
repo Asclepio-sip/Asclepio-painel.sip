@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 .navbar {
-  height: 64px;
+  height: 72px;
   background: #ffffff;
   display: flex;
   align-items: center;
@@ -16,11 +16,38 @@
 
 /* ===== LOGO ===== */
 .logo {
-  font-size: 22px;
-  font-weight: 700;
-  color:#dc2626; /* vermelho Promofarma */
+  display: flex;
+  align-items: center;
+  gap: 12px;
   cursor: pointer;
-  letter-spacing: 0.5px;
+  text-decoration: none;
+}
+.nav-logo-symbol {
+  height: 52px;
+  width: auto;
+  display: block;
+  flex-shrink: 0;
+}
+.nav-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.nav-brand-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #20272E;
+  letter-spacing: 3px;
+  line-height: 1;
+  font-family: 'Montserrat', 'Poppins', sans-serif;
+}
+.nav-brand-sub {
+  font-size: 10px;
+  font-weight: 500;
+  color: #C5794E;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
 /* ===== AÇÕES ===== */
@@ -44,7 +71,7 @@
 
 /* ===== BOTÃO SAIR ===== */
 .logout-btn {
-  background: #dc2626;
+  background: #C5794E;
   color: #fff;
   border: none;
   padding: 8px 18px;
@@ -56,7 +83,7 @@
 }
 
 .logout-btn:hover {
-  background: #dc2626;
+  background: #C5794E;
   transform: translateY(-1px);
 }
 

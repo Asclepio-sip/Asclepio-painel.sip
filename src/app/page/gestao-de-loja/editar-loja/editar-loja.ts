@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LojaService, Loja } from '../../../service/loja/loja.service';
@@ -34,7 +34,7 @@ loja: Loja = {
   imagemUrl: '' 
 };
 
-  modoEdicao = false; // 👈 controla se pode editar
+  modoEdicao = false; // ðŸ‘ˆ controla se pode editar
 
 constructor(
   private route: ActivatedRoute,
