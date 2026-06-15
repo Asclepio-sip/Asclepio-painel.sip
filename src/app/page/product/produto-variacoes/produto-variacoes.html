@@ -1,63 +1,127 @@
-<app-navbar-administrador></app-navbar-administrador>
-<app-sidebar></app-sidebar>
+<div class="variacoes-container">
 
-<div class="page-wrapper">
-  <div class="card">
-    <div class="header-row">
-      <div>
-        <h2 class="title">Variações do Produto</h2>
-        <p *ngIf="produto">{{ produto.name }}</p>
-      </div>
-
-      <button class="btn secondary" type="button" [routerLink]="['/products']">
-        Voltar
-      </button>
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <div class="breadcrumb">ADMIN / PRODUTOS / <span>VARIAÇÕES</span></div>
+      <h1 class="page-title">Variações do Produto</h1>
+      <p class="page-subtitle" *ngIf="produto">{{ produto.name }}</p>
+      <p class="page-subtitle" *ngIf="!produto">Carregando produto...</p>
     </div>
-
-    <form class="variation-form" (ngSubmit)="salvar()">
-      <label>
-        Nome da variação
-        <input
-          type="text"
-          placeholder="10 comprimidos"
-          [(ngModel)]="nomeVariacao"
-          name="nomeVariacao">
-      </label>
-
-      <label>
-        Código de barras
-        <input
-          type="text"
-          placeholder="789123456789"
-          [(ngModel)]="codigoBarras"
-          name="codigoBarras">
-      </label>
-
-      <label class="checkbox-field">
-        <input
-          type="checkbox"
-          [(ngModel)]="ativo"
-          name="ativo">
-        Ativa
-      </label>
-
-      <button class="btn primary" type="submit">
-        Salvar
-      </button>
-    </form>
+    <button class="btn-back" [routerLink]="['/products']">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Voltar
+    </button>
   </div>
 
-  <div class="product-table">
-    <div class="variacoes-header">
-      <div>Variação</div>
-      <div>Código de barras</div>
-      <div>Status</div>
+  <!-- Layout -->
+  <div class="content-grid">
+
+    <!-- Form Card -->
+    <div class="form-card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C5794E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        </div>
+        <div>
+          <p class="card-title">Nova Variação</p>
+          <p class="card-subtitle">Adicione uma variação ao produto</p>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <div class="form-group">
+          <label class="form-label">Nome da Variação <span class="required">*</span></label>
+          <div class="input-icon-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            <input type="text" class="form-input" [(ngModel)]="nomeVariacao" name="nomeVariacao" placeholder="Ex: 10 comprimidos, 100ml..." />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Código de Barras</label>
+          <div class="input-icon-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="2" height="16"/><rect x="7" y="4" width="1" height="16"/><rect x="10" y="4" width="2" height="16"/><rect x="14" y="4" width="1" height="16"/><rect x="17" y="4" width="2" height="16"/><rect x="21" y="4" width="2" height="16"/></svg>
+            <input type="text" class="form-input" [(ngModel)]="codigoBarras" name="codigoBarras" placeholder="789123456789" />
+          </div>
+          <span class="form-hint">Opcional</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <label class="toggle-wrap">
+            <input type="checkbox" [(ngModel)]="ativo" name="ativo" class="toggle-input" />
+            <div class="toggle-track">
+              <div class="toggle-thumb"></div>
+            </div>
+            <span class="toggle-label">{{ ativo ? 'Variação ativa' : 'Variação inativa' }}</span>
+          </label>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-cancel" type="button" (click)="resetForm()">Limpar</button>
+          <button class="btn-save" type="button" (click)="salvar()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Salvar Variação
+          </button>
+        </div>
+
+      </div>
     </div>
 
-    <div class="variacoes-row" *ngFor="let variacao of variacoes">
-      <div>{{ variacao.nomeVariacao }}</div>
-      <div>{{ variacao.codigoBarras || '-' }}</div>
-      <div>{{ variacao.ativo ? 'Ativa' : 'Inativa' }}</div>
+    <!-- Table Card -->
+    <div class="table-card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C5794E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </div>
+        <div>
+          <p class="card-title">Variações Cadastradas</p>
+          <p class="card-subtitle">{{ variacoes.length }} variação(ões) encontrada(s)</p>
+        </div>
+      </div>
+
+      <!-- Empty -->
+      <div *ngIf="variacoes.length === 0" class="empty-state">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <p>Nenhuma variação cadastrada ainda</p>
+        <span>Adicione a primeira variação usando o formulário ao lado</span>
+      </div>
+
+      <!-- Table -->
+      <div *ngIf="variacoes.length > 0" class="table-wrap">
+        <table class="variacoes-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nome da Variação</th>
+              <th>Código de Barras</th>
+              <th style="text-align:center">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of variacoes; let i = index">
+              <td class="td-index">{{ i + 1 }}</td>
+              <td>
+                <div class="variacao-name">
+                  <div class="variacao-dot"></div>
+                  {{ v.nomeVariacao }}
+                </div>
+              </td>
+              <td class="td-code">
+                <span *ngIf="v.codigoBarras" class="code-tag">{{ v.codigoBarras }}</span>
+                <span *ngIf="!v.codigoBarras" class="td-empty">—</span>
+              </td>
+              <td style="text-align:center">
+                <span class="status-badge" [class.status-ativo]="v.ativo" [class.status-inativo]="!v.ativo">
+                  {{ v.ativo ? 'Ativa' : 'Inativa' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+
   </div>
 </div>

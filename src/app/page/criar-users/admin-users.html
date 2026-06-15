@@ -1,68 +1,180 @@
-<app-add-usuario (usuarioCriado)="carregarUsuarios()"></app-add-usuario>
-<app-sidebar></app-sidebar>
-
 <div class="admin-users-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item">ADMIN</span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-item active">GEST?fO DE EQUIPE</span>
+      </div>
+      <h1>Usuários e Permissões</h1>
+    </div>
+    <button class="btn-add-member" type="button" (click)="abrirModalCriar()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="8.5" cy="7" r="4"/>
+        <line x1="20" y1="8" x2="20" y2="14"/>
+        <line x1="23" y1="11" x2="17" y2="11"/>
+      </svg>
+      Adicionar Membro
+    </button>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon-users">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">TOTAL USUÁRIOS</span>
+        <span class="kpi-value">{{ users.length | number:'2.0-0' }}</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-icon-admins">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div class="kpi-content">
+        <span class="kpi-label">ADMINISTRADORES</span>
+        <span class="kpi-value">{{ getAdminCount() | number:'2.0-0' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search & Filters -->
+  <div class="filters-bar">
+    <div class="search-box">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" placeholder="Buscar por nome, login ou email..." [(ngModel)]="searchTerm" (input)="filtrarUsuarios()" />
+    </div>
+    <button class="btn-filter" type="button" (click)="toggleFiltros()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="4" y1="6" x2="20" y2="6"/>
+        <line x1="8" y1="12" x2="16" y2="12"/>
+        <line x1="11" y1="18" x2="13" y2="18"/>
+      </svg>
+      Filtros
+    </button>
+    <div class="sort-box">
+      <label>Ordenar por:</label>
+      <select [(ngModel)]="sortBy" (ngModelChange)="filtrarUsuarios()">
+        <option value="recente">Recente</option>
+        <option value="nome">Nome</option>
+        <option value="role">Role</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Filtros expandidos -->
+  <div class="filters-expanded" *ngIf="showFiltros">
+    <div class="filter-group">
+      <label>Role:</label>
+      <select [(ngModel)]="filterRole" (ngModelChange)="filtrarUsuarios()">
+        <option value="">Todas</option>
+        <option *ngFor="let role of roles" [value]="role.nome">{{ role.nome }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Table -->
   <div class="table-wrapper">
     <table class="user-table">
       <thead>
         <tr>
-          <th>Login</th>
-          <th>Role</th>
-          <th>Permissoes</th>
-          <th>Acoes</th>
+          <th>INFORMAÇÕES DO USUÁRIO</th>
+          <th>ROLE / CARGO</th>
+          <th>MÓDULOS / PERMISSÕES</th>
+          <th>AÇÕES</th>
         </tr>
       </thead>
 
       <tbody>
-        <tr *ngFor="let user of users" [class.editing]="editUserId === user.id">
+        <tr *ngFor="let user of paginatedUsers">
           <td>
             <div class="user-info">
-              <div class="user-avatar">{{ user.login.charAt(0).toUpperCase() }}</div>
-              <span>{{ user.login }}</span>
+              <div class="user-avatar" [style.background]="getAvatarColor(user)">
+                {{ user.login.charAt(0).toUpperCase() }}
+              </div>
+              <div class="user-details">
+                <span class="user-name">{{ user.login }}</span>
+                <span class="user-email">{{ user.email || user.login + '@promofarma.com.br' }}</span>
+              </div>
             </div>
           </td>
           <td>
-            <span class="role-badge">
-              {{ getUserRoleName(user) }}
+            <span class="role-badge" [ngClass]="getRoleBadgeClass(user)">
+              {{ getUserRoleName(user) | uppercase }}
             </span>
           </td>
           <td>
-            <span class="permission-list">
-              {{ getUserPermissionNames(user) }}
-            </span>
+            <div class="permission-bar-container">
+              <div class="permission-bar">
+                <div class="permission-bar-fill" [style.width.%]="getPermissionPercent(user)" [style.background]="getPermissionBarColor(user)"></div>
+              </div>
+              <span class="permission-count">{{ getUserPermissionCount(user) }}/{{ permissions.length }} módulos</span>
+            </div>
           </td>
           <td>
-            <button class="btn-edit" type="button" (click)="editar(user)">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-              </svg>
-              Editar
-            </button>
+            <div class="action-buttons">
+              <button class="btn-action btn-acessos" type="button" (click)="editar(user)">Ajustar Acessos</button>
+            </div>
           </td>
         </tr>
       </tbody>
     </table>
 
     <div *ngIf="loading" class="empty-state">
-      <p>Carregando usuarios...</p>
+      <div class="spinner"></div>
+      <p>Carregando usuários...</p>
     </div>
 
-    <div *ngIf="!loading && users.length === 0" class="empty-state">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-        <circle cx="9" cy="7" r="4"></circle>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+    <div *ngIf="!loading && filteredUsers.length === 0" class="empty-state">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
       </svg>
-      <p>Nenhum usuario cadastrado</p>
+      <p>Nenhum usuário encontrado</p>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="!loading && filteredUsers.length > 0">
+      <span class="pagination-info">MOSTRANDO {{ getPageStart() }} DE {{ filteredUsers.length }} USUÁRIOS</span>
+      <div class="pagination-controls">
+        <button class="page-btn" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+        </button>
+        <button *ngFor="let p of getPages()" class="page-btn" [class.active]="p === currentPage" (click)="changePage(p)">{{ p }}</button>
+        <button class="page-btn" [disabled]="currentPage === getTotalPages()" (click)="changePage(currentPage + 1)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 
+  <!-- ─────────────────────────────────────────── -->
+  <!-- MODAL: Editar Usuário -->
+  <!-- ─────────────────────────────────────────── -->
   <div *ngIf="editUserId" class="modal-overlay" (click)="cancelar()">
-    <div class="edit-modal" (click)="$event.stopPropagation()">
+    <div class="edit-modal modal-lg" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>Editar Usuario</h3>
+        <h3>Editar Usuário</h3>
         <button class="btn-close" type="button" (click)="cancelar()">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -72,78 +184,71 @@
       </div>
 
       <div class="modal-body">
-        <div class="form-group">
-          <label for="edit-login">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            Login
-          </label>
-          <input
-            id="edit-login"
-            type="text"
-            [(ngModel)]="editLogin"
-            placeholder="Digite o login"
-          />
+        <div class="modal-form-row">
+          <div class="form-group">
+            <label for="edit-login">Login</label>
+            <input id="edit-login" type="text" [(ngModel)]="editLogin" placeholder="Digite o login" />
+          </div>
+          <div class="form-group">
+            <label for="edit-password">Nova senha</label>
+            <input id="edit-password" type="password" [(ngModel)]="editPassword" placeholder="Deixe em branco para não alterar" />
+          </div>
+          <div class="form-group">
+            <label for="edit-role">Role</label>
+            <select id="edit-role" [(ngModel)]="editRoleId" (ngModelChange)="onEditRoleChange()">
+              <option value="">Selecione uma role</option>
+              <option *ngFor="let role of roles" [value]="role.id">{{ role.nome }}</option>
+            </select>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="edit-password">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-            Nova senha
-          </label>
-          <input
-            id="edit-password"
-            type="password"
-            [(ngModel)]="editPassword"
-            placeholder="Deixe em branco para nao alterar"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="edit-role">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-            </svg>
-            Role
-          </label>
-          <select id="edit-role" [(ngModel)]="editRoleId" (ngModelChange)="onEditRoleChange()">
-            <option value="">Selecione uma role</option>
-            <option *ngFor="let role of roles" [value]="role.id">
-              {{ role.nome }}
-            </option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 12l2 2 4-4"></path>
-              <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1"></path>
-              <path d="M3 12v7c0 .552.448 1 1 1h16c.552 0 1-.448 1-1v-7"></path>
-            </svg>
-            Permissoes
-          </label>
-
-          <div class="permission-options">
-            <label *ngFor="let permission of permissions" class="permission-option">
-              <input
-                type="checkbox"
-                [checked]="isEditPermissionSelected(permission.id)"
-                [disabled]="isEditRolePermission(permission.id)"
-                (change)="toggleEditPermission(permission.id, $event)"
-              />
-              <span>
-                <strong>{{ permission.nome }}</strong>
-                <small>
-                  {{ isEditRolePermission(permission.id) ? 'Herdada da role' : permission.descricao }}
-                </small>
-              </span>
+        <!-- Tabela de Permissões -->
+        <div class="permissions-panel">
+          <div class="permissions-header">
+            <div>
+              <h4>Permissões</h4>
+              <p>{{ getEditTotalSelecionadas() }} de {{ permissions.length }} selecionadas</p>
+            </div>
+            <label class="select-all">
+              <input type="checkbox" [checked]="isEditTudoSelecionado()" (change)="toggleEditTodasPermissoes($event)" />
+              Marcar tudo
             </label>
+          </div>
+          <div class="permissions-table-wrap">
+            <table class="permissions-table">
+              <thead>
+                <tr>
+                  <th>Modulo</th>
+                  <th *ngFor="let action of permissionActions">{{ action.label }}</th>
+                  <th>Linha</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let group of editPermissionGroups">
+                  <td class="module-cell">{{ group.recurso }}</td>
+                  <td *ngFor="let action of permissionActions">
+                    <ng-container *ngIf="getPermission(group, action.key) as permission; else noPermission">
+                      <label class="check-cell" [title]="permission.descricao">
+                        <input type="checkbox"
+                          [checked]="isEditPermissionSelected(permission.id)"
+                          [disabled]="isEditRolePermission(permission.id)"
+                          (change)="toggleEditPermission(permission.id, $event)" />
+                        <span *ngIf="isEditRolePermission(permission.id)" class="inherited-label">role</span>
+                      </label>
+                    </ng-container>
+                    <ng-template #noPermission><span class="empty-permission">&mdash;</span></ng-template>
+                  </td>
+                  <td>
+                    <label class="check-cell row-check">
+                      <input type="checkbox"
+                        [checked]="isEditGrupoSelecionado(group)"
+                        [indeterminate]="isEditGrupoParcial(group)"
+                        (change)="toggleEditGrupo(group, $event)" />
+                    </label>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -154,9 +259,107 @@
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
-          Salvar Alteracoes
+          Salvar Alterações
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────── -->
+  <!-- MODAL: Criar Usuário -->
+  <!-- ─────────────────────────────────────────── -->
+  <div *ngIf="showCriarModal" class="modal-overlay" (click)="fecharModalCriar()">
+    <div class="edit-modal modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Criar Usuário</h3>
+        <button class="btn-close" type="button" (click)="fecharModalCriar()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-form-row">
+          <div class="form-group">
+            <label for="criar-login">Login</label>
+            <input id="criar-login" type="text" [(ngModel)]="criarLogin" placeholder="Ex: suporte1" />
+          </div>
+          <div class="form-group">
+            <label for="criar-password">Senha</label>
+            <input id="criar-password" type="password" [(ngModel)]="criarPassword" placeholder="Digite a senha" />
+          </div>
+          <div class="form-group">
+            <label for="criar-role">Role</label>
+            <select id="criar-role" [(ngModel)]="criarRoleId" (ngModelChange)="onCriarRoleChange()">
+              <option value="">Selecione uma role</option>
+              <option *ngFor="let role of roles" [value]="role.id">{{ role.nome }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Tabela de Permissões -->
+        <div class="permissions-panel">
+          <div class="permissions-header">
+            <div>
+              <h4>Permissões</h4>
+              <p>{{ getCriarTotalSelecionadas() }} de {{ permissions.length }} selecionadas</p>
+            </div>
+            <label class="select-all">
+              <input type="checkbox" [checked]="isCriarTudoSelecionado()" (change)="toggleCriarTodasPermissoes($event)" />
+              Marcar tudo
+            </label>
+          </div>
+          <div class="permissions-table-wrap">
+            <table class="permissions-table">
+              <thead>
+                <tr>
+                  <th>Modulo</th>
+                  <th *ngFor="let action of permissionActions">{{ action.label }}</th>
+                  <th>Linha</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let group of criarPermissionGroups">
+                  <td class="module-cell">{{ group.recurso }}</td>
+                  <td *ngFor="let action of permissionActions">
+                    <ng-container *ngIf="getPermission(group, action.key) as permission; else noPerm">
+                      <label class="check-cell" [title]="permission.descricao">
+                        <input type="checkbox"
+                          [checked]="isCriarPermissionSelected(permission.id)"
+                          [disabled]="isCriarRolePermission(permission.id)"
+                          (change)="toggleCriarPermission(permission.id, $event)" />
+                        <span *ngIf="isCriarRolePermission(permission.id)" class="inherited-label">role</span>
+                      </label>
+                    </ng-container>
+                    <ng-template #noPerm><span class="empty-permission">&mdash;</span></ng-template>
+                  </td>
+                  <td>
+                    <label class="check-cell row-check">
+                      <input type="checkbox"
+                        [checked]="isCriarGrupoSelecionado(group)"
+                        [indeterminate]="isCriarGrupoParcial(group)"
+                        (change)="toggleCriarGrupo(group, $event)" />
+                    </label>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" type="button" (click)="fecharModalCriar()">Cancelar</button>
+        <button class="btn-save" type="button" (click)="criarUsuario()" [disabled]="salvandoCriar">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          {{ salvandoCriar ? 'Criando...' : 'Criar Usuário' }}
         </button>
       </div>
     </div>
   </div>
 </div>
+

@@ -1,73 +1,73 @@
+<div class="table-card">
 
-<div class="lista-container">
-
-  <div *ngIf="lojas.length === 0" class="empty-state">
-    Nenhuma loja cadastrada.
+  <div class="table-card-header">
+    <div>
+      <h3 class="table-card-title">Lojas Cadastradas</h3>
+      <p class="table-card-sub">{{ lojas.length }} loja(s) encontrada(s)</p>
+    </div>
   </div>
 
-  <div
-    *ngIf="lojas.length > 0"
-    class="table-wrapper"
-  >
+  <div class="empty-state" *ngIf="lojas.length === 0">
+    <svg width="40" height="40" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#e5e7eb">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+    </svg>
+    <p>Nenhuma loja cadastrada</p>
+  </div>
 
+  <div class="table-scroll" *ngIf="lojas.length > 0">
     <table class="lojas-table">
-
       <thead>
         <tr>
-          <th>Nome</th>
-          <th>Tipo</th>
-          <th>Ações</th>
+          <th>Loja</th>
+          <th>Contato</th>
+          <th>Tipo de Atendimento</th>
+          <th>Frete Gratis</th>
+          <th class="th-actions">Acoes</th>
         </tr>
       </thead>
-
       <tbody>
+        <tr class="loja-row" *ngFor="let loja of lojas">
 
-        <tr *ngFor="let loja of lojas">
-
-          <td>
-            {{ loja.nomeLoja }}
+          <td class="td-loja">
+            <div class="loja-avatar">
+              <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C5794E">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+              </svg>
+            </div>
+            <div>
+              <span class="loja-nome">{{ loja.nomeLoja }}</span>
+              <span class="loja-cep" *ngIf="loja.cep">CEP: {{ loja.cep }}</span>
+            </div>
           </td>
 
-         
-          <td>
-            {{ loja.tipoAtendimento }}
+          <td class="td-contato">
+            <span class="contato-tel" *ngIf="loja.telefone">{{ loja.telefone }}</span>
+            <span class="sem-contato" *ngIf="!loja.telefone">&mdash;</span>
           </td>
 
-          <td class="acoes">
+          <td>
+            <span class="tipo-badge"
+              [class.tipo-delivery]="loja.tipoAtendimento === 'DELIVERY'"
+              [class.tipo-presencial]="loja.tipoAtendimento === 'PRESENCIAL'"
+              [class.tipo-ambos]="loja.tipoAtendimento === 'AMBOS'">
+              {{ loja.tipoAtendimento }}
+            </span>
+          </td>
 
-            <button
-              class="btn editar"
-              [routerLink]="[
-                '/editar-loja',
-                loja.id
-              ]"
-            >
-              Editar
-            </button>
+          <td class="td-frete">
+            <span *ngIf="loja.valorMinimoFreteGratis">{{ loja.valorMinimoFreteGratis | currency:'BRL' }}</span>
+            <span class="sem-frete" *ngIf="!loja.valorMinimoFreteGratis">&mdash;</span>
+          </td>
 
-            <button
-              class="btn funcionario"
-              [routerLink]="[
-                '/addloja',
-                loja.id,
-                'funcionarios'
-              ]"
-            >
-              Funcionários
-            </button>
-
-            <button [routerLink]="['/loja', loja.id, 'bairros']">
-          Relacionar Bairro
-        </button>
-
+          <td class="td-actions">
+            <button class="btn-editar" [routerLink]="['/editar-loja', loja.id]">Editar</button>
+            <button class="btn-funcionario" [routerLink]="['/addloja', loja.id, 'funcionarios']">Funcionarios</button>
+            <button class="btn-bairro" [routerLink]="['/loja', loja.id, 'bairros']">Bairros</button>
           </td>
 
         </tr>
-
       </tbody>
-
     </table>
-
   </div>
 
 </div>

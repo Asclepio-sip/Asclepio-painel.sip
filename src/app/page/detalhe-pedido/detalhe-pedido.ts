@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PedidosService, Pedido } from '../../service/pedidos.service';
@@ -25,9 +25,9 @@ export class DetalhePedido implements OnInit {
 
 statusEtapas = [
   { key: 'AGUARDANDO', label: 'Pedido Recebido' },
-  { key: 'SEPARACAO', label: 'Em Separação' },
-  { key: 'EM_TRANSITO', label: 'Em Trânsito' },
-  { key: 'CONCLUIDO', label: 'Pedido Concluído' }
+  { key: 'SEPARACAO', label: 'Em SeparaÃ§Ã£o' },
+  { key: 'EM_TRANSITO', label: 'Em TrÃ¢nsito' },
+  { key: 'CONCLUIDO', label: 'Pedido ConcluÃ­do' }
 ];
 
 isEtapaAtiva(statusKey: string): boolean {
@@ -160,7 +160,7 @@ ngOnInit() {
 
   falarWhatsApp() {
     const numero = this.pedido.telefone.replace(/\D/g, '');
-    const mensagem = `Olá ${this.pedido.cliente}, seu pedido #${this.pedido.id} está sendo processado!`;
+    const mensagem = `OlÃ¡ ${this.pedido.cliente}, seu pedido #${this.pedido.id} estÃ¡ sendo processado!`;
     window.open(`https://wa.me/55${numero}?text=${encodeURIComponent(mensagem)}`, '_blank');
   }
 

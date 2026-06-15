@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+﻿import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -91,12 +91,12 @@ export class Pedidos implements OnInit {
       cancelado: this.service.listar({ status: 'CANCELADO', page: 0, size: 1 }),
     }).subscribe({
       next: res => {
-        this.totalTodos = res.todos.totalElements;
-        this.contadores.novosHoje = res.aguardando.totalElements;
-        this.contadores.pendentes = res.separacao.totalElements;
-        this.contadores.emTransito = res.transito.totalElements;
-        this.contadores.finalizados = res.concluido.totalElements;
-        this.contadores.cancelados = res.cancelado.totalElements;
+        this.totalTodos = res.todos.totalElements ?? 0;
+        this.contadores.novosHoje = res.aguardando.totalElements ?? 0;
+        this.contadores.pendentes = res.separacao.totalElements ?? 0;
+        this.contadores.emTransito = res.transito.totalElements ?? 0;
+        this.contadores.finalizados = res.concluido.totalElements ?? 0;
+        this.contadores.cancelados = res.cancelado.totalElements ?? 0;
         this.cdr.detectChanges();
       },
       error: err => console.error('Erro ao carregar contadores de pedidos', err)

@@ -1,104 +1,144 @@
-<app-navbar-administrador></app-navbar-administrador>
-<app-sidebar></app-sidebar>
+<div class="relatorio-container">
 
-<main class="relatorio-page">
-  <section class="header">
-    <div>
-      <h1>Relatorio de Estoque</h1>
-      <p>Historico de movimentacoes: criacao, atualizacao, entrada, saida por pedido, promocao e exclusao.</p>
+  <!-- Cabecalho -->
+  <div class="page-header">
+    <div class="header-left">
+      <p class="breadcrumb">ADMIN / ESTOQUE / <span>RELATORIO</span></p>
+      <h1 class="page-title">Relatorio de Estoque</h1>
+      <p class="page-subtitle">Historico de movimentacoes: criacao, atualizacao, entrada, saida e exclusao.</p>
     </div>
-
-    <button class="btn primary" type="button" (click)="buscar()">
+    <button class="btn-refresh" type="button" (click)="buscar()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+      </svg>
       Atualizar
     </button>
-  </section>
+  </div>
 
-  <section class="filters">
-    <label>
-      Loja
-      <select [(ngModel)]="filtros.lojaId">
-        <option [ngValue]="null">Todas as lojas</option>
-        <option *ngFor="let loja of lojas" [ngValue]="loja.id">
-          {{ loja.nomeLoja }}
-        </option>
-      </select>
-    </label>
+  <!-- Filtros -->
+  <div class="filter-card">
+    <div class="filter-card-header">
+      <div class="card-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
+        </svg>
+      </div>
+      <h3 class="filter-card-title">Filtros</h3>
+    </div>
 
-    <label>
-      Nome do produto
-      <input type="text" [(ngModel)]="filtros.nomeProduto" placeholder="Buscar produto">
-    </label>
+    <div class="filter-body">
+      <div class="filter-grid">
 
-    <label>
-      Usuario
-      <input type="text" [(ngModel)]="filtros.usuario" placeholder="Buscar usuario">
-    </label>
+        <div class="form-group">
+          <label class="form-label">Loja</label>
+          <select class="form-input" [(ngModel)]="filtros.lojaId">
+            <option [ngValue]="null">Todas as lojas</option>
+            <option *ngFor="let loja of lojas" [ngValue]="loja.id">{{ loja.nomeLoja }}</option>
+          </select>
+        </div>
 
-    <label>
-      Tipo
-      <select [(ngModel)]="filtros.tipo">
-        <option value="">Todos</option>
-        <option *ngFor="let tipo of tipos" [value]="tipo">
-          {{ rotuloTipo(tipo) }}
-        </option>
-      </select>
-    </label>
+        <div class="form-group">
+          <label class="form-label">Produto</label>
+          <input class="form-input" type="text" [(ngModel)]="filtros.nomeProduto" placeholder="Buscar produto..." />
+        </div>
 
-    <label>
-      Data inicial
-      <input type="date" [(ngModel)]="filtros.dataInicio">
-    </label>
+        <div class="form-group">
+          <label class="form-label">Usuario</label>
+          <input class="form-input" type="text" [(ngModel)]="filtros.usuario" placeholder="Buscar usuario..." />
+        </div>
 
-    <label>
-      Data final
-      <input type="date" [(ngModel)]="filtros.dataFim">
-    </label>
+        <div class="form-group">
+          <label class="form-label">Tipo de Movimentacao</label>
+          <select class="form-input" [(ngModel)]="filtros.tipo">
+            <option value="">Todos os tipos</option>
+            <option *ngFor="let tipo of tipos" [value]="tipo">{{ rotuloTipo(tipo) }}</option>
+          </select>
+        </div>
 
-    <div class="period-shortcuts">
-      <span>Período rápido</span>
-      <div class="period-buttons">
-        <button
-          *ngFor="let periodo of periodos"
-          class="period-btn"
-          type="button"
-          [class.active]="periodoSelecionado === periodo.value"
-          (click)="aplicarPeriodo(periodo.value)">
-          {{ periodo.label }}
+        <div class="form-group">
+          <label class="form-label">Data Inicial</label>
+          <input class="form-input" type="date" [(ngModel)]="filtros.dataInicio" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Data Final</label>
+          <input class="form-input" type="date" [(ngModel)]="filtros.dataFim" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Itens por pagina</label>
+          <select class="form-input" [(ngModel)]="filtros.size">
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="20">20</option>
+            <option [ngValue]="50">50</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Periodos rapidos -->
+      <div class="period-row">
+        <span class="period-label">Periodo rapido:</span>
+        <div class="period-pills">
+          <button
+            *ngFor="let periodo of periodos"
+            type="button"
+            class="period-pill"
+            [class.active]="periodoSelecionado === periodo.value"
+            (click)="aplicarPeriodo(periodo.value)">
+            {{ periodo.label }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Acoes dos filtros -->
+      <div class="filter-actions">
+        <button class="btn-primary" type="button" (click)="buscar()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
+          </svg>
+          Filtrar
+        </button>
+        <button class="btn-ghost" type="button" (click)="limparFiltros()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+          Limpar filtros
         </button>
       </div>
     </div>
+  </div>
 
-    <label>
-      Por pagina
-      <select [(ngModel)]="filtros.size">
-        <option [ngValue]="10">10</option>
-        <option [ngValue]="20">20</option>
-        <option [ngValue]="50">50</option>
-      </select>
-    </label>
+  <!-- Tabela -->
+  <div class="table-card">
 
-    <div class="filter-actions">
-      <button class="btn primary" type="button" (click)="buscar()">Filtrar</button>
-      <button class="btn ghost" type="button" (click)="limparFiltros()">Limpar</button>
-    </div>
-  </section>
-
-  <section class="table-panel">
-    <div class="table-summary">
-      <strong>{{ totalElementos }}</strong>
-      movimentacoes encontradas
+    <div class="table-card-header">
+      <div>
+        <h3 class="table-card-title">Movimentacoes</h3>
+        <p class="table-card-sub">
+          <strong>{{ totalElementos }}</strong> registro(s) encontrado(s)
+        </p>
+      </div>
     </div>
 
-    <div *ngIf="erro" class="alert">
+    <!-- Loading -->
+    <div *ngIf="carregando" class="loading-state">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="spin">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+      </svg>
+      <p>Carregando movimentacoes...</p>
+    </div>
+
+    <!-- Erro -->
+    <div *ngIf="erro" class="error-banner">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
       {{ erro }}
     </div>
 
-    <div *ngIf="carregando" class="loading">
-      Carregando movimentacoes...
-    </div>
-
-    <div class="table-wrapper" *ngIf="!carregando">
-      <table>
+    <div class="table-scroll" *ngIf="!carregando">
+      <table class="relatorio-table">
         <thead>
           <tr>
             <th>Data</th>
@@ -106,57 +146,93 @@
             <th>Produto</th>
             <th>Loja</th>
             <th>Usuario</th>
-            <th>Qtd.</th>
+            <th>Quantidade</th>
             <th>Preco</th>
             <th>Desconto</th>
             <th>Obs.</th>
           </tr>
         </thead>
-
         <tbody>
           <tr *ngIf="movimentacoes.length === 0">
-            <td colspan="9" class="empty">Nenhuma movimentacao encontrada.</td>
+            <td colspan="9" class="empty-state">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              <p>Nenhuma movimentacao encontrada</p>
+            </td>
           </tr>
 
-          <tr *ngFor="let item of movimentacoes">
-            <td>{{ formatarData(item.criadoEm) }}</td>
-            <td>
-              <span class="badge">{{ rotuloTipo(item.tipo) }}</span>
+          <tr class="relatorio-row" *ngFor="let item of movimentacoes">
+
+            <td class="td-data">
+              <span class="data-principal">{{ formatarData(item.criadoEm) }}</span>
             </td>
+
             <td>
-              <strong>{{ item.nomeProduto }}</strong>
-              <small>ID {{ item.produtoId }} | Estoque {{ item.estoqueId }}</small>
+              <span class="tipo-badge tipo-{{ item.tipo | lowercase }}">{{ rotuloTipo(item.tipo) }}</span>
             </td>
-            <td>
-              {{ item.nomeLoja }}
-              <small>ID {{ item.lojaId }}</small>
+
+            <td class="td-produto">
+              <span class="produto-nome">{{ item.nomeProduto }}</span>
+              <span class="produto-meta">ID {{ item.produtoId }}</span>
             </td>
-            <td>{{ item.usuario || '-' }}</td>
-            <td>{{ formatarValor(item.quantidadeAntes) }} -> {{ formatarValor(item.quantidadeDepois) }}</td>
-            <td>{{ formatarMoeda(item.precoAntes) }} -> {{ formatarMoeda(item.precoDepois) }}</td>
-            <td>{{ formatarValor(item.descontoAntes) }} -> {{ formatarValor(item.descontoDepois) }}</td>
-            <td>{{ item.observacao || '-' }}</td>
+
+            <td class="td-loja">
+              <span class="loja-nome">{{ item.nomeLoja }}</span>
+            </td>
+
+            <td class="td-usuario">{{ item.usuario || '&mdash;' }}</td>
+
+            <td class="td-diff">
+              <span class="diff-before">{{ formatarValor(item.quantidadeAntes) }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+              </svg>
+              <span class="diff-after">{{ formatarValor(item.quantidadeDepois) }}</span>
+            </td>
+
+            <td class="td-diff">
+              <span class="diff-before">{{ formatarMoeda(item.precoAntes) }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+              </svg>
+              <span class="diff-after">{{ formatarMoeda(item.precoDepois) }}</span>
+            </td>
+
+            <td class="td-diff">
+              <span class="diff-before">{{ formatarValor(item.descontoAntes) }}%</span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+              </svg>
+              <span class="diff-after">{{ formatarValor(item.descontoDepois) }}%</span>
+            </td>
+
+            <td class="td-obs">{{ item.observacao || '&mdash;' }}</td>
+
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div class="pagination">
-      <button class="btn ghost" type="button" (click)="paginaAnterior()" [disabled]="paginaAtual === 0">
-        Anterior
-      </button>
-
-      <span>
-        Pagina {{ paginaAtual + 1 }} de {{ totalPaginas || 1 }}
-      </span>
-
-      <button
-        class="btn ghost"
-        type="button"
-        (click)="proximaPagina()"
-        [disabled]="paginaAtual >= totalPaginas - 1">
-        Proxima
-      </button>
+    <!-- Paginacao -->
+    <div class="table-footer">
+      <span class="footer-info">Pagina <strong>{{ paginaAtual + 1 }}</strong> de <strong>{{ totalPaginas || 1 }}</strong></span>
+      <div class="pagination">
+        <button class="btn-page" type="button" (click)="paginaAnterior()" [disabled]="paginaAtual === 0">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+          Anterior
+        </button>
+        <button class="btn-page" type="button" (click)="proximaPagina()" [disabled]="paginaAtual >= totalPaginas - 1">
+          Proxima
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
     </div>
-  </section>
-</main>
+
+  </div>
+
+</div>

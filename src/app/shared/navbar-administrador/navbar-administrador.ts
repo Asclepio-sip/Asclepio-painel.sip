@@ -30,6 +30,10 @@ export class NavbarAdministradorComponent implements OnInit {
     // Inicialização do componente
   }
 
+  toggleSidebar() {
+    document.body.classList.toggle('sidebar-collapsed');
+  }
+
   abrirLogout() {
     this.showLogoutModal = true;
   }

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+﻿import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavbarAdministradorComponent } from "../../../shared/navbar-administrador/navbar-administrador";
 import { SidebarComponent } from "../../../shared/sidebar/sidebar.component";
