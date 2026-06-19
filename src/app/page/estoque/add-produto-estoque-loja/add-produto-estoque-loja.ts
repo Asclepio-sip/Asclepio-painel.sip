@@ -57,8 +57,8 @@ export class AddProdutoEstoqueLoja implements OnInit {
   }
 
   carregarLojas() {
-    this.lojaService.listar().subscribe((lojas: Loja[]) => {
-      this.lojas = lojas;
+    this.lojaService.listar().subscribe(response => {
+      this.lojas = response.content;
       this.cdr.detectChanges();
     });
   }

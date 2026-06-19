@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 // ✅ campo corrigido para bater com o que o backend retorna
@@ -8,7 +9,10 @@ export interface Categoria {
   id: number;
   nomeCategoria: string;
   descricao?: string;
+  icone?: string;
+  ativa?: boolean;
   categoriaPaiId?: number | null;
+  nomeCategoriaPai?: string | null;
   categoriaPai?: Categoria | null;
 }
 
@@ -34,8 +38,10 @@ export class CategoriaService {
     Observable<Categoria[]> {
 
     return this.http.get<
-      Categoria[]
-    >(this.apiUrl);
+      Categoria[] | { content: Categoria[] }
+    >(this.apiUrl).pipe(
+      map(response => Array.isArray(response) ? response : response.content ?? [])
+    );
   }
 
   criar(categoria: CategoriaRequest) {

@@ -26,7 +26,7 @@ export class EditarLoja implements OnInit {
 loja: Loja = {
   nomeLoja: '',
   cep: '',
-  cpnj: '',
+  cnpj: '',
   telefone: '',
   textoDescricao: '',
   tipoAtendimento: '',

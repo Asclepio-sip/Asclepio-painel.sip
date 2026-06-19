@@ -3,7 +3,7 @@
   <div class="table-card-header">
     <div>
       <h3 class="table-card-title">Lojas Cadastradas</h3>
-      <p class="table-card-sub">{{ lojas.length }} loja(s) encontrada(s)</p>
+      <p class="table-card-sub">{{ totalElementos || lojas.length }} loja(s) encontrada(s)</p>
     </div>
   </div>
 
@@ -47,8 +47,8 @@
 
           <td>
             <span class="tipo-badge"
-              [class.tipo-delivery]="loja.tipoAtendimento === 'DELIVERY'"
-              [class.tipo-presencial]="loja.tipoAtendimento === 'PRESENCIAL'"
+              [class.tipo-delivery]="loja.tipoAtendimento === 'ENTREGA'"
+              [class.tipo-presencial]="loja.tipoAtendimento === 'RETIRADA'"
               [class.tipo-ambos]="loja.tipoAtendimento === 'AMBOS'">
               {{ loja.tipoAtendimento }}
             </span>
@@ -68,6 +68,16 @@
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <div class="pagination" *ngIf="lojas.length > 0">
+    <button class="btn-page" type="button" (click)="paginaAnterior()" [disabled]="paginaAtual === 0">
+      Anterior
+    </button>
+    <span class="page-info">Pagina <strong>{{ paginaAtual + 1 }}</strong> de <strong>{{ totalPaginas || 1 }}</strong></span>
+    <button class="btn-page" type="button" (click)="proximaPagina()" [disabled]="paginaAtual >= totalPaginas - 1">
+      Proxima
+    </button>
   </div>
 
 </div>

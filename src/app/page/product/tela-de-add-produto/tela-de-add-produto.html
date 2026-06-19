@@ -39,7 +39,19 @@
         </div>
 
         <div class="form-group">
-          <label class="form-label">Categoria</label>
+          <label class="form-label">Descricao</label>
+          <textarea class="form-input form-textarea" rows="3" [(ngModel)]="descricao" name="descricao"
+            placeholder="Descricao detalhada do produto"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Marca</label>
+          <input class="form-input" type="text" [(ngModel)]="marca" name="marca" 
+            placeholder="Ex: Generico, Bayer, etc" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Categoria <span class="required">*</span></label>
           <div class="custom-select" [class.open]="dropdownAberto">
             <button type="button" class="custom-select-trigger" (click)="toggleDropdown()">
               <span [class.placeholder]="!categoriaSelecionada">
@@ -51,7 +63,7 @@
             </button>
             <ul *ngIf="dropdownAberto" class="custom-select-list">
               <li *ngFor="let cat of categorias" (click)="selecionarCategoria(cat)" class="custom-select-item">
-                {{ cat }}
+                {{ cat.nomeCategoria }}
               </li>
             </ul>
           </div>
@@ -120,10 +132,10 @@
           <div class="progress-row">
             <div class="progress-bar">
               <div class="progress-fill"
-                [style.width.%]="((name ? 1 : 0) + (categoriaSelecionada ? 1 : 0) + (imagemBase64 ? 1 : 0)) / 3 * 100">
+                [style.width.%]="((name ? 1 : 0) + (categoriaSelecionada ? 1 : 0) + (imagemFile ? 1 : 0)) / 3 * 100">
               </div>
             </div>
-            <span class="progress-count">{{ (name ? 1 : 0) + (categoriaSelecionada ? 1 : 0) + (imagemBase64 ? 1 : 0) }}/3</span>
+            <span class="progress-count">{{ (name ? 1 : 0) + (categoriaSelecionada ? 1 : 0) + (imagemFile ? 1 : 0) }}/3</span>
           </div>
         </div>
       </div>

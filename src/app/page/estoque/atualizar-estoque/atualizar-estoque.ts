@@ -60,8 +60,8 @@ export class AtualizarEstoque implements OnInit {
     this.lojaService
       .listar()
       .subscribe({
-        next: (lojas) => {
-          this.lojas = lojas;
+        next: (response) => {
+          this.lojas = response.content;
           this.cdr.detectChanges();
         },
         error: (err) => {
