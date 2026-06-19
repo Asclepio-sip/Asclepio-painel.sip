@@ -22,7 +22,7 @@ export class TelaDeAddLoja {
 
   nomeLoja = '';
   cep = '';
-  cpnj = '';
+  cnpj = '';
   telefone = '';
   textoDescricao = '';
   tipoAtendimento = '';
@@ -41,11 +41,11 @@ export class TelaDeAddLoja {
 
       cep: this.cep,
 
-      cpnj: this.cpnj || null,
+      cnpj: this.cnpj || null,
 
       telefone: this.telefone,
 
-      textoDescricao: this.textoDescricao || null,
+      TextoDescricao: this.textoDescricao || null,
 
       tipoAtendimento: this.tipoAtendimento,
 

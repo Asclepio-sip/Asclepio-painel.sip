@@ -23,10 +23,13 @@ import { NavbarAdministradorComponent } from '../../../shared/navbar-administrad
 export class TelaDeAddProduto implements OnInit {
 
   name = '';
+  descricao = '';
+  marca = '';
   categoriaSelecionada = '';
-  categorias: string[] = [];
+  categoriaId: number | null = null;
+  categorias: any[] = [];
 
-  imagemBase64 = '';
+  imagemFile: File | null = null;
   previewImagem = '';
 
   dropdownAberto = false;
@@ -38,7 +41,7 @@ export class TelaDeAddProduto implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.productService.getCategorias().subscribe({
+    this.productService.getCategoriasComId().subscribe({
       next: cats => this.categorias = cats,
       error: () => {
         Swal.fire('Erro', 'Erro ao carregar categorias', 'error');
@@ -48,7 +51,7 @@ export class TelaDeAddProduto implements OnInit {
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
-    if (file) this.convertToBase64(file);
+    if (file) this.processarImagem(file);
   }
 
   onDragOver(event: DragEvent) {
@@ -59,36 +62,16 @@ export class TelaDeAddProduto implements OnInit {
     event.preventDefault();
     if (event.dataTransfer?.files.length) {
       const file = event.dataTransfer.files[0];
-      this.convertToBase64(file);
+      this.processarImagem(file);
     }
   }
 
-  private convertToBase64(file: File) {
-    const img = new Image();
+  private processarImagem(file: File) {
+    this.imagemFile = file;
     const reader = new FileReader();
-
     reader.onload = (e: any) => {
-      img.src = e.target.result;
-
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const maxWidth = 800;
-        const scale = maxWidth / img.width;
-
-        canvas.width = maxWidth;
-        canvas.height = img.height * scale;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        const webpBase64 = canvas.toDataURL('image/webp', 0.7);
-        this.previewImagem = webpBase64;
-        this.imagemBase64 = webpBase64.split(',')[1];
-      };
+      this.previewImagem = e.target.result;
     };
-
     reader.readAsDataURL(file);
   }
 
@@ -96,8 +79,9 @@ export class TelaDeAddProduto implements OnInit {
     this.dropdownAberto = !this.dropdownAberto;
   }
 
-  selecionarCategoria(cat: string) {
-    this.categoriaSelecionada = cat;
+  selecionarCategoria(cat: any) {
+    this.categoriaSelecionada = cat.nomeCategoria;
+    this.categoriaId = cat.id;
     this.dropdownAberto = false;
   }
 
@@ -114,15 +98,17 @@ export class TelaDeAddProduto implements OnInit {
   }
 
   salvar() {
-    if (!this.name.trim() || !this.categoriaSelecionada || !this.imagemBase64) {
+    if (!this.name.trim() || !this.categoriaSelecionada || !this.imagemFile || !this.categoriaId) {
       Swal.fire('Atencao', 'Preencha todos os campos obrigatorios.', 'warning');
       return;
     }
 
     this.productService.addProduct({
-      name: this.name.trim(),
-      categoriaNome: this.categoriaSelecionada,
-      imagemBase64: this.imagemBase64
+      nome: this.name.trim(),
+      descricao: this.descricao.trim(),
+      marca: this.marca.trim(),
+      categoriaId: this.categoriaId,
+      imagem: this.imagemFile!
     }).subscribe({
       next: (produto) => {
         Swal.fire('Sucesso', 'Produto cadastrado!', 'success')

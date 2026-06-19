@@ -27,6 +27,7 @@ export interface Estoque {
   nomeVariacao: string;
 
   imagemBase64: string;
+  imagemUrl?: string;
 
   quantidade: number;
 
@@ -140,8 +141,16 @@ export class EstoqueService {
 }
 
 private normalizarEstoque(item: any): Estoque {
+  const imagemBase64 = item.imagemBase64 ?? '';
+
   return {
     ...item,
+    imagemBase64,
+    imagemUrl:
+      item.imagemUrl ??
+      item.produto?.imagemUrl ??
+      item.produtoVariacao?.produto?.imagemUrl ??
+      (imagemBase64 ? `data:image/png;base64,${imagemBase64}` : ''),
     nomeProduto:
       item.nomeProduto ??
       item.produto?.name ??
