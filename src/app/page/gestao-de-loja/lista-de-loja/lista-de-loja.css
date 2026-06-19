@@ -62,3 +62,9 @@
 .btn-bairro { background: #fdf6f0; color: #C5794E; border-color: #f0cdb0; }
 .btn-bairro svg { width: 13px; height: 13px; }
 .btn-bairro:hover { background: #C5794E; color: #fff; border-color: #C5794E; }
+
+.pagination { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 16px 24px; border-top: 1px solid #f3f4f6; }
+.btn-page { padding: 8px 14px; border-radius: 7px; border: 1.5px solid #e5e7eb; background: #fff; color: #374151; font-size: 12px; font-weight: 600; font-family: 'Poppins', sans-serif; cursor: pointer; }
+.btn-page:hover:not(:disabled) { background: #f9fafb; border-color: #d1d5db; }
+.btn-page:disabled { opacity: .45; cursor: not-allowed; }
+.page-info { font-size: 12.5px; color: #6b7280; }

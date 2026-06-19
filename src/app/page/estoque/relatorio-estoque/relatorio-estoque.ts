@@ -73,8 +73,8 @@ export class RelatorioEstoque implements OnInit {
     this.lojaService
       .listar()
       .subscribe({
-        next: (lojas) => {
-          this.lojas = lojas;
+        next: (response) => {
+          this.lojas = response.content;
         },
         error: (err) => {
           console.error('Erro ao carregar lojas', err);

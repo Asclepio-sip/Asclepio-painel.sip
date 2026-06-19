@@ -38,24 +38,31 @@ export class ProductListComponent implements OnInit {
 
   ngOnInit() {
     this.categoriaService.listar().subscribe({
-      next: cats => { this.categorias = cats; this.cdr.detectChanges(); },
+      next: cats => {
+        this.categorias = cats;
+        this.todosProdutos = this.preencherCategorias(this.todosProdutos);
+        this.atualizarCategoriaAtual();
+        this.cdr.detectChanges();
+      },
       error: () => {}
     });
 
     this.route.queryParams.subscribe(params => {
       const id = params['categoriaId'] ? Number(params['categoriaId']) : null;
       this.categoriaAtualId = id;
-      this.categoriaAtual = id ? (this.categorias.find(c => c.id === id) ?? null) : null;
+      this.atualizarCategoriaAtual();
       this.carregarProdutos(0);
     });
   }
 
   carregarProdutos(page: number = 0) {
     this.produtoService
-      .loadProducts(page, 10)
+      .loadProducts(page, 10, {
+        categoriaId: this.categoriaAtualId
+      })
       .subscribe({
         next: (res) => {
-          this.todosProdutos = res.content;
+          this.todosProdutos = this.preencherCategorias(res.content);
           this.paginaAtualProduto = res.page?.number ?? res.number ?? page;
           this.totalPaginasProduto = res.page?.totalPages ?? res.totalPages ?? 0;
           this.cdr.detectChanges();
@@ -76,5 +83,29 @@ export class ProductListComponent implements OnInit {
     if (this.paginaAtualProduto > 0) {
       this.carregarProdutos(this.paginaAtualProduto - 1);
     }
+  }
+
+  private preencherCategorias(produtos: Product[]): Product[] {
+    return produtos.map(produto => {
+      const categoria = produto.categoriaId
+        ? this.categorias.find(cat => cat.id === produto.categoriaId)
+        : undefined;
+
+      return {
+        ...produto,
+        categoria: produto.categoria ?? categoria,
+        categoriaNome:
+          produto.categoriaNome ||
+          produto.nomeCategoria ||
+          categoria?.nomeCategoria ||
+          ''
+      };
+    });
+  }
+
+  private atualizarCategoriaAtual() {
+    this.categoriaAtual = this.categoriaAtualId
+      ? (this.categorias.find(c => c.id === this.categoriaAtualId) ?? null)
+      : null;
   }
 }

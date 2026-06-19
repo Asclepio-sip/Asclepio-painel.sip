@@ -14,6 +14,9 @@ import { Router, RouterModule } from '@angular/router';
 export class ListaDeLoja implements OnInit {
 
   lojas: Loja[] = [];
+  paginaAtual = 0;
+  totalPaginas = 0;
+  totalElementos = 0;
 
   constructor(
     private lojaService: LojaService,
@@ -25,11 +28,26 @@ export class ListaDeLoja implements OnInit {
     this.carregarLojas();
   }
 
-  carregarLojas() {
-    this.lojaService.listar().subscribe(dados => {
-      this.lojas = dados;
+  carregarLojas(page: number = 0) {
+    this.lojaService.listar(page, 20).subscribe(response => {
+      this.lojas = response.content;
+      this.paginaAtual = response.page?.number ?? response.number ?? page;
+      this.totalPaginas = response.page?.totalPages ?? response.totalPages ?? 0;
+      this.totalElementos = response.page?.totalElements ?? response.totalElements ?? this.lojas.length;
       this.cdr.detectChanges();
     });
+  }
+
+  proximaPagina() {
+    if (this.paginaAtual < this.totalPaginas - 1) {
+      this.carregarLojas(this.paginaAtual + 1);
+    }
+  }
+
+  paginaAnterior() {
+    if (this.paginaAtual > 0) {
+      this.carregarLojas(this.paginaAtual - 1);
+    }
   }
 
   editar(loja: Loja) {

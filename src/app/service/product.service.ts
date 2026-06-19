@@ -12,16 +12,21 @@ import { Categoria } from './categoria.service';
 export interface Product {
   id: number;
   name: string;
+  imagemUrl?: string;
   imagemBase64: string;
   categoria?: Categoria;
   variacoes: ProdutoVariacao[];
+  categoriaId?: number;
+  nomeCategoria?: string | null;
   categoriaNome?: string;
 }
 
 export interface ProdutoAddDTO {
-  name: string;
-  imagemBase64: string;
-  categoriaNome: string;
+  nome: string;
+  descricao?: string;
+  marca?: string;
+  categoriaId: number;
+  imagem: File;
 }
 
 export interface ProdutoUpdateDTO {
@@ -154,13 +159,17 @@ export class ProductService {
      CREATE
   ========================= */
 
-  addProduct(
-    product: ProdutoAddDTO
-  ) {
+  addProduct(product: ProdutoAddDTO) {
+    const formData = new FormData();
+    formData.append('nome', product.nome);
+    formData.append('descricao', product.descricao || '');
+    formData.append('marca', product.marca || '');
+    formData.append('categoriaId', product.categoriaId.toString());
+    formData.append('imagem', product.imagem);
 
     return this.http.post<Product>(
       this.API,
-      product
+      formData
     );
   }
 
@@ -183,7 +192,7 @@ export class ProductService {
     variacao: ProdutoVariacaoRequest
   ) {
     return this.http.post<ProdutoVariacao>(
-      `${this.VARIACOES_API}/${produtoId}/variacoes`,
+      `${environment.apiUrl}/variacoes/produtos/${produtoId}`,
       variacao
     ).pipe(
       map(response => this.normalizarVariacao(response))
@@ -191,8 +200,14 @@ export class ProductService {
   }
 
   listarVariacoes(produtoId: number) {
+    const params = new HttpParams()
+      .set('produtoId', produtoId)
+      .set('page', 0)
+      .set('size', 20);
+
     return this.http.get<ProdutoVariacao[] | PageResponse<ProdutoVariacao>>(
-      `${this.VARIACOES_API}/${produtoId}/variacoes`
+      `${environment.apiUrl}/variacoes`,
+      { params }
     ).pipe(
       map(response => {
         const variacoes = Array.isArray(response)
@@ -210,7 +225,7 @@ export class ProductService {
     variacao: ProdutoVariacaoRequest
   ) {
     return this.http.put<ProdutoVariacao>(
-      `${this.VARIACOES_API}/${produtoId}/variacoes/${variacaoId}`,
+      `${environment.apiUrl}/variacoes/produtos/${produtoId}/${variacaoId}`,
       variacao
     ).pipe(
       map(response => this.normalizarVariacao(response))
@@ -222,7 +237,7 @@ export class ProductService {
     variacaoId: number
   ) {
     return this.http.delete(
-      `${this.VARIACOES_API}/${produtoId}/variacoes/${variacaoId}`
+      `${environment.apiUrl}/variacoes/produtos/${produtoId}/${variacaoId}`
     );
   }
 
@@ -287,13 +302,31 @@ export class ProductService {
   getCategorias() {
 
     return this.http.get<
-      Categoria[]
+      any
     >(
       `${environment.apiUrl}/categorias`
     ).pipe(
-      map(categorias =>
-        categorias.map(categoria => categoria.nomeCategoria)
-      )
+      map(response => {
+        const categorias = Array.isArray(response) ? response : response.content || [];
+        return categorias
+          .filter((cat: Categoria) => !cat.categoriaPaiId)
+          .map((categoria: Categoria) => categoria.nomeCategoria)
+          .filter((nome: string) => !!nome);
+      })
+    );
+  }
+
+  getCategoriasComId() {
+
+    return this.http.get<
+      any
+    >(
+      `${environment.apiUrl}/categorias`
+    ).pipe(
+      map(response => {
+        const categorias = Array.isArray(response) ? response : response.content || [];
+        return categorias.filter((cat: Categoria) => !cat.categoriaPaiId);
+      })
     );
   }
 
@@ -310,10 +343,21 @@ export class ProductService {
   }
 
   private normalizarProduto(produto: any): Product {
+    const imagemBase64 = produto.imagemBase64 ?? '';
+
     return {
       ...produto,
       name: produto.name ?? produto.nomeProduto ?? produto.nome ?? '',
-      imagemBase64: produto.imagemBase64 ?? '',
+      imagemUrl:
+        produto.imagemUrl ??
+        produto.imageUrl ??
+        (imagemBase64 ? `data:image/png;base64,${imagemBase64}` : ''),
+      imagemBase64,
+      categoriaNome:
+        produto.categoriaNome ??
+        produto.nomeCategoria ??
+        produto.categoria?.nomeCategoria ??
+        '',
       variacoes: (produto.variacoes ?? []).map((variacao: any) =>
         this.normalizarVariacao(variacao)
       )
