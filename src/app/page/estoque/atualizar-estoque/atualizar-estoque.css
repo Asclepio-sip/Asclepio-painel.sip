@@ -51,6 +51,19 @@
 .td-loja svg { width: 14px; height: 14px; color: #9ca3af; flex-shrink: 0; }
 
 .td-preco { color: #374151; font-weight: 500; white-space: nowrap; }
+.price-view { display: flex; align-items: center; gap: 8px; }
+.btn-edit-price { padding: 5px 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; color: #C5794E; font: 600 11px 'Poppins', sans-serif; cursor: pointer; }
+.btn-edit-price:hover { border-color: #C5794E; background: #fff7f2; }
+.price-editor { display: flex; align-items: center; gap: 5px; }
+.price-editor input { width: 90px; padding: 6px 8px; border: 1.5px solid #C5794E; border-radius: 6px; outline: none; font: 500 12px 'Poppins', sans-serif; }
+.btn-price-done { padding: 6px 8px; border: none; border-radius: 6px; background: #C5794E; color: #fff; font: 600 11px 'Poppins', sans-serif; cursor: pointer; }
+.promotion-view, .promotion-editor { display: flex; align-items: center; gap: 6px; }
+.btn-edit-promotion { padding: 5px 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; color: #C5794E; font: 600 11px 'Poppins', sans-serif; cursor: pointer; white-space: nowrap; }
+.btn-edit-promotion:hover { border-color: #C5794E; background: #fff7f2; }
+.promotion-editor input { width: 58px; padding: 6px; border: 1.5px solid #C5794E; border-radius: 6px; outline: none; font: 500 12px 'Poppins', sans-serif; }
+.btn-promotion-apply, .btn-promotion-cancel { padding: 6px 8px; border: none; border-radius: 6px; font: 600 11px 'Poppins', sans-serif; cursor: pointer; }
+.btn-promotion-apply { background: #C5794E; color: #fff; }
+.btn-promotion-cancel { background: #e5e7eb; color: #4b5563; }
 .td-final { color: #111827; font-weight: 700; white-space: nowrap; }
 
 .desconto-badge { background: #fdf6f0; color: #C5794E; border-radius: 20px; padding: 2px 9px; font-size: 12px; font-weight: 600; }

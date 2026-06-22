@@ -13,6 +13,9 @@ import {
   Loja,
   LojaService
 } from '../../../service/loja/loja.service';
+import { EstoqueService } from '../../../service/estoque.service';
+import { ProductService } from '../../../service/product.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-relatorio-estoque',
@@ -34,7 +37,7 @@ export class RelatorioEstoque implements OnInit {
   };
 
   tipos: TipoMovimentacaoEstoque[] = [
-    'CRIACAO',
+    'ENTRADA_NO_ESTOQUE',
     'ATUALIZACAO',
     'ENTRADA',
     'SAIDA_PEDIDO',
@@ -61,7 +64,9 @@ export class RelatorioEstoque implements OnInit {
 
   constructor(
     private relatorioEstoqueService: RelatorioEstoqueService,
-    private lojaService: LojaService
+    private lojaService: LojaService,
+    private estoqueService: EstoqueService,
+    private productService: ProductService
   ) {}
 
   ngOnInit() {
@@ -87,11 +92,36 @@ export class RelatorioEstoque implements OnInit {
     this.erro = '';
     this.filtros.page = page;
 
-    this.relatorioEstoqueService
-      .listar(this.filtros)
+    forkJoin({
+      relatorio: this.relatorioEstoqueService.listar(this.filtros),
+      estoques: this.estoqueService.listar(0, 1000),
+      produtos: this.productService.loadProducts(0, 1000)
+    })
       .subscribe({
-        next: (res) => {
-          this.movimentacoes = res.content;
+        next: ({ relatorio: res, estoques, produtos }) => {
+          this.movimentacoes = res.content.map((movimentacao) => {
+            const itemEstoque = estoques.content.find(
+              (estoque) => estoque.id === movimentacao.estoqueId
+            );
+            const produtoId = movimentacao.produtoId ?? itemEstoque?.produtoId ?? null;
+            const produto = produtos.content.find((item) => item.id === produtoId);
+
+            return {
+              ...movimentacao,
+              produtoId,
+              nomeProduto:
+                movimentacao.nomeProduto ||
+                itemEstoque?.nomeProduto ||
+                produto?.name ||
+                'Produto não encontrado',
+              imagemUrl:
+                itemEstoque?.imagemUrl ||
+                produto?.imagemUrl ||
+                (produto?.imagemBase64
+                  ? `data:image/png;base64,${produto.imagemBase64}`
+                  : '')
+            };
+          });
           this.totalElementos = res.totalElements;
           this.totalPaginas = res.totalPages;
           this.paginaAtual = res.number;
@@ -164,7 +194,8 @@ export class RelatorioEstoque implements OnInit {
 
   rotuloTipo(tipo: TipoMovimentacaoEstoque) {
     const labels: Record<TipoMovimentacaoEstoque, string> = {
-      CRIACAO: 'Criacao',
+      ENTRADA_NO_ESTOQUE: 'Entrada no estoque',
+      CRIACAO: 'Criação de estoque',
       ATUALIZACAO: 'Atualizacao',
       ENTRADA: 'Entrada',
       SAIDA_PEDIDO: 'Saida por pedido',
