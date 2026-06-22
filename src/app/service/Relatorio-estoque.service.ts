@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export type TipoMovimentacaoEstoque =
+  | 'ENTRADA_NO_ESTOQUE'
   | 'CRIACAO'
   | 'ATUALIZACAO'
   | 'ENTRADA'
@@ -16,8 +17,9 @@ export interface MovimentacaoEstoque {
   estoqueId: number;
   lojaId: number;
   nomeLoja: string;
-  produtoId: number;
+  produtoId: number | null;
   nomeProduto: string;
+  imagemUrl?: string;
   usuario: string;
   tipo: TipoMovimentacaoEstoque;
   quantidadeAntes: number | null;
@@ -57,6 +59,24 @@ export interface PageResponse<T> {
   empty: boolean;
 }
 
+interface ApiPageResponse<T> {
+  content: T[];
+  page?: {
+    size: number;
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
+  totalPages?: number;
+  totalElements?: number;
+  size?: number;
+  number?: number;
+  first?: boolean;
+  last?: boolean;
+  numberOfElements?: number;
+  empty?: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -83,9 +103,27 @@ export class RelatorioEstoqueService {
     params = this.adicionarParametro(params, 'dataInicio', filtros.dataInicio);
     params = this.adicionarParametro(params, 'dataFim', filtros.dataFim);
 
-    return this.http.get<PageResponse<MovimentacaoEstoque>>(
+    return this.http.get<ApiPageResponse<MovimentacaoEstoque>>(
       this.apiUrl,
       { params }
+    ).pipe(
+      map((response) => {
+        const number = response.page?.number ?? response.number ?? 0;
+        const totalPages = response.page?.totalPages ?? response.totalPages ?? 0;
+        const content = response.content ?? [];
+
+        return {
+          content,
+          size: response.page?.size ?? response.size ?? content.length,
+          number,
+          totalElements: response.page?.totalElements ?? response.totalElements ?? content.length,
+          totalPages,
+          first: response.first ?? number === 0,
+          last: response.last ?? (totalPages === 0 || number >= totalPages - 1),
+          numberOfElements: response.numberOfElements ?? content.length,
+          empty: response.empty ?? content.length === 0
+        };
+      })
     );
   }
 

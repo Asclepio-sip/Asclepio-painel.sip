@@ -74,7 +74,8 @@
 
 /* Tipo badges */
 .tipo-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
-.tipo-criacao    { background: #f0fdf4; color: #16a34a; }
+.tipo-entrada_no_estoque { background: #f0fdf4; color: #16a34a; }
+.tipo-criacao { background: #f0fdf4; color: #16a34a; }
 .tipo-atualizacao { background: #eff6ff; color: #2563eb; }
 .tipo-entrada    { background: #f0fdfa; color: #0d9488; }
 .tipo-saida_pedido { background: #fff7ed; color: #ea580c; }
@@ -82,7 +83,11 @@
 .tipo-delecao    { background: #fdf6f0; color: #C5794E; }
 
 .td-produto { min-width: 160px; }
-.produto-nome { display: block; font-weight: 600; color: #111827; }
+.produto-info { display: flex; align-items: center; gap: 10px; min-width: 220px; }
+.produto-imagem { width: 42px; height: 42px; border-radius: 8px; overflow: hidden; background: #f3f4f6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.produto-imagem img { width: 100%; height: 100%; object-fit: cover; }
+.produto-imagem span { padding: 3px; color: #9ca3af; font-size: 8px; text-align: center; line-height: 1.1; }
+.produto-nome { display: block; max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: #111827; }
 .produto-meta { display: block; font-size: 11px; color: #9ca3af; margin-top: 1px; }
 
 .td-loja .loja-nome { font-size: 13px; color: #374151; }

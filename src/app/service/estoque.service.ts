@@ -14,6 +14,19 @@ export interface EstoqueRequest {
   percentualDesconto?: number;
 }
 
+export interface AtualizarEstoqueRequest {
+  lojaID: number;
+  produtoId: number;
+  quantidade: number;
+  precoVenda?: number;
+}
+
+export interface AplicarPromocaoRequest {
+  lojaId: number;
+  produtoId: number;
+  percentual: number;
+}
+
 export interface Estoque {
 
   id: number;
@@ -131,11 +144,18 @@ export class EstoqueService {
 
 
   atualizarEstoque(
-  data: Partial<EstoqueRequest>
+  data: AtualizarEstoqueRequest
 ): Observable<any> {
 
   return this.http.patch(
     `${this.api}`,
+    data
+  );
+}
+
+aplicarPromocao(data: AplicarPromocaoRequest): Observable<void> {
+  return this.http.patch<void>(
+    `${this.api}/promocao`,
     data
   );
 }
@@ -163,6 +183,9 @@ private normalizarEstoque(item: any): Estoque {
       0,
     variacaoId:
       item.variacaoId ??
+      item.produtoVariacaoId ??
+      item.variacaoProdutoId ??
+      item.idVariacao ??
       item.produtoVariacao?.id ??
       0,
     nomeVariacao:

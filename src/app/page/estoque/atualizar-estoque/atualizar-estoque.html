@@ -67,11 +67,48 @@
               {{ p.nomeLoja }}
             </td>
 
-            <td class="td-preco">{{ p.precoVenda | currency:'BRL' }}</td>
+            <td class="td-preco">
+              <div class="price-editor" *ngIf="precoEmEdicao(p); else precoVisualizacao">
+                <span>R$</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  [(ngModel)]="p.precoVenda"
+                  (ngModelChange)="marcarPrecoAlterado(p)"
+                  [name]="'preco-' + p.id"
+                />
+                <button class="btn-price-done" type="button" (click)="finalizarEdicaoPreco(p)">OK</button>
+              </div>
+              <ng-template #precoVisualizacao>
+                <div class="price-view">
+                  <span>{{ p.precoVenda | currency:'BRL' }}</span>
+                  <button class="btn-edit-price" type="button" (click)="editarPreco(p)">Editar preço</button>
+                </div>
+              </ng-template>
+            </td>
 
             <td>
-              <span class="desconto-badge" *ngIf="p.percentualDesconto > 0">-{{ p.percentualDesconto }}%</span>
-              <span class="sem-desconto" *ngIf="!p.percentualDesconto || p.percentualDesconto === 0">&mdash;</span>
+              <div class="promotion-editor" *ngIf="promocaoEmEdicao(p); else promocaoVisualizacao">
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="1"
+                  [(ngModel)]="p.percentualDesconto"
+                  [name]="'promocao-' + p.id"
+                />
+                <span>%</span>
+                <button class="btn-promotion-apply" type="button" (click)="aplicarPromocao(p)">Aplicar</button>
+                <button class="btn-promotion-cancel" type="button" (click)="cancelarPromocao(p)">Cancelar</button>
+              </div>
+              <ng-template #promocaoVisualizacao>
+                <div class="promotion-view">
+                  <span class="desconto-badge" *ngIf="p.percentualDesconto > 0">-{{ p.percentualDesconto }}%</span>
+                  <span class="sem-desconto" *ngIf="!p.percentualDesconto || p.percentualDesconto === 0">&mdash;</span>
+                  <button class="btn-edit-promotion" type="button" (click)="editarPromocao(p)">Aplicar promoção</button>
+                </div>
+              </ng-template>
             </td>
 
             <td class="td-final">{{ p.valorFinal | currency:'BRL' }}</td>

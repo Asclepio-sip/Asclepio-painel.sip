@@ -99,6 +99,11 @@
   width: 100%;
 }
 .form-input:focus { border-color: #C5794E; box-shadow: 0 0 0 3px rgba(197,121,78,.08); }
+.form-textarea { resize: vertical; min-height: 110px; }
+.form-input.description-near-limit { border-color: #f59e0b; }
+.description-info { display: flex; justify-content: space-between; gap: 12px; font-size: 11.5px; color: #6b7280; }
+.description-info strong { white-space: nowrap; }
+.description-info.warning { color: #b45309; }
 
 /* ── Dropdown customizado ── */
 .custom-select { position: relative; }
