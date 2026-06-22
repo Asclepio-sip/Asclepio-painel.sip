@@ -22,6 +22,8 @@ import { NavbarAdministradorComponent } from '../../../shared/navbar-administrad
 })
 export class TelaDeAddProduto implements OnInit {
 
+  readonly limiteDescricao = 3000;
+
   name = '';
   descricao = '';
   marca = '';
@@ -100,6 +102,15 @@ export class TelaDeAddProduto implements OnInit {
   salvar() {
     if (!this.name.trim() || !this.categoriaSelecionada || !this.imagemFile || !this.categoriaId) {
       Swal.fire('Atencao', 'Preencha todos os campos obrigatorios.', 'warning');
+      return;
+    }
+
+    if (this.descricao.length > this.limiteDescricao) {
+      Swal.fire(
+        'Descrição muito longa',
+        `A descrição deve ter no máximo ${this.limiteDescricao} caracteres.`,
+        'warning'
+      );
       return;
     }
 

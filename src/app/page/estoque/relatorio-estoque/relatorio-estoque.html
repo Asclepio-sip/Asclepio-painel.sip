@@ -5,7 +5,7 @@
     <div class="header-left">
       <p class="breadcrumb">ADMIN / ESTOQUE / <span>RELATORIO</span></p>
       <h1 class="page-title">Relatorio de Estoque</h1>
-      <p class="page-subtitle">Historico de movimentacoes: criacao, atualizacao, entrada, saida e exclusao.</p>
+      <p class="page-subtitle">Historico de movimentacoes: entrada no estoque, atualizacao, saida e exclusao.</p>
     </div>
     <button class="btn-refresh" type="button" (click)="buscar()">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -173,8 +173,15 @@
             </td>
 
             <td class="td-produto">
-              <span class="produto-nome">{{ item.nomeProduto }}</span>
-              <span class="produto-meta">ID {{ item.produtoId }}</span>
+              <div class="produto-info">
+                <div class="produto-imagem">
+                  <img *ngIf="item.imagemUrl" [src]="item.imagemUrl" [alt]="item.nomeProduto" />
+                  <span *ngIf="!item.imagemUrl">Sem foto</span>
+                </div>
+                <div>
+                  <span class="produto-nome" [title]="item.nomeProduto">{{ item.nomeProduto }}</span>
+                </div>
+              </div>
             </td>
 
             <td class="td-loja">

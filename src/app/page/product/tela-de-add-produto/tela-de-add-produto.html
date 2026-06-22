@@ -40,8 +40,20 @@
 
         <div class="form-group">
           <label class="form-label">Descricao</label>
-          <textarea class="form-input form-textarea" rows="3" [(ngModel)]="descricao" name="descricao"
-            placeholder="Descricao detalhada do produto"></textarea>
+          <textarea
+            class="form-input form-textarea"
+            [class.description-near-limit]="descricao.length >= 2700"
+            rows="4"
+            [(ngModel)]="descricao"
+            name="descricao"
+            [attr.maxlength]="limiteDescricao"
+            placeholder="Descricao detalhada do produto"
+          ></textarea>
+          <div class="description-info" [class.warning]="descricao.length >= 2700">
+            <span *ngIf="descricao.length < 2700">Máximo de {{ limiteDescricao }} caracteres.</span>
+            <span *ngIf="descricao.length >= 2700">Atenção: você está próximo do limite.</span>
+            <strong>{{ descricao.length }}/{{ limiteDescricao }}</strong>
+          </div>
         </div>
 
         <div class="form-group">
