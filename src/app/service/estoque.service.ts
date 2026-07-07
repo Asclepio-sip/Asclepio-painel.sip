@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface EstoqueRequest {
+  produtoId: number;
   variacaoId: number;
   lojaID: number;
   nomeLoja?: string;
@@ -66,6 +67,19 @@ export interface PageResponse<T> {
   };
 }
 
+export interface EstoqueFiltros {
+  lojaId?: number;
+  nomeLoja?: string;
+  nomeProduto?: string;
+  nomeVariacao?: string;
+  categoriaId?: number;
+  nomeCategoria?: string;
+  semEstoque?: boolean;
+  page?: number;
+  size?: number;
+  sort?: string | string[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -111,34 +125,47 @@ export class EstoqueService {
     semEstoque?: boolean
   ): Observable<Estoque[]> {
 
-    let params = new HttpParams();
+    return this.relatorio({
+      lojaId,
+      nomeLoja,
+      semEstoque,
+      page: 0,
+      size: 1000
+    }).pipe(
+      map(response => response.content)
+    );
+  }
 
-    if (lojaId !== undefined) {
-      params = params.set(
-        'lojaId',
-        lojaId
-      );
+  relatorio(filtros: EstoqueFiltros = {}): Observable<PageResponse<Estoque>> {
+    let params = new HttpParams()
+      .set('page', filtros.page ?? 0)
+      .set('size', filtros.size ?? 20);
+
+    params = this.adicionarParametro(params, 'lojaId', filtros.lojaId);
+    params = this.adicionarParametro(params, 'nomeLoja', filtros.nomeLoja);
+    params = this.adicionarParametro(params, 'nomeProduto', filtros.nomeProduto);
+    params = this.adicionarParametro(params, 'nomeVariacao', filtros.nomeVariacao);
+    params = this.adicionarParametro(params, 'categoriaId', filtros.categoriaId);
+    params = this.adicionarParametro(params, 'nomeCategoria', filtros.nomeCategoria);
+    params = this.adicionarParametro(params, 'semEstoque', filtros.semEstoque);
+
+    const sort = filtros.sort;
+    if (Array.isArray(sort)) {
+      sort.forEach(criterio => {
+        params = params.append('sort', criterio);
+      });
+    } else if (sort) {
+      params = params.set('sort', sort);
     }
 
-    if (nomeLoja) {
-      params = params.set(
-        'nomeLoja',
-        nomeLoja
-      );
-    }
-
-    if (semEstoque !== undefined) {
-      params = params.set(
-        'semEstoque',
-        semEstoque
-      );
-    }
-
-    return this.http.get<Estoque[]>(
-      `${this.api}/filtro`,
+    return this.http.get<PageResponse<Estoque>>(
+      `${this.api}/relatorio`,
       { params }
     ).pipe(
-      map(estoques => estoques.map(item => this.normalizarEstoque(item)))
+      map(response => ({
+        ...response,
+        content: response.content.map(item => this.normalizarEstoque(item))
+      }))
     );
   }
 
@@ -158,6 +185,18 @@ aplicarPromocao(data: AplicarPromocaoRequest): Observable<void> {
     `${this.api}/promocao`,
     data
   );
+}
+
+private adicionarParametro(
+  params: HttpParams,
+  nome: string,
+  valor: string | number | boolean | null | undefined
+): HttpParams {
+  if (valor === null || valor === undefined || valor === '') {
+    return params;
+  }
+
+  return params.set(nome, valor);
 }
 
 private normalizarEstoque(item: any): Estoque {
@@ -183,6 +222,8 @@ private normalizarEstoque(item: any): Estoque {
       0,
     variacaoId:
       item.variacaoId ??
+      item.VaricaoId ??
+      item.VaricaoID ??
       item.produtoVariacaoId ??
       item.variacaoProdutoId ??
       item.idVariacao ??

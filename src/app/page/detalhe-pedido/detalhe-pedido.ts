@@ -2,13 +2,11 @@
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PedidosService, Pedido } from '../../service/pedidos.service';
-import { SidebarComponent } from "../../shared/sidebar/sidebar.component";
-import { NavbarAdministradorComponent } from "../../shared/navbar-administrador/navbar-administrador";
 
 @Component({
   selector: 'app-detalhe-pedido',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, NavbarAdministradorComponent],
+  imports: [CommonModule],
   templateUrl: './detalhe-pedido.html',
   styleUrl: './detalhe-pedido.css'
 })

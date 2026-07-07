@@ -1,9 +1,6 @@
 ﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-
-import { NavbarAdministradorComponent } from '../../../shared/navbar-administrador/navbar-administrador';
-import { SidebarComponent } from '../../../shared/sidebar/sidebar.component';
 import { EstoqueService, EstoqueRequest } from '../../../service/estoque.service';
 import { ProductService, Product, ProdutoVariacao } from '../../../service/product.service';
 import { LojaService, Loja } from '../../../service/loja/loja.service';
@@ -13,9 +10,7 @@ import { LojaService, Loja } from '../../../service/loja/loja.service';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    NavbarAdministradorComponent,
-    SidebarComponent
+    FormsModule
   ],
   templateUrl: './add-produto-estoque-loja.html',
   styleUrls: ['./add-produto-estoque-loja.css']
@@ -121,6 +116,7 @@ export class AddProdutoEstoqueLoja implements OnInit {
     }
 
     const data: EstoqueRequest = {
+      produtoId: this.produtoSelecionado.id,
       variacaoId: this.variacaoSelecionada.id,
       lojaID: this.lojaSelecionada.id!,
       nomeLoja: this.lojaSelecionada.nomeLoja,

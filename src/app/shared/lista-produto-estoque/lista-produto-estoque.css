@@ -1,0 +1,274 @@
+.stock-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.list-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.list-toolbar h2 {
+  margin: 0;
+  color: #16181d;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.list-toolbar p {
+  margin: 6px 0 0;
+  color: #667085;
+  font-size: 13px;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(180px, 260px) minmax(240px, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  padding: 14px;
+  background: #f9fafb;
+  border: 1px solid #edf0f3;
+  border-radius: 8px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field span {
+  color: #344054;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.field select,
+.field input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #d9dee5;
+  border-radius: 8px;
+  background: #fff;
+  color: #1d2939;
+  font-size: 14px;
+  outline: none;
+}
+
+.field select:focus,
+.field input:focus {
+  border-color: #c5794e;
+  box-shadow: 0 0 0 3px rgba(197, 121, 78, 0.12);
+}
+
+.refresh-btn,
+.clear-btn,
+.add-btn {
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.refresh-btn,
+.clear-btn {
+  padding: 0 16px;
+  background: #fff;
+  color: #344054;
+  border: 1px solid #d9dee5;
+}
+
+.refresh-btn:hover,
+.clear-btn:hover {
+  color: #c5794e;
+  border-color: #c5794e;
+}
+
+.product-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.product-row {
+  display: grid;
+  grid-template-columns: 72px minmax(220px, 1fr) 92px 120px 112px;
+  gap: 14px;
+  align-items: center;
+  min-height: 92px;
+  padding: 12px;
+  border: 1px solid #edf0f3;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.product-row:hover {
+  border-color: #e2c7b6;
+  background: #fffdfb;
+}
+
+.product-image {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #f4f6f8;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.product-main {
+  min-width: 0;
+}
+
+.product-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.product-title-row h3 {
+  margin: 0;
+  overflow: hidden;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.discount {
+  flex: 0 0 auto;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #d5002d;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.product-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.product-meta span {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f2f4f7;
+  color: #667085;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.product-stock,
+.product-price {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.product-stock span {
+  color: #111827;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.product-stock small,
+.product-price small {
+  color: #667085;
+  font-size: 11px;
+}
+
+.product-price {
+  align-items: flex-start;
+}
+
+.product-price small {
+  text-decoration: line-through;
+}
+
+.product-price strong {
+  color: #111827;
+  font-size: 18px;
+}
+
+.add-btn {
+  width: 100%;
+  background: #d5002d;
+  color: #fff;
+}
+
+.add-btn:hover {
+  background: #b80026;
+}
+
+.state {
+  padding: 28px 16px;
+  text-align: center;
+  color: #667085;
+  border: 1px dashed #d9dee5;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.state.error {
+  color: #b42318;
+  border-color: #fecdca;
+  background: #fffbfa;
+}
+
+@media (max-width: 900px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .product-row {
+    grid-template-columns: 64px 1fr;
+  }
+
+  .product-stock,
+  .product-price,
+  .add-btn {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 560px) {
+  .list-toolbar {
+    flex-direction: column;
+  }
+
+  .refresh-btn {
+    width: 100%;
+  }
+
+  .product-row {
+    grid-template-columns: 1fr;
+  }
+
+  .product-image,
+  .product-stock,
+  .product-price,
+  .add-btn {
+    grid-column: auto;
+  }
+}

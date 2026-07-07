@@ -46,11 +46,26 @@ export interface Pedido {
   totalFinal?: number;
 }
 
+export interface CriarPedidoItemRequest {
+  variacaoId: number;
+  quantidade: number;
+}
+
+export interface CriarPedidoBalcaoRequest {
+  lojaId: number;
+  nomeCliente: string;
+  email?: string;
+  itens: CriarPedidoItemRequest[];
+  formaDePagamento: 'PIX' | 'DINHEIRO' | 'CARTAO';
+}
+
 export interface PedidoFiltro {
   lojaId?: number | null;
   nomeCliente?: string;
   telefone?: string;
+  email?: string;
   status?: string;
+  tipoAtendimentoPedido?: string;
   tipoEntrega?: string;
   formaDePagamento?: string;
   dataInicio?: string;
@@ -80,12 +95,26 @@ export interface PageResponse<T> {
 })
 export class PedidosService {
 
-  private api =
+  private pedidosApi =
     `${environment.apiUrl}/pedidos`;
+
+  private pedidosBalcaoApi =
+    `${environment.apiUrl}/pedidos/balcao`;
 
   constructor(
     private http: HttpClient
   ) {}
+
+  criarBalcao(pedido: CriarPedidoBalcaoRequest): Observable<any> {
+    return this.http.post(
+      this.pedidosBalcaoApi,
+      pedido
+    );
+  }
+
+  criar(pedido: CriarPedidoBalcaoRequest): Observable<any> {
+    return this.criarBalcao(pedido);
+  }
 
   listar(
     filtro: PedidoFiltro = {}
@@ -99,7 +128,9 @@ export class PedidosService {
     this.adicionarParametro(params, 'lojaId', filtro.lojaId);
     this.adicionarParametro(params, 'nomeCliente', filtro.nomeCliente);
     this.adicionarParametro(params, 'telefone', filtro.telefone);
+    this.adicionarParametro(params, 'email', filtro.email);
     this.adicionarParametro(params, 'status', filtro.status);
+    this.adicionarParametro(params, 'tipoAtendimentoPedido', filtro.tipoAtendimentoPedido);
     this.adicionarParametro(params, 'tipoEntrega', filtro.tipoEntrega);
     this.adicionarParametro(params, 'formaDePagamento', filtro.formaDePagamento);
     this.adicionarParametro(params, 'dataInicio', filtro.dataInicio);
@@ -108,7 +139,7 @@ export class PedidosService {
     this.adicionarParametro(params, 'freteGratis', filtro.freteGratis);
 
     return this.http.get<PageResponse<any>>(
-      this.api,
+      this.pedidosApi,
       { params }
     );
   }
@@ -118,7 +149,7 @@ export class PedidosService {
   ) {
 
     return this.http.get(
-      `${this.api}/${id}/pdf`,
+      `${this.pedidosApi}/${id}/pdf`,
       {
         responseType:
           'blob'
@@ -132,7 +163,7 @@ export class PedidosService {
   ) {
 
     return this.http.patch(
-      `${this.api}/${id}/status`,
+      `${this.pedidosApi}/${id}/status`,
       { status }
     );
   }
@@ -140,7 +171,7 @@ export class PedidosService {
 
   buscarPorId(id: number): Observable<any> {
   return this.http.get<any>(
-    `${this.api}/${id}`
+    `${this.pedidosApi}/${id}`
   );
 }
 

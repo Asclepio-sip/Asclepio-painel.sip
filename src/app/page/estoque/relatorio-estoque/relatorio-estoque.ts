@@ -1,8 +1,6 @@
 ﻿import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavbarAdministradorComponent } from '../../../shared/navbar-administrador/navbar-administrador';
-import { SidebarComponent } from '../../../shared/sidebar/sidebar.component';
 import {
   MovimentacaoEstoque,
   MovimentacaoEstoqueFiltros,
@@ -22,9 +20,7 @@ import { forkJoin } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    NavbarAdministradorComponent,
-    SidebarComponent
+    FormsModule
   ],
   templateUrl: './relatorio-estoque.html',
   styleUrl: './relatorio-estoque.css',

@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Product, ProductService } from '../../service/product.service';
-import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
-import { NavbarAdministradorComponent } from '../../shared/navbar-administrador/navbar-administrador';
 import { CategoriaService, Categoria } from '../../service/categoria.service';
 
 @Component({
@@ -13,8 +11,6 @@ import { CategoriaService, Categoria } from '../../service/categoria.service';
   imports: [
     CommonModule,
     FormsModule,
-    SidebarComponent,
-    NavbarAdministradorComponent,
     RouterModule
   ],
   templateUrl: './product-list.component.html',

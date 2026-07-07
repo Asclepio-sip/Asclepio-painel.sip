@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NavbarAdministradorComponent } from '../navbar-administrador/navbar-administrador';
 import { Permission, Role, UserAdminService } from '../../service/UserAdmin.service';
 import { of, switchMap } from 'rxjs';
 
@@ -15,7 +14,7 @@ interface PermissionGroup {
 
 @Component({
   selector: 'app-add-usuario',
-  imports: [CommonModule, FormsModule, NavbarAdministradorComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './add-usuario.html',
   styleUrl: './add-usuario.css',
 })

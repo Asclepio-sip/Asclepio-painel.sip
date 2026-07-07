@@ -131,7 +131,7 @@
               <span class="pedido-num">#{{ pedido.id }}</span>
             </td>
             <td class="td-cliente">
-              <div class="cliente-avatar">{{ pedido.cliente?.charAt(0)?.toUpperCase() }}</div>
+              <div class="cliente-avatar">{{ pedido.cliente.charAt(0).toUpperCase() }}</div>
               <span class="cliente-nome">{{ pedido.cliente }}</span>
             </td>
             <td class="td-data">{{ pedido.criado | date:'dd/MM/yyyy' }}<br/><span class="td-hora">{{ pedido.criado | date:'HH:mm' }}</span></td>
