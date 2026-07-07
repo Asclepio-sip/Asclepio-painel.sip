@@ -1,8 +1,6 @@
 ﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NavbarAdministradorComponent } from '../../../shared/navbar-administrador/navbar-administrador';
-import { SidebarComponent } from '../../../shared/sidebar/sidebar.component';
 import { Estoque, EstoqueService } from '../../../service/estoque.service';
 import { Loja, LojaService } from '../../../service/loja/loja.service';
 import { ProductService } from '../../../service/product.service';
@@ -14,9 +12,7 @@ import Swal from 'sweetalert2';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    NavbarAdministradorComponent,
-    SidebarComponent
+    FormsModule
   ],
   templateUrl: './atualizar-estoque.html',
   styleUrl: './atualizar-estoque.css',

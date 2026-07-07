@@ -2,18 +2,12 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LojaService, Loja } from '../../../service/loja/loja.service';
-import { NavbarAdministradorComponent } from "../../../shared/navbar-administrador/navbar-administrador";
-import { SidebarComponent } from "../../../shared/sidebar/sidebar.component";
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
 @Component({
   selector: 'app-editar-loja',
   standalone: true,
-imports: [
-  CommonModule,
-  FormsModule,
-  NavbarAdministradorComponent,
-  SidebarComponent],
+imports: [CommonModule, FormsModule],
   templateUrl: './editar-loja.html',
   styleUrls: ['./editar-loja.css'],
 })

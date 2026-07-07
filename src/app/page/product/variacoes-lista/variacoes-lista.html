@@ -49,8 +49,8 @@
               <span class="category-tag">{{ p.categoria?.nomeCategoria || p.categoriaNome || (p.categoriaId ? 'Categoria #' + p.categoriaId : '—') }}</span>
             </td>
             <td style="text-align:center">
-              <span class="variation-count" [class.no-var]="(p.variacoes?.length || 0) === 0">
-                {{ p.variacoes?.length || 0 }}
+              <span class="variation-count" [class.no-var]="p.variacoes.length === 0">
+                {{ p.variacoes.length }}
               </span>
             </td>
             <td style="text-align:center">

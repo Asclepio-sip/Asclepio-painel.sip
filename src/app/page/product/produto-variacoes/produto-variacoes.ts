@@ -5,8 +5,6 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 
 import { Product, ProdutoVariacao, ProductService } from '../../../service/product.service';
-import { NavbarAdministradorComponent } from '../../../shared/navbar-administrador/navbar-administrador';
-import { SidebarComponent } from '../../../shared/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-produto-variacoes',
@@ -14,9 +12,7 @@ import { SidebarComponent } from '../../../shared/sidebar/sidebar.component';
   imports: [
     CommonModule,
     FormsModule,
-    RouterModule,
-    NavbarAdministradorComponent,
-    SidebarComponent
+    RouterModule
   ],
   templateUrl: './produto-variacoes.html',
   styleUrl: './produto-variacoes.css'

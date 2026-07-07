@@ -4,8 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { PedidosService, Pedido } from '../../service/pedidos.service';
-import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
-import { NavbarAdministradorComponent } from '../../shared/navbar-administrador/navbar-administrador';
 
 interface PedidoUI extends Pedido {
   selecionado?: boolean;
@@ -14,7 +12,7 @@ interface PedidoUI extends Pedido {
 @Component({
   selector: 'app-pedidos',
   standalone: true,
-  imports: [CommonModule, FormsModule, SidebarComponent, NavbarAdministradorComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './pedidos.html',
   styleUrl: './pedidos.css',
 })

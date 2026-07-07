@@ -1,16 +1,14 @@
 ﻿import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { NavbarAdministradorComponent } from '../../shared/navbar-administrador/navbar-administrador';
 import { CategoriaService, Categoria, CategoriaRequest } from '../../service/categoria.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Router } from '@angular/router';
-import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-add-edit-cartegoria',
   standalone: true,
-  imports: [NavbarAdministradorComponent, CommonModule, FormsModule, SidebarComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './add-edit-cartegoria.html',
   styleUrl: './add-edit-cartegoria.css',
 })

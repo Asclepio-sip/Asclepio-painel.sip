@@ -4,17 +4,13 @@ import { RouterModule } from '@angular/router';
 
 import { Categoria, CategoriaService } from '../../../service/categoria.service';
 import { Product, ProductService } from '../../../service/product.service';
-import { NavbarAdministradorComponent } from '../../../shared/navbar-administrador/navbar-administrador';
-import { SidebarComponent } from '../../../shared/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-variacoes-lista',
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,
-    NavbarAdministradorComponent,
-    SidebarComponent
+    RouterModule
   ],
   templateUrl: './variacoes-lista.html',
   styleUrl: './variacoes-lista.css'

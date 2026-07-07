@@ -13,17 +13,12 @@ import {
   LojaBairroService
 } from '../../../service/loja/loja-bairro.service';
 
-import { NavbarAdministradorComponent } from "../../../shared/navbar-administrador/navbar-administrador";
-import { SidebarComponent } from "../../../shared/sidebar/sidebar.component";
-
 @Component({
   selector: 'app-relacionar-bairro-loja',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    NavbarAdministradorComponent,
-    SidebarComponent
+    FormsModule
   ],
   templateUrl: './relacionar-bairro-loja.html',
   styleUrls: ['./relacionar-bairro-loja.css']

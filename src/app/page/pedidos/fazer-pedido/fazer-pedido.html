@@ -1,13 +1,88 @@
-<app-navbar></app-navbar><main class="fazer-pedido-page">
+<main class="fazer-pedido-page">
   <header class="page-header">
     <div>
-      <h1>Fazer Pedido</h1>
-      <p>Selecione os produtos disponiveis e monte o pedido pela cesta.</p>
+      <h1>Vendas / Caixa</h1>
+      <p>Atendimento ao cliente e fechamento de pedidos</p>
     </div>
   </header>
 
-  <section class="products-panel">
-    <app-lista-de-produto></app-lista-de-produto>
+  <section class="checkout-grid">
+    <div class="products-panel">
+      <app-lista-produto-estoque></app-lista-produto-estoque>
+    </div>
+
+    <aside class="cart-card">
+      <div class="cart-title">
+        <span class="cart-icon" aria-hidden="true"></span>
+        <h2>Carrinho</h2>
+      </div>
+
+      <label class="field">
+        <span>Cliente</span>
+        <input
+          type="text"
+          name="nomeCliente"
+          [(ngModel)]="nomeCliente"
+          placeholder="Nome do cliente"
+          autocomplete="off"
+        />
+      </label>
+
+      <label class="field">
+        <span>Pagamento</span>
+        <select name="formaDePagamento" [(ngModel)]="formaDePagamento">
+          <option value="PIX">PIX</option>
+          <option value="DINHEIRO">Dinheiro</option>
+          <option value="CARTAO">Cartao</option>
+        </select>
+      </label>
+
+      <div class="cart-items" *ngIf="itens.length > 0; else carrinhoVazio">
+        <article class="cart-item" *ngFor="let item of itens">
+          <div class="item-main">
+            <strong>{{ item.nomeProduto }}</strong>
+            <small>{{ item.nomeLoja }}</small>
+            <small *ngIf="item.nomeVariacao">{{ item.nomeVariacao }}</small>
+          </div>
+
+          <div class="quantity-control">
+            <button type="button" (click)="diminuir(item)" aria-label="Diminuir quantidade">-</button>
+            <span>{{ item.quantidade }}</span>
+            <button type="button" (click)="aumentar(item)" aria-label="Aumentar quantidade">+</button>
+          </div>
+
+          <strong class="item-total">
+            {{ item.valorFinal * item.quantidade | currency:'BRL' }}
+          </strong>
+
+          <button class="remove-btn" type="button" (click)="remover(item)" aria-label="Remover item">
+            Remover
+          </button>
+        </article>
+      </div>
+
+      <ng-template #carrinhoVazio>
+        <div class="empty-cart">Carrinho vazio</div>
+      </ng-template>
+
+      <div class="message error" *ngIf="erro">{{ erro }}</div>
+      <div class="message success" *ngIf="sucesso">{{ sucesso }}</div>
+
+      <footer class="cart-footer">
+        <div class="total-row">
+          <span>Total</span>
+          <strong>{{ totalValor() | currency:'BRL' }}</strong>
+        </div>
+
+        <button
+          class="finish-btn"
+          type="button"
+          (click)="finalizarPedido()"
+          [disabled]="finalizando || itens.length === 0"
+        >
+          {{ finalizando ? 'Finalizando...' : 'Finalizar venda' }}
+        </button>
+      </footer>
+    </aside>
   </section>
 </main>
-
