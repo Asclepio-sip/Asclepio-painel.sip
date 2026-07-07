@@ -3,8 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Bairro, BairroService } from '../../../service/loja/bairro.service';
-import { NavbarAdministradorComponent } from "../../../shared/navbar-administrador/navbar-administrador";
-import { SidebarComponent } from '../../../shared/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-add-bairro',
@@ -12,9 +10,7 @@ import { SidebarComponent } from '../../../shared/sidebar/sidebar.component';
   imports: [
     CommonModule,
     FormsModule,
-    RouterModule,
-    NavbarAdministradorComponent,
-    SidebarComponent
+    RouterModule
   ],
   templateUrl: './add-bairro.html',
   styleUrls: ['./add-bairro.css']

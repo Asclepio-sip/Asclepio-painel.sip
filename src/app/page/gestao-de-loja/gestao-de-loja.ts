@@ -1,13 +1,11 @@
 ﻿import { Component } from '@angular/core';
-import { NavbarAdministradorComponent } from "../../shared/navbar-administrador/navbar-administrador";
-import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { ProductService } from '../../service/product.service';
 import { RouterModule } from '@angular/router';
 import { ListaDeLoja } from "./lista-de-loja/lista-de-loja";
 
 @Component({
   selector: 'app-gestao-de-loja',
-  imports: [NavbarAdministradorComponent, SidebarComponent, RouterModule, ListaDeLoja],
+  imports: [RouterModule, ListaDeLoja],
   templateUrl: './gestao-de-loja.html',
   styleUrl: './gestao-de-loja.css',
 })

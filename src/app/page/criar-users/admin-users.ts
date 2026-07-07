@@ -2,7 +2,6 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Permission, Role, User } from '../../service/UserAdmin.service';
-import { SidebarComponent } from '../../shared/sidebar/sidebar.component';
 import { UserAdminService } from '../../service/UserAdmin.service';
 import { of, switchMap } from 'rxjs';
 
@@ -17,7 +16,7 @@ interface PermissionGroup {
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, SidebarComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './admin-users.html',
   styleUrl: './admin-users.css',
 })
