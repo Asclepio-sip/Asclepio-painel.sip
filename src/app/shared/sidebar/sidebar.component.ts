@@ -15,11 +15,13 @@ import { CategoriaService, Categoria } from '../../service/categoria.service';
 export class SidebarComponent implements OnInit {
 
   isOpen = false;
+  gestaoOpen = false;
   estoqueOpen = false;
   estoquePermissions = PermissionGroups.estoque;
   pedidoOpen = false;
   pedidoPermissions = PermissionGroups.pedidos;
   produtoOpen = false;
+  gestaoPermissions = PermissionGroups.lojas;
   categoriasOpen = false;
   categorias: Categoria[] = [];
 
@@ -31,6 +33,7 @@ export class SidebarComponent implements OnInit {
     private router: Router,
     private categoriaService: CategoriaService
   ) {
+    this.gestaoOpen = this.isGestaoRoute();
     this.estoqueOpen = this.isEstoqueRoute();
     this.pedidoOpen = this.isPedidoRoute();
     this.produtoOpen = this.isProdutoRoute();
@@ -51,6 +54,10 @@ export class SidebarComponent implements OnInit {
 
   fecharSidebar() {
     this.isOpen = false;
+  }
+
+  toggleGestao() {
+    this.gestaoOpen = !this.gestaoOpen;
   }
 
   toggleEstoque() {
@@ -78,6 +85,16 @@ export class SidebarComponent implements OnInit {
       '/addestoque',
       '/atualizar-estoque',
       '/relatorio-estoque'
+    ].some(route => this.router.url.startsWith(route));
+  }
+
+  private isGestaoRoute() {
+    return [
+      '/loja',
+      '/empresa',
+      '/addloja',
+      '/editar-loja',
+      '/add-bairro'
     ].some(route => this.router.url.startsWith(route));
   }
 

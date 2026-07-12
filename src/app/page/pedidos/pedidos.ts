@@ -23,6 +23,7 @@ export class Pedidos implements OnInit {
 
   busca = '';
   filtroAtivo = 'AGUARDANDO';
+  somenteHoje = true;
 
   paginaAtual = 1;
   itensPorPagina = 10;
@@ -63,7 +64,8 @@ export class Pedidos implements OnInit {
       size: this.itensPorPagina,
       sort: 'criadoEm,desc',
       status: this.filtroAtivo === 'todos' ? undefined : this.filtroAtivo,
-      nomeCliente: this.busca.trim() || undefined
+      nomeCliente: this.busca.trim() || undefined,
+      somenteHoje: this.somenteHoje
     }).subscribe({
       next: res => {
         this.pedidos = res.content.map((p: any) => this.mapearPedido(p));
@@ -81,12 +83,12 @@ export class Pedidos implements OnInit {
 
   carregarContadores() {
     forkJoin({
-      todos: this.service.listar({ page: 0, size: 1 }),
-      aguardando: this.service.listar({ status: 'AGUARDANDO', page: 0, size: 1 }),
-      separacao: this.service.listar({ status: 'SEPARACAO', page: 0, size: 1 }),
-      transito: this.service.listar({ status: 'EM_TRANSITO', page: 0, size: 1 }),
-      concluido: this.service.listar({ status: 'CONCLUIDO', page: 0, size: 1 }),
-      cancelado: this.service.listar({ status: 'CANCELADO', page: 0, size: 1 }),
+      todos: this.service.listar({ page: 0, size: 1, somenteHoje: this.somenteHoje }),
+      aguardando: this.service.listar({ status: 'AGUARDANDO', page: 0, size: 1, somenteHoje: this.somenteHoje }),
+      separacao: this.service.listar({ status: 'SEPARACAO', page: 0, size: 1, somenteHoje: this.somenteHoje }),
+      transito: this.service.listar({ status: 'EM_TRANSITO', page: 0, size: 1, somenteHoje: this.somenteHoje }),
+      concluido: this.service.listar({ status: 'CONCLUIDO', page: 0, size: 1, somenteHoje: this.somenteHoje }),
+      cancelado: this.service.listar({ status: 'CANCELADO', page: 0, size: 1, somenteHoje: this.somenteHoje }),
     }).subscribe({
       next: res => {
         this.totalTodos = res.todos.totalElements ?? 0;
@@ -108,6 +110,11 @@ export class Pedidos implements OnInit {
   }
 
   onBuscaChange() {
+    this.paginaAtual = 1;
+    this.carregarPedidos();
+  }
+
+  onSomenteHojeChange() {
     this.paginaAtual = 1;
     this.carregarPedidos();
   }

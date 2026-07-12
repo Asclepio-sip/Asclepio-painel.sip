@@ -83,11 +83,15 @@ import { filter } from 'rxjs/operators';
             </div>
 
             <div class="footer-col">
-              <h4 class="footer-col-title">Administração</h4>
+              <h4 class="footer-col-title">Gestão</h4>
               <nav class="footer-nav">
                 <a routerLink="/loja" class="footer-link">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-                  Gestão de Lojas
+                  Loja
+                </a>
+                <a routerLink="/empresa" class="footer-link">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V7a2 2 0 012-2h4V3h4v2h4a2 2 0 012 2v14"/><path d="M7 21v-4h4v4M13 21v-6h4v6"/></svg>
+                  Empresa
                 </a>
                 <a routerLink="/add-bairro" class="footer-link">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>

@@ -1,7 +1,9 @@
-﻿import { Component } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../../service/product.service';
 import { RouterModule } from '@angular/router';
 import { ListaDeLoja } from "./lista-de-loja/lista-de-loja";
+import { forkJoin } from 'rxjs';
+import { LojaService, PageResponse, Loja } from '../../service/loja/loja.service';
 
 @Component({
   selector: 'app-gestao-de-loja',
@@ -10,6 +12,11 @@ import { ListaDeLoja } from "./lista-de-loja/lista-de-loja";
   styleUrl: './gestao-de-loja.css',
 })
 export class GestaoDeLoja {
+
+  totalLojas = 0;
+  totalEntrega = 0;
+  totalRetirada = 0;
+  totalAmbos = 0;
 
 
   // ðŸ”¹ FORM PRODUTO
@@ -24,7 +31,14 @@ export class GestaoDeLoja {
   showProductModal = false;
   showCategoryModal = false;
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private lojaService: LojaService
+  ) {}
+
+  ngOnInit() {
+    this.carregarResumoLojas();
+  }
 
 
   
@@ -49,6 +63,32 @@ export class GestaoDeLoja {
   // ðŸ” PESQUISA
   onSearch(value: string) {
     this.productService.setSearch(value);
+  }
+
+  carregarResumoLojas() {
+    forkJoin({
+      total: this.lojaService.listar(0, 1),
+      entrega: this.lojaService.listar(0, 1, { tipoAtendimento: 'ENTREGA' }),
+      retirada: this.lojaService.listar(0, 1, { tipoAtendimento: 'RETIRADA' }),
+      ambos: this.lojaService.listar(0, 1, { tipoAtendimento: 'AMBOS' }),
+    }).subscribe({
+      next: ({ total, entrega, retirada, ambos }) => {
+        this.totalLojas = this.obterTotalElementos(total);
+        this.totalEntrega = this.obterTotalElementos(entrega);
+        this.totalRetirada = this.obterTotalElementos(retirada);
+        this.totalAmbos = this.obterTotalElementos(ambos);
+      },
+      error: () => {
+        this.totalLojas = 0;
+        this.totalEntrega = 0;
+        this.totalRetirada = 0;
+        this.totalAmbos = 0;
+      }
+    });
+  }
+
+  private obterTotalElementos(response: PageResponse<Loja>): number {
+    return response.page?.totalElements ?? response.totalElements ?? response.content?.length ?? 0;
   }
 
   

@@ -12,6 +12,9 @@
 
 .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
+.today-toggle { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; background: #fff; border: 1.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-weight: 600; color: #374151; white-space: nowrap; }
+.today-toggle input { width: 16px; height: 16px; accent-color: #C5794E; }
+
 .search-box { display: flex; align-items: center; gap: 8px; background: #fff; border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 9px 14px; transition: border-color .2s; }
 .search-box:focus-within { border-color: #C5794E; box-shadow: 0 0 0 3px rgba(197,121,78,.07); }
 .search-box svg { width: 16px; height: 16px; color: #9ca3af; flex-shrink: 0; }

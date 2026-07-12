@@ -1,0 +1,117 @@
+<div class="landing">
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <img src="logo-dark.svg" alt="Asclepio" class="header-logo" />
+      <nav class="header-nav">
+        <a href="#recursos">Recursos</a>
+        <a href="#como-funciona">Como funciona</a>
+      </nav>
+      <div class="header-actions">
+        <a routerLink="/login" class="btn-ghost">Entrar</a>
+        <a routerLink="/cadastro" class="btn-solid">Criar conta</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="deco-circle deco-circle-1"></div>
+    <div class="deco-circle deco-circle-2"></div>
+    <div class="deco-ring deco-ring-1"></div>
+    <div class="deco-dots"></div>
+
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Sistema de gestão para farmácias e redes de varejo</p>
+      <h1 class="hero-title">Sua farmácia organizada,<br />do estoque à entrega.</h1>
+      <p class="hero-subtitle">
+        Asclepio centraliza produtos, pedidos, lojas e equipes em um só painel —
+        feito para redes que não podem parar.
+      </p>
+      <div class="hero-actions">
+        <a routerLink="/cadastro" class="btn-solid btn-lg">
+          Criar conta grátis
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a routerLink="/login" class="btn-ghost-light btn-lg">Já tenho conta</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-value">500+</span>
+          <span class="stat-label">Produtos</span>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+          <span class="stat-value">24/7</span>
+          <span class="stat-label">Monitoramento</span>
+        </div>
+        <div class="stat-sep"></div>
+        <div class="stat-item">
+          <span class="stat-value">100%</span>
+          <span class="stat-label">Seguro</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="recursos">
+    <div class="section-inner">
+      <p class="section-label">O que você pode gerenciar</p>
+      <h2 class="section-title">Tudo que sua rede precisa, em um só lugar</h2>
+
+      <div class="features-grid">
+        <div class="feature-card" *ngFor="let f of features">
+          <div class="feature-icon">
+            <svg *ngIf="f.icon === 'box'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            <svg *ngIf="f.icon === 'check'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            <svg *ngIf="f.icon === 'store'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <svg *ngIf="f.icon === 'chart'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <svg *ngIf="f.icon === 'users'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <h3 class="feature-title">{{ f.title }}</h3>
+          <p class="feature-desc">{{ f.desc }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Como funciona -->
+  <section class="how-it-works" id="como-funciona">
+    <div class="section-inner">
+      <p class="section-label section-label-light">Como funciona</p>
+      <h2 class="section-title section-title-light">Em produção em três passos</h2>
+
+      <div class="steps-grid">
+        <div class="step-card" *ngFor="let s of steps">
+          <span class="step-number">{{ s.number }}</span>
+          <h3 class="step-title">{{ s.title }}</h3>
+          <p class="step-desc">{{ s.desc }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA final -->
+  <section class="cta-band">
+    <div class="deco-ring deco-ring-2"></div>
+    <div class="cta-inner">
+      <h2 class="cta-title">Pronto para organizar sua rede?</h2>
+      <p class="cta-subtitle">Crie sua conta e comece a usar o Asclepio hoje mesmo.</p>
+      <a routerLink="/cadastro" class="btn-solid btn-lg">Criar conta grátis</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <img src="logo-dark.svg" alt="Asclepio" class="footer-logo" />
+    <p class="footer-text">PromoFarma &copy; {{ currentYear }} — Todos os direitos reservados</p>
+    <div class="footer-links">
+      <a routerLink="/login">Entrar</a>
+      <a routerLink="/cadastro">Criar conta</a>
+    </div>
+  </footer>
+
+</div> 

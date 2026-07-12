@@ -150,6 +150,10 @@
   color: #C5794E !important;
 }
 
+.nav-section > .submenu-toggle {
+  margin-top: 2px;
+}
+
 /* ===== SUBMENU ===== */
 .submenu {
   display: flex;

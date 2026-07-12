@@ -77,6 +77,7 @@ export class UserAdminService {
       login: string;
       password: string;
       roleId: string;
+      Email: string;
       permissionIds?: string[];
     }
   ) {
