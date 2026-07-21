@@ -23,6 +23,7 @@ export class AddUsuario implements OnInit {
   @Output() usuarioCriado = new EventEmitter<void>();
 
   login = '';
+  email = '';
   password = '';
   roleId = '';
   roles: Role[] = [];
@@ -85,8 +86,8 @@ export class AddUsuario implements OnInit {
   }
 
   salvar() {
-    if (!this.login || !this.password || !this.roleId) {
-      alert('Preencha login, senha e role');
+    if (!this.login || !this.email || !this.password || !this.roleId) {
+      alert('Preencha login, email, senha e role');
       return;
     }
 
@@ -94,6 +95,7 @@ export class AddUsuario implements OnInit {
 
     this.userService.criarUsuario({
       login: this.login,
+      Email: this.email,
       password: this.password,
       roleId: this.roleId,
       permissionIds: this.selectedPermissionIds
@@ -110,6 +112,7 @@ export class AddUsuario implements OnInit {
 
         return this.userService.atualizarUsuario(usuarioCriado.id, {
           login: this.login,
+          Email: this.email,
           roleId: this.roleId,
           permissionIds: this.selectedPermissionIds
         });
@@ -118,6 +121,7 @@ export class AddUsuario implements OnInit {
       next: () => {
         alert('Usuario criado com sucesso!');
         this.login = '';
+        this.email = '';
         this.password = '';
         this.roleId = this.roles[0]?.id || '';
         this.aplicarPermissoesDaRole();

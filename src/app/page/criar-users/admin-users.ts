@@ -30,6 +30,7 @@ export class AdminUsersComponent implements OnInit {
   // Editar
   editUserId: string | null = null;
   editLogin = '';
+  editEmail = '';
   editPassword = '';
   editRoleId = '';
   editPermissionIds: string[] = [];
@@ -39,6 +40,7 @@ export class AdminUsersComponent implements OnInit {
   // Criar
   showCriarModal = false;
   criarLogin = '';
+  criarEmail = '';
   criarPassword = '';
   criarRoleId = '';
   criarPermissionIds: string[] = [];
@@ -156,6 +158,7 @@ export class AdminUsersComponent implements OnInit {
   abrirModalCriar() {
     this.showCriarModal = true;
     this.criarLogin = '';
+    this.criarEmail = '';
     this.criarPassword = '';
     this.criarRoleId = this.roles[0]?.id || '';
     this.criarPermissionIds = [];
@@ -240,6 +243,7 @@ export class AdminUsersComponent implements OnInit {
   editar(user: User) {
     this.editUserId = user.id;
     this.editLogin = user.login;
+    this.editEmail = user.email ?? '';
     this.editRoleId = this.getUserRoleId(user);
     this.editPassword = '';
     this.atualizarPermissoesDaRoleEdit();
@@ -255,8 +259,14 @@ export class AdminUsersComponent implements OnInit {
       return;
     }
 
+    if (!this.editEmail) {
+      alert('Informe o email');
+      return;
+    }
+
     this.userService.atualizarUsuario(this.editUserId, {
       login: this.editLogin,
+      Email: this.editEmail,
       password: this.editPassword || undefined,
       roleId: this.editRoleId,
       permissionIds: this.editPermissionIds
@@ -320,8 +330,8 @@ export class AdminUsersComponent implements OnInit {
   // â”€â”€ Criar UsuÃ¡rio â”€â”€
 
   criarUsuario() {
-    if (!this.criarLogin || !this.criarPassword || !this.criarRoleId) {
-      alert('Preencha login, senha e role');
+    if (!this.criarLogin || !this.criarEmail || !this.criarPassword || !this.criarRoleId) {
+      alert('Preencha login, email, senha e role');
       return;
     }
 
@@ -329,6 +339,7 @@ export class AdminUsersComponent implements OnInit {
 
     this.userService.criarUsuario({
       login: this.criarLogin,
+      Email: this.criarEmail,
       password: this.criarPassword,
       roleId: this.criarRoleId,
       permissionIds: this.criarPermissionIds
@@ -339,6 +350,7 @@ export class AdminUsersComponent implements OnInit {
         if (!usuarioCriado || this.criarPermissionIds.length === 0) return of(null);
         return this.userService.atualizarUsuario(usuarioCriado.id, {
           login: this.criarLogin,
+          Email: this.criarEmail,
           roleId: this.criarRoleId,
           permissionIds: this.criarPermissionIds
         });
