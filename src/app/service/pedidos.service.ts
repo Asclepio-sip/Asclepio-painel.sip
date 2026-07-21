@@ -61,6 +61,7 @@ export interface CriarPedidoBalcaoRequest {
 
 export interface PedidoFiltro {
   lojaId?: number | null;
+  nomeLoja?: string;
   nomeCliente?: string;
   telefone?: string;
   email?: string;
@@ -72,6 +73,7 @@ export interface PedidoFiltro {
   dataFim?: string;
   bairro?: string;
   freteGratis?: boolean | null;
+  somenteHoje?: boolean | null;
   page?: number;
   size?: number;
   sort?: string;
@@ -121,11 +123,12 @@ export class PedidosService {
   ): Observable<PageResponse<any>> {
     const params: Record<string, string> = {
       page: String(filtro.page ?? 0),
-      size: String(filtro.size ?? 10),
+      size: String(filtro.size ?? 20),
       sort: filtro.sort || 'criadoEm,desc'
     };
 
     this.adicionarParametro(params, 'lojaId', filtro.lojaId);
+    this.adicionarParametro(params, 'nomeLoja', filtro.nomeLoja);
     this.adicionarParametro(params, 'nomeCliente', filtro.nomeCliente);
     this.adicionarParametro(params, 'telefone', filtro.telefone);
     this.adicionarParametro(params, 'email', filtro.email);
@@ -137,6 +140,7 @@ export class PedidosService {
     this.adicionarParametro(params, 'dataFim', filtro.dataFim);
     this.adicionarParametro(params, 'bairro', filtro.bairro);
     this.adicionarParametro(params, 'freteGratis', filtro.freteGratis);
+    this.adicionarParametro(params, 'somenteHoje', filtro.somenteHoje);
 
     return this.http.get<PageResponse<any>>(
       this.pedidosApi,

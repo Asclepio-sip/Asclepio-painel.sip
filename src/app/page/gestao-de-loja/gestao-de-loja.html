@@ -1,10 +1,36 @@
 <div class="gestao-container">
 
+  <section class="stats-grid" aria-label="Resumo de lojas">
+    <article class="stat-card stat-total">
+      <span class="stat-label">Limite de loja</span>
+      <strong>{{ totalLojas }}</strong>
+      <p>Lojas cadastradas no sistema.</p>
+    </article>
+
+    <article class="stat-card stat-entrega">
+      <span class="stat-label">Lojas no sistema</span>
+      <strong>{{ totalEntrega }}</strong>
+      <p>Lojas com atendimento por entrega.</p>
+    </article>
+
+    <article class="stat-card stat-retirada">
+      <span class="stat-label">Lojas ativas</span>
+      <strong>{{ totalRetirada }}</strong>
+      <p>Lojas com retirada presencial.</p>
+    </article>
+
+    <article class="stat-card stat-ambos">
+      <span class="stat-label">Lojas inativas</span>
+      <strong>{{ totalAmbos }}</strong>
+      <p>Lojas com entrega e retirada.</p>
+    </article>
+  </section>
+
   <!-- Cabecalho -->
   <div class="page-header">
     <div class="header-left">
-      <p class="breadcrumb">ADMIN / <span>GESTAO DE LOJA</span></p>
-      <h1 class="page-title">Gestao de Lojas</h1>
+      <p class="breadcrumb">ADMIN / GESTÃO / <span>LOJA</span></p>
+      <h1 class="page-title">Gestão</h1>
     </div>
     <div class="header-actions">
       <div class="search-box">
