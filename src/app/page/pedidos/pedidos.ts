@@ -24,6 +24,7 @@ export class Pedidos implements OnInit {
   busca = '';
   filtroAtivo = 'AGUARDANDO';
   somenteHoje = true;
+  tipoEntregaFiltro: '' | 'BALCAO' | 'DELIVERY' = '';
 
   paginaAtual = 1;
   itensPorPagina = 10;
@@ -65,7 +66,8 @@ export class Pedidos implements OnInit {
       sort: 'criadoEm,desc',
       status: this.filtroAtivo === 'todos' ? undefined : this.filtroAtivo,
       nomeCliente: this.busca.trim() || undefined,
-      somenteHoje: this.somenteHoje
+      somenteHoje: this.somenteHoje,
+      tipoEntrega: this.tipoEntregaFiltro || undefined
     }).subscribe({
       next: res => {
         this.pedidos = res.content.map((p: any) => this.mapearPedido(p));
@@ -115,6 +117,12 @@ export class Pedidos implements OnInit {
   }
 
   onSomenteHojeChange() {
+    this.paginaAtual = 1;
+    this.carregarPedidos();
+  }
+
+  filtrarTipoEntrega(tipo: '' | 'BALCAO' | 'DELIVERY') {
+    this.tipoEntregaFiltro = tipo;
     this.paginaAtual = 1;
     this.carregarPedidos();
   }

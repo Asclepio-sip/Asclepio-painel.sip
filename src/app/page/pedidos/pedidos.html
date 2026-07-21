@@ -7,6 +7,33 @@
       <h1 class="page-title">Painel de Pedidos</h1>
     </div>
     <div class="header-actions">
+      <div class="delivery-filter" role="group" aria-label="Tipo de entrega">
+        <button
+          type="button"
+          class="delivery-filter-btn"
+          [class.active]="tipoEntregaFiltro === 'BALCAO'"
+          (click)="filtrarTipoEntrega('BALCAO')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 11l2-2m0 0l4-4 4 4m-6 0v10a1 1 0 001 1h6a1 1 0 001-1V9m-6 0l5-5 5 5m-5-5v4"/>
+          </svg>
+          Balcão
+        </button>
+
+        <button
+          type="button"
+          class="delivery-filter-btn"
+          [class.active]="tipoEntregaFiltro === 'DELIVERY'"
+          (click)="filtrarTipoEntrega('DELIVERY')"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 16v-6a2 2 0 012-2h9v8H3zm11 0h2.5m0 0a2.5 2.5 0 105 0m-5 0h5m-11 0a2.5 2.5 0 105 0m-5 0h5"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 8h2.5l2.5 3v5"/>
+          </svg>
+          Delivery
+        </button>
+      </div>
+
       <label class="today-toggle">
         <input type="checkbox" [(ngModel)]="somenteHoje" (change)="onSomenteHojeChange()" />
         <span>Somente hoje</span>
