@@ -1,2 +1,14 @@
 
-<router-outlet></router-outlet>
+<ng-container *ngIf="!isPublicRoute">
+	<app-navbar-administrador></app-navbar-administrador>
+	<div class="private-shell">
+		<app-sidebar></app-sidebar>
+		<main class="private-content">
+			<router-outlet></router-outlet>
+		</main>
+	</div>
+</ng-container>
+
+<ng-container *ngIf="isPublicRoute">
+	<router-outlet></router-outlet>
+</ng-container>

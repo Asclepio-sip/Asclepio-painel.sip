@@ -30,6 +30,7 @@ export class AdminUsersComponent implements OnInit {
   // Editar
   editUserId: string | null = null;
   editLogin = '';
+  editEmail = '';
   editPassword = '';
   editRoleId = '';
   editPermissionIds: string[] = [];
@@ -242,6 +243,7 @@ export class AdminUsersComponent implements OnInit {
   editar(user: User) {
     this.editUserId = user.id;
     this.editLogin = user.login;
+    this.editEmail = user.email ?? '';
     this.editRoleId = this.getUserRoleId(user);
     this.editPassword = '';
     this.atualizarPermissoesDaRoleEdit();
@@ -257,8 +259,14 @@ export class AdminUsersComponent implements OnInit {
       return;
     }
 
+    if (!this.editEmail) {
+      alert('Informe o email');
+      return;
+    }
+
     this.userService.atualizarUsuario(this.editUserId, {
       login: this.editLogin,
+      Email: this.editEmail,
       password: this.editPassword || undefined,
       roleId: this.editRoleId,
       permissionIds: this.editPermissionIds
@@ -342,6 +350,7 @@ export class AdminUsersComponent implements OnInit {
         if (!usuarioCriado || this.criarPermissionIds.length === 0) return of(null);
         return this.userService.atualizarUsuario(usuarioCriado.id, {
           login: this.criarLogin,
+          Email: this.criarEmail,
           roleId: this.criarRoleId,
           permissionIds: this.criarPermissionIds
         });

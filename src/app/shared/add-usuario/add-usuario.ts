@@ -112,6 +112,7 @@ export class AddUsuario implements OnInit {
 
         return this.userService.atualizarUsuario(usuarioCriado.id, {
           login: this.login,
+          Email: this.email,
           roleId: this.roleId,
           permissionIds: this.selectedPermissionIds
         });

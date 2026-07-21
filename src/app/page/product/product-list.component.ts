@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Product, ProductService } from '../../service/product.service';
 import { CategoriaService, Categoria } from '../../service/categoria.service';
+import { NavbarAdministradorComponent } from "../../shared/navbar-administrador/navbar-administrador";
 
 @Component({
   selector: 'app-products',
@@ -12,7 +13,7 @@ import { CategoriaService, Categoria } from '../../service/categoria.service';
     CommonModule,
     FormsModule,
     RouterModule
-  ],
+],
   templateUrl: './product-list.component.html',
   styleUrl: './product.css'
 })
