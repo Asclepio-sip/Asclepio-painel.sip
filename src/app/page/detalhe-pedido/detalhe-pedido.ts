@@ -79,10 +79,10 @@ ngOnInit() {
           criado: res.criadoEm,
 
           statusDoPedido: res.status,
-          tipoEntrega: res.tipoEntrega,
+          tipoEntrega: res.tipoAtendimento ?? res.tipoEntrega ?? '',
 
           formaDePagamento:
-            res.formaPagamento ?? '',
+            res.formaDePagamento ?? res.formaPagamento ?? '',
 
           cep: '',
 

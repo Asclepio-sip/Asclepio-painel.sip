@@ -64,20 +64,27 @@
 
         <div class="form-group">
           <label class="form-label">Categoria <span class="required">*</span></label>
-          <div class="custom-select" [class.open]="dropdownAberto">
-            <button type="button" class="custom-select-trigger" (click)="toggleDropdown()">
-              <span [class.placeholder]="!categoriaSelecionada">
-                {{ categoriaSelecionada || 'Selecione uma categoria...' }}
-              </span>
+          <div class="categoria-select-row">
+            <div class="custom-select" [class.open]="dropdownAberto">
+              <button type="button" class="custom-select-trigger" (click)="toggleDropdown()">
+                <span [class.placeholder]="!categoriaSelecionada">
+                  {{ categoriaSelecionada || 'Selecione uma categoria...' }}
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </button>
+              <ul *ngIf="dropdownAberto" class="custom-select-list">
+                <li *ngFor="let cat of categorias" (click)="selecionarCategoria(cat)" class="custom-select-item">
+                  {{ cat.nomeCategoria }}
+                </li>
+              </ul>
+            </div>
+            <button type="button" class="btn-nova-categoria" title="Adicionar nova categoria" (click)="novaCategoria()">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
               </svg>
             </button>
-            <ul *ngIf="dropdownAberto" class="custom-select-list">
-              <li *ngFor="let cat of categorias" (click)="selecionarCategoria(cat)" class="custom-select-item">
-                {{ cat.nomeCategoria }}
-              </li>
-            </ul>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
-import { Categoria, CategoriaService } from '../../../service/categoria.service';
+import { Categoria } from '../../../service/categoria.service';
 import { Product, ProductService } from '../../../service/product.service';
 
 @Component({
@@ -23,12 +23,11 @@ export class VariacoesLista implements OnInit {
 
   constructor(
     private productService: ProductService,
-    private categoriaService: CategoriaService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    this.categoriaService.listar().subscribe({
+    this.productService.getCategoriasVariacao().subscribe({
       next: categorias => {
         this.categorias = categorias;
         this.produtos = this.preencherCategorias(this.produtos);
@@ -43,7 +42,7 @@ export class VariacoesLista implements OnInit {
   }
 
   carregarProdutos(page: number = 0) {
-    this.productService.loadProducts(page, 12).subscribe({
+    this.productService.loadProdutosVariacao(page, 12).subscribe({
       next: response => {
         this.produtos = this.preencherCategorias(response.content);
         this.paginaAtual = response.page?.number ?? response.number ?? page;

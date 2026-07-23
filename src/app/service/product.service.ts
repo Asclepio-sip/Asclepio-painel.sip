@@ -4,75 +4,27 @@ import { BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Categoria } from './categoria.service';
+import type {
+  PageResponse,
+  Product,
+  ProdutoAddDTO,
+  ProdutoFiltro,
+  ProdutoUpdateDTO,
+  ProdutoVariacao,
+  ProdutoVariacaoRequest,
+  ProdutoVitrine
+} from '../modulos/produto/produto.model';
 
-/* =========================
-   DTOs (BACKEND MAPPED)
-========================= */
-
-export interface Product {
-  id: number;
-  name: string;
-  imagemUrl?: string;
-  imagemBase64: string;
-  categoria?: Categoria;
-  variacoes: ProdutoVariacao[];
-  categoriaId?: number;
-  nomeCategoria?: string | null;
-  categoriaNome?: string;
-}
-
-export interface ProdutoAddDTO {
-  nome: string;
-  descricao?: string;
-  marca?: string;
-  categoriaId: number;
-  imagem: File;
-}
-
-export interface ProdutoUpdateDTO {
-  name?: string;
-  imagemBase64?: string;
-  categoriaNome?: string;
-}
-
-export interface ProdutoVariacao {
-  id: number;
-  nomeVariacao: string;
-  codigoBarras?: string;
-  ativo: boolean;
-}
-
-export interface ProdutoVariacaoRequest {
-  nomeVariacao: string;
-  codigoBarras?: string;
-  ativo?: boolean;
-}
-
-export interface ProdutoVitrine {
-  name: string;
-  variacoes: ProdutoVariacao[];
-}
-
-export interface ProdutoFiltro {
-  nome?: string;
-  variacao?: string;
-  categoriaId?: number | null;
-  nomeCategoria?: string;
-}
-
-export interface PageResponse<T> {
-  content: T[];
-  page?: {
-    size: number;
-    number: number;
-    totalElements: number;
-    totalPages: number;
-  };
-  size?: number;
-  number?: number;
-  totalElements?: number;
-  totalPages?: number;
-}
+export type {
+  PageResponse,
+  Product,
+  ProdutoAddDTO,
+  ProdutoFiltro,
+  ProdutoUpdateDTO,
+  ProdutoVariacao,
+  ProdutoVariacaoRequest,
+  ProdutoVitrine
+};
 
 @Injectable({
   providedIn: 'root'
@@ -187,6 +139,61 @@ export class ProductService {
     );
   }
 
+  /* =========================
+     LOAD (VARIACOES)
+  ========================= */
+
+  loadProdutosVariacao(
+    page: number = 0,
+    size: number = 20,
+    filtro: ProdutoFiltro = {}
+  ) {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    params = this.adicionarParametro(params, 'nome', filtro.nome);
+    params = this.adicionarParametro(params, 'variacao', filtro.variacao);
+    params = this.adicionarParametro(params, 'categoriaId', filtro.categoriaId);
+    params = this.adicionarParametro(params, 'nomeCategoria', filtro.nomeCategoria);
+
+    return this.http.get<
+      PageResponse<Product>
+    >(
+      `${environment.apiUrl}/variacoes/produtos`,
+      { params }
+    ).pipe(
+      map(response => ({
+        ...response,
+        content: response.content.map(produto => this.normalizarProduto(produto))
+      }))
+    );
+  }
+
+  buscarProdutoVariacaoPorId(id: number) {
+    return this.loadProdutosVariacao(0, 1000).pipe(
+      map(response => {
+        const produto = response.content.find(p => p.id === id);
+
+        if (!produto) {
+          throw new Error(`Produto ${id} nao encontrado na listagem.`);
+        }
+
+        return produto;
+      })
+    );
+  }
+
+  getCategoriasVariacao() {
+    return this.http.get<
+      Categoria[] | { content: Categoria[] }
+    >(
+      `${environment.apiUrl}/variacoes/categorias`
+    ).pipe(
+      map(response => Array.isArray(response) ? response : response.content ?? [])
+    );
+  }
+
   addVariacao(
     produtoId: number,
     variacao: ProdutoVariacaoRequest
@@ -220,12 +227,11 @@ export class ProductService {
   }
 
   atualizarVariacao(
-    produtoId: number,
     variacaoId: number,
     variacao: ProdutoVariacaoRequest
   ) {
     return this.http.put<ProdutoVariacao>(
-      `${environment.apiUrl}/variacoes/produtos/${produtoId}/${variacaoId}`,
+      `${environment.apiUrl}/variacoes/${variacaoId}`,
       variacao
     ).pipe(
       map(response => this.normalizarVariacao(response))
@@ -233,11 +239,10 @@ export class ProductService {
   }
 
   deletarVariacao(
-    produtoId: number,
     variacaoId: number
   ) {
     return this.http.delete(
-      `${environment.apiUrl}/variacoes/produtos/${produtoId}/${variacaoId}`
+      `${environment.apiUrl}/variacoes/${variacaoId}`
     );
   }
 
@@ -304,7 +309,7 @@ export class ProductService {
     return this.http.get<
       any
     >(
-      `${environment.apiUrl}/categorias`
+      `${this.API}/categorias`
     ).pipe(
       map(response => {
         const categorias = Array.isArray(response) ? response : response.content || [];
@@ -321,12 +326,23 @@ export class ProductService {
     return this.http.get<
       any
     >(
-      `${environment.apiUrl}/categorias`
+      `${this.API}/categorias`
     ).pipe(
       map(response => {
         const categorias = Array.isArray(response) ? response : response.content || [];
         return categorias.filter((cat: Categoria) => !cat.categoriaPaiId);
       })
+    );
+  }
+
+  getCategoriasProdutos() {
+
+    return this.http.get<
+      Categoria[] | { content: Categoria[] }
+    >(
+      `${this.API}/categorias`
+    ).pipe(
+      map(response => Array.isArray(response) ? response : response.content ?? [])
     );
   }
 

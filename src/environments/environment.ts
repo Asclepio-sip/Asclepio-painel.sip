@@ -1,6 +1,11 @@
 export const environment = {
+<<<<<<< HEAD
   production: false,
   apiUrl: 'https://panel-ascl-pio-sip-1.onrender.com'
+=======
+  production: false,  
+  apiUrl: 'http://localhost:8080'
+>>>>>>> 0332fd9 (feat:adicao de nova ajuste)
 };
 
 // aqui é um teste re pull requesta

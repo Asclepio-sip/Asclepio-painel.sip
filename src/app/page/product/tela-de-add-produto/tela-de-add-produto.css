@@ -106,6 +106,24 @@
 .description-info.warning { color: #b45309; }
 
 /* ── Dropdown customizado ── */
+.categoria-select-row { display: flex; align-items: center; gap: 8px; }
+.categoria-select-row .custom-select { flex: 1; min-width: 0; }
+.btn-nova-categoria {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #C5794E;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.btn-nova-categoria svg { width: 18px; height: 18px; }
+.btn-nova-categoria:hover { border-color: #C5794E; background: #fdf6f0; }
 .custom-select { position: relative; }
 .custom-select-trigger {
   width: 100%;

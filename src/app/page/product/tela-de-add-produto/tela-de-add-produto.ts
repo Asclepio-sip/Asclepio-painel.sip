@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 
 import { ProductService } from '../../../service/product.service';
+import { CategoriaService } from '../../../service/categoria.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -36,16 +37,62 @@ export class TelaDeAddProduto implements OnInit {
 
   constructor(
     private productService: ProductService,
+    private categoriaService: CategoriaService,
     private router: Router,
     private elementRef: ElementRef
   ) {}
 
   ngOnInit() {
+    this.carregarCategorias();
+  }
+
+  private carregarCategorias() {
     this.productService.getCategoriasComId().subscribe({
       next: cats => this.categorias = cats,
       error: () => {
         Swal.fire('Erro', 'Erro ao carregar categorias', 'error');
       }
+    });
+  }
+
+  novaCategoria() {
+    this.dropdownAberto = false;
+
+    Swal.fire({
+      title: 'Nova categoria',
+      input: 'text',
+      inputLabel: 'Nome da categoria',
+      inputPlaceholder: 'Ex: Higiene Pessoal',
+      showCancelButton: true,
+      confirmButtonText: 'Criar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#C5794E',
+      inputValidator: (value) => {
+        if (!value || !value.trim()) {
+          return 'Digite o nome da categoria';
+        }
+        return null;
+      }
+    }).then((result) => {
+      if (!result.isConfirmed || !result.value) return;
+
+      this.categoriaService.criar({ nomeCategoria: result.value.trim() }).subscribe({
+        next: (categoria: any) => {
+          Swal.fire('Sucesso', 'Categoria criada!', 'success');
+          this.productService.getCategoriasComId().subscribe({
+            next: cats => {
+              this.categorias = cats;
+              const criada = categoria?.id
+                ? this.categorias.find(c => c.id === categoria.id)
+                : this.categorias.find(c => c.nomeCategoria === result.value.trim());
+              if (criada) this.selecionarCategoria(criada);
+            }
+          });
+        },
+        error: () => {
+          Swal.fire('Erro', 'Nao foi possivel criar a categoria', 'error');
+        }
+      });
     });
   }
 

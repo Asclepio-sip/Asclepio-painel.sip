@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
+import { Loja, LojaFiltro } from './loja/loja.service';
+import { Estoque } from './estoque.service';
 
 export interface ItemPedido {
   produtoId: number;
@@ -185,6 +188,111 @@ buscarTodosPedidos() {
     size: 1000,
     sort: 'criadoEm,desc'
   });
+}
+
+/* =========================
+   LOJA / ESTOQUE (PEDIDO)
+========================= */
+
+listarLojas(
+  page: number = 0,
+  size: number = 20,
+  filtros: LojaFiltro = {}
+): Observable<{ content: Loja[] }> {
+  let params = new HttpParams()
+    .set('page', page)
+    .set('size', size);
+
+  params = this.adicionarParametroHttp(params, 'id', filtros.id);
+  params = this.adicionarParametroHttp(params, 'nomeLoja', filtros.nomeLoja);
+  params = this.adicionarParametroHttp(params, 'cep', filtros.cep);
+  params = this.adicionarParametroHttp(params, 'cnpj', filtros.cnpj);
+  params = this.adicionarParametroHttp(params, 'telefone', filtros.telefone);
+  params = this.adicionarParametroHttp(params, 'tipoAtendimento', filtros.tipoAtendimento);
+
+  return this.http.get<{ content: Loja[] } | Loja[]>(
+    `${environment.apiUrl}/pedidos/loja`,
+    { params }
+  ).pipe(
+    map(response => Array.isArray(response) ? { content: response } : response)
+  );
+}
+
+relatorioEstoque(
+  lojaId?: number,
+  nomeLoja?: string,
+  semEstoque?: boolean
+): Observable<Estoque[]> {
+  let params = new HttpParams()
+    .set('page', 0)
+    .set('size', 1000);
+
+  params = this.adicionarParametroHttp(params, 'lojaId', lojaId);
+  params = this.adicionarParametroHttp(params, 'nomeLoja', nomeLoja);
+  params = this.adicionarParametroHttp(params, 'semEstoque', semEstoque);
+
+  return this.http.get<{ content: Estoque[] } | Estoque[]>(
+    `${environment.apiUrl}/pedidos/estoque`,
+    { params }
+  ).pipe(
+    map(response => {
+      const itens = Array.isArray(response) ? response : response.content ?? [];
+      return itens.map(item => this.normalizarEstoque(item));
+    })
+  );
+}
+
+private normalizarEstoque(item: any): Estoque {
+  const imagemBase64 = item.imagemBase64 ?? '';
+
+  return {
+    ...item,
+    imagemBase64,
+    imagemUrl:
+      item.imagemUrl ??
+      item.produto?.imagemUrl ??
+      item.produtoVariacao?.produto?.imagemUrl ??
+      (imagemBase64 ? `data:image/png;base64,${imagemBase64}` : ''),
+    nomeProduto:
+      item.nomeProduto ??
+      item.produto?.name ??
+      item.produtoVariacao?.produto?.name ??
+      '',
+    produtoId:
+      item.produtoId ??
+      item.produto?.id ??
+      item.produtoVariacao?.produto?.id ??
+      0,
+    variacaoId:
+      item.variacaoId ??
+      item.VaricaoId ??
+      item.VaricaoID ??
+      item.produtoVariacaoId ??
+      item.variacaoProdutoId ??
+      item.idVariacao ??
+      item.produtoVariacao?.id ??
+      0,
+    nomeVariacao:
+      item.nomeVariacao ??
+      item.variacao ??
+      item.Variacao ??
+      item.produtoVariacao?.nomeVariacao ??
+      item.produtoVariacao?.Variacao ??
+      item.produtoVariacao?.nome ??
+      ''
+  };
+}
+
+private adicionarParametroHttp(
+  params: HttpParams,
+  chave: string,
+  valor: string | number | boolean | null | undefined
+): HttpParams {
+  if (valor === null || valor === undefined || valor === '') {
+    return params;
+  }
+
+  return params.set(chave, String(valor));
 }
 
 private adicionarParametro(

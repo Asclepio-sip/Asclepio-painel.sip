@@ -41,7 +41,7 @@ export class ProdutoVariacoes implements OnInit {
   carregarProduto() {
     if (!this.produtoId) return;
 
-    this.productService.buscarPorId(this.produtoId).subscribe({
+    this.productService.buscarProdutoVariacaoPorId(this.produtoId).subscribe({
       next: produto => {
         this.produto = produto;
         this.cdr.detectChanges();

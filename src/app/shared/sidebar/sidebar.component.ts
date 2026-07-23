@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../service/auth.service';
 import { PermissionGroups } from '../../core/security/permission-groups';
-import { CategoriaService, Categoria } from '../../service/categoria.service';
+import { Categoria } from '../../service/categoria.service';
+import { ProductService } from '../../service/product.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,7 +13,7 @@ import { CategoriaService, Categoria } from '../../service/categoria.service';
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css',
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent {
 
   isOpen = false;
   gestaoOpen = false;
@@ -24,6 +25,7 @@ export class SidebarComponent implements OnInit {
   gestaoPermissions = PermissionGroups.lojas;
   categoriasOpen = false;
   categorias: Categoria[] = [];
+  private categoriasCarregadas = false;
 
   showLogoutModal = false;
   closing = false;
@@ -31,7 +33,7 @@ export class SidebarComponent implements OnInit {
   constructor(
     public authService: AuthService,
     private router: Router,
-    private categoriaService: CategoriaService
+    private productService: ProductService
   ) {
     this.gestaoOpen = this.isGestaoRoute();
     this.estoqueOpen = this.isEstoqueRoute();
@@ -39,13 +41,17 @@ export class SidebarComponent implements OnInit {
     this.produtoOpen = this.isProdutoRoute();
   }
 
-  ngOnInit() {
-    if (this.authService.isAuthenticated()) {
-      this.categoriaService.listar().subscribe({
-        next: cats => this.categorias = cats,
-        error: () => {}
-      });
+  private carregarCategorias() {
+    if (this.categoriasCarregadas) {
+      return;
     }
+
+    this.categoriasCarregadas = true;
+
+    this.productService.getCategoriasProdutos().subscribe({
+      next: cats => this.categorias = cats,
+      error: () => this.categoriasCarregadas = false
+    });
   }
 
   abrirSidebar() {
@@ -70,6 +76,10 @@ export class SidebarComponent implements OnInit {
 
   toggleProduto() {
     this.produtoOpen = !this.produtoOpen;
+
+    if (this.produtoOpen) {
+      this.carregarCategorias();
+    }
   }
 
   toggleCategorias() {

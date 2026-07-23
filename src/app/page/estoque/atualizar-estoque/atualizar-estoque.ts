@@ -1,8 +1,7 @@
 ﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Estoque, EstoqueService } from '../../../service/estoque.service';
-import { Loja, LojaService } from '../../../service/loja/loja.service';
+import { Estoque, EstoqueLoja, EstoqueService } from '../../../service/estoque.service';
 import { ProductService } from '../../../service/product.service';
 import { forkJoin, map, of, switchMap } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -23,7 +22,7 @@ export class AtualizarEstoque implements OnInit {
 
   produtos: Estoque[] = [];
   produtosFiltrados: Estoque[] = [];
-  lojas: Loja[] = [];
+  lojas: EstoqueLoja[] = [];
   lojaSelecionada = '';
   alterados: Set<number> = new Set();
   precosEmEdicao: Set<number> = new Set();
@@ -32,7 +31,6 @@ export class AtualizarEstoque implements OnInit {
 
   constructor(
     private estoqueService: EstoqueService,
-    private lojaService: LojaService,
     private productService: ProductService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -84,8 +82,8 @@ export class AtualizarEstoque implements OnInit {
   }
 
   carregarLojas() {
-    this.lojaService
-      .listar()
+    this.estoqueService
+      .listarLojas()
       .subscribe({
         next: (response) => {
           this.lojas = response.content;
