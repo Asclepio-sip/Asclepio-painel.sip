@@ -6,9 +6,9 @@ export const publicGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  // 🔐 SE JÁ ESTIVER LOGADO → MANDA PRA PRODUCTS
+  // 🔐 SE JÁ ESTIVER LOGADO → MANDA PRA ROTA INICIAL DO PERFIL
   if (auth.isAuthenticated()) {
-    router.navigate(['/products']);
+    router.navigate([auth.getHomeRoute()]);
     return false;
   }
 

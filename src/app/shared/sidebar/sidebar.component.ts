@@ -104,7 +104,8 @@ export class SidebarComponent {
       '/empresa',
       '/addloja',
       '/editar-loja',
-      '/add-bairro'
+      '/add-bairro',
+      '/AddUsuario'
     ].some(route => this.router.url.startsWith(route));
   }
 

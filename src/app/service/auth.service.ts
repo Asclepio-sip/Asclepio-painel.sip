@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { PermissionGroups } from '../core/security/permission-groups';
+import { AppPermissions } from '../core/security/app-permissions';
 
 interface JwtPayload {
   sub: string;
@@ -118,6 +119,21 @@ export class AuthService {
 
   hasEstoquePermission(): boolean {
     return this.hasAnyPermission(PermissionGroups.estoque);
+  }
+
+  getHomeRoute(): string {
+    if (
+      this.hasPermission(AppPermissions.Pedido.create) &&
+      !this.hasPermission(AppPermissions.Produto.read)
+    ) {
+      return '/fazer-pedido';
+    }
+
+    if (this.hasPermission(AppPermissions.Produto.read)) {
+      return '/products';
+    }
+
+    return '/';
   }
 
 

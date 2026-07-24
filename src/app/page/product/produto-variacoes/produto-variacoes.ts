@@ -25,6 +25,7 @@ export class ProdutoVariacoes implements OnInit {
   nomeVariacao = '';
   codigoBarras = '';
   ativo = true;
+  variacaoEditandoId: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -82,6 +83,11 @@ export class ProdutoVariacoes implements OnInit {
       return;
     }
 
+    if (this.variacaoEditandoId) {
+      this.atualizarVariacao();
+      return;
+    }
+
     this.productService.addVariacao(this.produtoId, {
       nomeVariacao: this.nomeVariacao.trim(),
       codigoBarras: this.codigoBarras.trim() || undefined,
@@ -99,9 +105,41 @@ export class ProdutoVariacoes implements OnInit {
     });
   }
 
+  editarVariacao(variacao: ProdutoVariacao) {
+    this.variacaoEditandoId = variacao.id;
+    this.nomeVariacao = variacao.nomeVariacao;
+    this.codigoBarras = variacao.codigoBarras ?? '';
+    this.ativo = variacao.ativo;
+  }
+
+  atualizarVariacao() {
+    if (!this.variacaoEditandoId) return;
+
+    this.productService.atualizarVariacao(this.variacaoEditandoId, {
+      nomeVariacao: this.nomeVariacao.trim(),
+      codigoBarras: this.codigoBarras.trim() || undefined,
+      ativo: this.ativo
+    }).subscribe({
+      next: () => {
+        Swal.fire('Sucesso', 'Variacao atualizada.', 'success');
+        this.resetForm();
+        this.carregarVariacoes();
+      },
+      error: err => {
+        console.error('Erro ao atualizar variacao', err);
+        Swal.fire('Erro', 'Nao foi possivel atualizar a variacao.', 'error');
+      }
+    });
+  }
+
+  cancelarEdicao() {
+    this.resetForm();
+  }
+
   resetForm() {
     this.nomeVariacao = '';
     this.codigoBarras = '';
     this.ativo = true;
+    this.variacaoEditandoId = null;
   }
 }

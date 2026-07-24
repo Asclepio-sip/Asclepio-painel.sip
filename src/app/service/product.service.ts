@@ -108,6 +108,37 @@ export class ProductService {
   }
 
   /* =========================
+     LOAD (ESTOQUE)
+  ========================= */
+
+  loadProdutosEstoque(
+    page: number = 0,
+    size: number = 20,
+    filtro: ProdutoFiltro = {}
+  ) {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+
+    params = this.adicionarParametro(params, 'nome', filtro.nome);
+    params = this.adicionarParametro(params, 'variacao', filtro.variacao);
+    params = this.adicionarParametro(params, 'categoriaId', filtro.categoriaId);
+    params = this.adicionarParametro(params, 'nomeCategoria', filtro.nomeCategoria);
+
+    return this.http.get<
+      PageResponse<Product>
+    >(
+      `${environment.apiUrl}/estoque/Produtos`,
+      { params }
+    ).pipe(
+      map(response => ({
+        ...response,
+        content: response.content.map(produto => this.normalizarProduto(produto))
+      }))
+    );
+  }
+
+  /* =========================
      CREATE
   ========================= */
 

@@ -69,5 +69,9 @@
 .status-ativo { background: #dcfce7; color: #16a34a; }
 .status-inativo { background: #f3f4f6; color: #9ca3af; }
 
+.row-editando { background: #fdf6f0; }
+.btn-edit { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: #fff; color: #6b7280; border: 1.5px solid #e5e7eb; border-radius: 7px; font-size: 12.5px; font-weight: 500; font-family: 'Poppins', sans-serif; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.btn-edit:hover { border-color: #C5794E; color: #C5794E; background: #fdf6f0; }
+
 @media (max-width: 900px) { .content-grid { grid-template-columns: 1fr; } }
 @media (max-width: 600px) { .variacoes-container { padding: 20px 16px; } }

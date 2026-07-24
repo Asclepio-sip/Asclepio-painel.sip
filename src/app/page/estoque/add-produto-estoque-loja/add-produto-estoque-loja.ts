@@ -1,9 +1,8 @@
-﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { EstoqueService, EstoqueRequest } from '../../../service/estoque.service';
+import { EstoqueService, EstoqueRequest, EstoqueLoja } from '../../../service/estoque.service';
 import { ProductService, Product, ProdutoVariacao } from '../../../service/product.service';
-import { LojaService, Loja } from '../../../service/loja/loja.service';
 
 @Component({
   selector: 'app-add-produto-estoque-loja',
@@ -15,24 +14,31 @@ import { LojaService, Loja } from '../../../service/loja/loja.service';
   templateUrl: './add-produto-estoque-loja.html',
   styleUrls: ['./add-produto-estoque-loja.css']
 })
-export class AddProdutoEstoqueLoja implements OnInit {
+export class AddProdutoEstoqueLoja implements OnInit, OnDestroy {
 
   produtos: Product[] = [];
-  lojas: Loja[] = [];
+  lojas: EstoqueLoja[] = [];
 
   produtoSelecionado?: Product;
   variacaoSelecionada?: ProdutoVariacao;
-  lojaSelecionada?: Loja;
+  lojaSelecionada?: EstoqueLoja;
   carregandoVariacoes = false;
+  carregandoProdutos = false;
 
   buscaProduto = '';
   quantidade = 0;
   precoVenda = 0;
   percentualDesconto = 0;
 
+  paginaAtual = 0;
+  totalPaginas = 0;
+  totalElementos = 0;
+  tamanhoPagina = 20;
+
+  private buscaTimeout: any;
+
   constructor(
     private produtoService: ProductService,
-    private lojaService: LojaService,
     private estoqueService: EstoqueService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -42,20 +48,78 @@ export class AddProdutoEstoqueLoja implements OnInit {
     this.carregarLojas();
   }
 
-  carregarProdutos() {
+  ngOnDestroy(): void {
+    clearTimeout(this.buscaTimeout);
+  }
+
+  carregarProdutos(page: number = 0) {
+    this.carregandoProdutos = true;
+
     this.produtoService
-      .loadProducts()
-      .subscribe(response => {
-        this.produtos = response.content;
-        this.cdr.detectChanges();
+      .loadProdutosEstoque(page, this.tamanhoPagina, {
+        nome: this.buscaProduto.trim() || undefined
+      })
+      .subscribe({
+        next: response => {
+          this.produtos = response.content;
+          this.paginaAtual = response.page?.number ?? response.number ?? page;
+          this.totalPaginas = response.page?.totalPages ?? response.totalPages ?? 0;
+          this.totalElementos = response.page?.totalElements ?? response.totalElements ?? response.content.length;
+          this.carregandoProdutos = false;
+          this.cdr.detectChanges();
+        },
+        error: err => {
+          console.error('Erro ao carregar produtos', err);
+          this.carregandoProdutos = false;
+          this.cdr.detectChanges();
+        }
       });
   }
 
   carregarLojas() {
-    this.lojaService.listar().subscribe(response => {
+    this.estoqueService.listarLojas().subscribe(response => {
       this.lojas = response.content;
       this.cdr.detectChanges();
     });
+  }
+
+  onBuscaProdutoChange() {
+    clearTimeout(this.buscaTimeout);
+    this.buscaTimeout = setTimeout(() => {
+      this.carregarProdutos(0);
+    }, 400);
+  }
+
+  onTamanhoPaginaChange() {
+    this.carregarProdutos(0);
+  }
+
+  proximaPagina() {
+    if (this.paginaAtual < this.totalPaginas - 1) {
+      this.carregarProdutos(this.paginaAtual + 1);
+    }
+  }
+
+  paginaAnterior() {
+    if (this.paginaAtual > 0) {
+      this.carregarProdutos(this.paginaAtual - 1);
+    }
+  }
+
+  irParaPagina(pagina: number) {
+    if (pagina >= 0 && pagina < this.totalPaginas && pagina !== this.paginaAtual) {
+      this.carregarProdutos(pagina);
+    }
+  }
+
+  get paginasVisiveis(): number[] {
+    const janela = 5;
+    const metade = Math.floor(janela / 2);
+    let inicio = Math.max(0, this.paginaAtual - metade);
+    const fim = Math.min(this.totalPaginas - 1, inicio + janela - 1);
+    inicio = Math.max(0, fim - janela + 1);
+
+    return Array.from({ length: fim - inicio + 1 }, (_, i) => inicio + i);
   }
 
   selecionarProduto(produto: Product) {
@@ -82,16 +146,6 @@ export class AddProdutoEstoqueLoja implements OnInit {
         this.cdr.detectChanges();
       }
     });
-  }
-
-  produtosFiltrados(): Product[] {
-    if (!this.buscaProduto) {
-      return this.produtos;
-    }
-
-    return this.produtos.filter((p: Product) =>
-      p.name.toLowerCase().includes(this.buscaProduto.toLowerCase())
-    );
   }
 
   salvar() {
