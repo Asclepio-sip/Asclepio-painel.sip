@@ -76,7 +76,7 @@
               </button>
               <ul *ngIf="dropdownAberto" class="custom-select-list">
                 <li *ngFor="let cat of categorias" (click)="selecionarCategoria(cat)" class="custom-select-item">
-                  {{ cat.nomeCategoria }}
+                  {{ cat.nomeCategoriaPai ? cat.nomeCategoriaPai + ' / ' + cat.nomeCategoria : cat.nomeCategoria }}
                 </li>
               </ul>
             </div>

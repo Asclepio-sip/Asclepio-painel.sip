@@ -127,7 +127,9 @@ export class TelaDeAddProduto implements OnInit {
   }
 
   selecionarCategoria(cat: any) {
-    this.categoriaSelecionada = cat.nomeCategoria;
+    this.categoriaSelecionada = cat.nomeCategoriaPai
+      ? `${cat.nomeCategoriaPai} / ${cat.nomeCategoria}`
+      : cat.nomeCategoria;
     this.categoriaId = cat.id;
     this.dropdownAberto = false;
   }

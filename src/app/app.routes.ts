@@ -19,7 +19,6 @@ import { RelatorioEstoque } from './page/estoque/relatorio-estoque/relatorio-est
 import { AtualizarEstoque } from './page/estoque/atualizar-estoque/atualizar-estoque';
 import { AddBairro } from './page/gestao-de-loja/add-bairro/add-bairro';
 import { RelacionarBairroLoja } from './page/gestao-de-loja/relacionar-bairro-loja/relacionar-bairro-loja';
-import { EmpresaComponent } from './page/empresa/empresa';
 import { PermissionGroups } from './core/security/permission-groups';
 import { LandingComponent } from './page/landing/landing';
 import { CadastroComponent } from './page/cadastro/cadastro';
@@ -35,7 +34,6 @@ export const routes: Routes = [
   { path: 'pedido', component: Pedidos, canActivate: [authGuard] },
   { path: 'fazer-pedido', component: FazerPedido, canActivate: [adminGuard], data: { permissions: PermissionGroups.pedidos } },
   { path: 'loja', component: GestaoDeLoja, canActivate: [authGuard] },
-  { path: 'empresa', component: EmpresaComponent, canActivate: [authGuard] },
   { path: 'addloja', component: TelaDeAddLoja, canActivate: [authGuard] },
   { path: 'editar-loja/:id', component: EditarLoja, canActivate: [authGuard] },
   { path: 'addloja/:id/funcionarios', component: AddFuncionarioLoja, canActivate: [authGuard] },

@@ -15,7 +15,6 @@ import { ProductService } from '../../service/product.service';
 })
 export class SidebarComponent {
 
-  isOpen = false;
   gestaoOpen = false;
   estoqueOpen = false;
   estoquePermissions = PermissionGroups.estoque;
@@ -52,14 +51,6 @@ export class SidebarComponent {
       next: cats => this.categorias = cats,
       error: () => this.categoriasCarregadas = false
     });
-  }
-
-  abrirSidebar() {
-    this.isOpen = true;
-  }
-
-  fecharSidebar() {
-    this.isOpen = false;
   }
 
   toggleGestao() {
@@ -101,7 +92,6 @@ export class SidebarComponent {
   private isGestaoRoute() {
     return [
       '/loja',
-      '/empresa',
       '/addloja',
       '/editar-loja',
       '/add-bairro',

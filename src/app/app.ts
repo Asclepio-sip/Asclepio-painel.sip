@@ -9,7 +9,8 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, RouterOutlet, NavbarAdministradorComponent, SidebarComponent],
-  templateUrl: './app.html'
+  templateUrl: './app.html',
+  styleUrl: './app.css'
 })
 export class App {
   private readonly publicRoutes = ['/login', '/landing', '/cadastro'];

@@ -119,6 +119,35 @@
   box-shadow: 0 0 0 3px rgba(213, 0, 45, 0.12);
 }
 
+.payment-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.payment-btn {
+  height: 40px;
+  border: 1px solid #cfd6df;
+  border-radius: 8px;
+  background: #fff;
+  color: #344054;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.payment-btn:hover {
+  border-color: #d5002d;
+  color: #d5002d;
+}
+
+.payment-btn.active {
+  border-color: #d5002d;
+  background: #d5002d;
+  color: #fff;
+}
+
 .cart-items {
   display: flex;
   flex-direction: column;
@@ -277,7 +306,7 @@
   background: #b80026;
 }
 
-@media (max-width: 1080px) {
+@media (max-width: 1340px) {
   .checkout-grid {
     grid-template-columns: 1fr;
   }

@@ -28,14 +28,20 @@
         />
       </label>
 
-      <label class="field">
+      <div class="field">
         <span>Pagamento</span>
-        <select name="formaDePagamento" [(ngModel)]="formaDePagamento">
-          <option value="PIX">PIX</option>
-          <option value="DINHEIRO">Dinheiro</option>
-          <option value="CARTAO">Cartao</option>
-        </select>
-      </label>
+        <div class="payment-options">
+          <button
+            type="button"
+            *ngFor="let forma of formasDePagamento"
+            class="payment-btn"
+            [class.active]="formaDePagamento === forma.value"
+            (click)="formaDePagamento = forma.value"
+          >
+            {{ forma.label }}
+          </button>
+        </div>
+      </div>
 
       <div class="cart-items" *ngIf="itens.length > 0; else carrinhoVazio">
         <article class="cart-item" *ngFor="let item of itens">

@@ -361,7 +361,7 @@ export class ProductService {
     ).pipe(
       map(response => {
         const categorias = Array.isArray(response) ? response : response.content || [];
-        return categorias.filter((cat: Categoria) => !cat.categoriaPaiId);
+        return categorias;
       })
     );
   }

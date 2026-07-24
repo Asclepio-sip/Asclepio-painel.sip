@@ -1,7 +1,4 @@
-<aside
-  class="sidebar"
-  [class.open]="isOpen"
-  (click)="$event.stopPropagation()">
+<aside class="sidebar">
 
   <nav class="menu">
 
@@ -44,13 +41,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10"/>
                   </svg>
                   Loja
-                </a>
-                <a routerLink="/empresa" routerLinkActive="active" class="submenu-link">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 21V7a2 2 0 012-2h4V3h4v2h4a2 2 0 012 2v14"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21v-4h4v4M13 21v-6h4v6"/>
-                  </svg>
-                  Empresa
                 </a>
               }
               @if (authService.hasAnyPermission(authService.PERMISSIONS.USUARIO)) {
@@ -225,25 +215,7 @@
         }
       </div>
 
-      <!-- RODAPÉ -->
-      <div class="menu-footer">
-        <button class="logout-btn" (click)="fecharSidebar()">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          Fechar menu
-        </button>
-      </div>
-
     }
 
   </nav>
 </aside>
-
-<!-- BOTÃO TOGGLE -->
-<button
-  class="toggle-btn"
-  *ngIf="!isOpen"
-  (click)="abrirSidebar()">
-  ☰
-</button>

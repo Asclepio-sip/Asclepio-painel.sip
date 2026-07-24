@@ -1,15 +1,4 @@
 <div class="stock-list">
-  <div class="list-toolbar">
-    <div>
-      <h2>Produtos disponiveis</h2>
-      <p>{{ produtosFiltrados().length }} item(ns) encontrados em estoque</p>
-    </div>
-
-    <button class="refresh-btn" type="button" (click)="carregarProdutos()">
-      Atualizar
-    </button>
-  </div>
-
   <div class="filters">
     <label class="field">
       <span>Loja</span>
@@ -47,42 +36,41 @@
     Nenhum produto encontrado para os filtros selecionados.
   </div>
 
-  <div *ngIf="!carregando && !erro && produtosFiltrados().length > 0" class="product-list">
-    <article class="product-row" *ngFor="let produto of produtosFiltrados()">
-      <div class="product-image">
+  <div *ngIf="!carregando && !erro && produtosFiltrados().length > 0" class="product-grid">
+    <article class="product-card" *ngFor="let produto of produtosFiltrados()">
+      <div class="product-card-image">
         <img [src]="imagemProduto(produto)" [alt]="produto.nomeProduto" />
+        <span *ngIf="produto.percentualDesconto > 0" class="discount">
+          -{{ produto.percentualDesconto }}%
+        </span>
       </div>
 
-      <div class="product-main">
-        <div class="product-title-row">
-          <h3>{{ produto.nomeProduto }}</h3>
-          <span *ngIf="produto.percentualDesconto > 0" class="discount">
-            -{{ produto.percentualDesconto }}%
-          </span>
-        </div>
+      <div class="product-card-body">
+        <h3>{{ produto.nomeProduto }}</h3>
 
         <div class="product-meta">
           <span>{{ produto.nomeLoja }}</span>
           <span *ngIf="produto.nomeVariacao">{{ produto.nomeVariacao }}</span>
-          <span>{{ produto.Entregar }}</span>
         </div>
-      </div>
 
-      <div class="product-stock">
-        <span>{{ produto.quantidade }}</span>
-        <small>em estoque</small>
-      </div>
+        <div class="product-card-footer">
+          <div class="product-price">
+            <small *ngIf="produto.percentualDesconto > 0">
+              {{ produto.precoVenda | currency:'BRL' }}
+            </small>
+            <strong>{{ produto.valorFinal | currency:'BRL' }}</strong>
+          </div>
 
-      <div class="product-price">
-        <small *ngIf="produto.percentualDesconto > 0">
-          {{ produto.precoVenda | currency:'BRL' }}
-        </small>
-        <strong>{{ produto.valorFinal | currency:'BRL' }}</strong>
-      </div>
+          <div class="product-stock">
+            <span>{{ produto.quantidade }}</span>
+            <small>em estoque</small>
+          </div>
+        </div>
 
-      <button class="add-btn" type="button" (click)="adicionar(produto)">
-        Adicionar
-      </button>
+        <button class="add-btn" type="button" (click)="adicionar(produto)">
+          Adicionar
+        </button>
+      </div>
     </article>
   </div>
 </div>

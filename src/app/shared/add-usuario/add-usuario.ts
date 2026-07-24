@@ -101,10 +101,10 @@ export class AddUsuario implements OnInit {
       permissionIds: this.selectedPermissionIds
     }).pipe(
       switchMap(() =>
-        this.userService.listarUsuarios(0, 1000)
+        this.userService.listarUsuarios(0, 20, { login: this.login })
       ),
-      switchMap(users => {
-        const usuarioCriado = users.find(user => user.login === this.login);
+      switchMap(response => {
+        const usuarioCriado = response.users.find(user => user.login === this.login);
 
         if (!usuarioCriado || this.selectedPermissionIds.length === 0) {
           return of(null);
