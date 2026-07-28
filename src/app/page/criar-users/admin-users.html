@@ -5,7 +5,7 @@
       <div class="breadcrumb">
         <span class="breadcrumb-item">ADMIN</span>
         <span class="breadcrumb-sep">/</span>
-        <span class="breadcrumb-item active">GEST?fO DE EQUIPE</span>
+        <span class="breadcrumb-item active">GESTÃO DE EQUIPE</span>
       </div>
       <h1>Usuários e Permissões</h1>
     </div>
@@ -33,7 +33,7 @@
       </div>
       <div class="kpi-content">
         <span class="kpi-label">TOTAL USUÁRIOS</span>
-        <span class="kpi-value">{{ users.length | number:'2.0-0' }}</span>
+        <span class="kpi-value">{{ totalElements | number:'2.0-0' }}</span>
       </div>
     </div>
     <div class="kpi-card">
@@ -44,7 +44,7 @@
       </div>
       <div class="kpi-content">
         <span class="kpi-label">ADMINISTRADORES</span>
-        <span class="kpi-value">{{ getAdminCount() | number:'2.0-0' }}</span>
+        <span class="kpi-value">{{ adminCount | number:'2.0-0' }}</span>
       </div>
     </div>
   </div>
@@ -139,7 +139,7 @@
       <p>Carregando usuários...</p>
     </div>
 
-    <div *ngIf="!loading && filteredUsers.length === 0" class="empty-state">
+    <div *ngIf="!loading && totalElements === 0" class="empty-state">
       <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
         <circle cx="9" cy="7" r="4"/>
@@ -150,8 +150,8 @@
     </div>
 
     <!-- Pagination -->
-    <div class="pagination" *ngIf="!loading && filteredUsers.length > 0">
-      <span class="pagination-info">MOSTRANDO {{ getPageStart() }} DE {{ filteredUsers.length }} USUÁRIOS</span>
+    <div class="pagination" *ngIf="!loading && totalElements > 0">
+      <span class="pagination-info">MOSTRANDO {{ getPageStart() }} DE {{ totalElements }} USUÁRIOS</span>
       <div class="pagination-controls">
         <button class="page-btn" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

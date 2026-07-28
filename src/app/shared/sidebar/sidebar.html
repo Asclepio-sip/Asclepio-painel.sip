@@ -1,7 +1,4 @@
-<aside
-  class="sidebar"
-  [class.open]="isOpen"
-  (click)="$event.stopPropagation()">
+<aside class="sidebar">
 
   <nav class="menu">
 
@@ -15,7 +12,7 @@
 
       <!-- ── SEÇÃO: GESTÃO ── -->
       <div class="nav-section">
-        @if (authService.hasAnyPermission(gestaoPermissions)) {
+        @if (authService.hasAnyPermission(gestaoPermissions) || authService.hasAnyPermission(authService.PERMISSIONS.USUARIO)) {
           <span class="section-label">Gestão</span>
 
           <button
@@ -37,36 +34,25 @@
 
           @if (gestaoOpen) {
             <div class="submenu">
-              <a routerLink="/loja" routerLinkActive="active" class="submenu-link">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10"/>
-                </svg>
-                Loja
-              </a>
-              <a routerLink="/empresa" routerLinkActive="active" class="submenu-link">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 21V7a2 2 0 012-2h4V3h4v2h4a2 2 0 012 2v14"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21v-4h4v4M13 21v-6h4v6"/>
-                </svg>
-                Empresa
-              </a>
+              @if (authService.hasAnyPermission(gestaoPermissions)) {
+                <a routerLink="/loja" routerLinkActive="active" class="submenu-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10"/>
+                  </svg>
+                  Loja
+                </a>
+              }
+              @if (authService.hasAnyPermission(authService.PERMISSIONS.USUARIO)) {
+                <a routerLink="/AddUsuario" routerLinkActive="active" class="submenu-link">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m4-4a4 4 0 100-8 4 4 0 000 8z"/>
+                  </svg>
+                  Usuários
+                </a>
+              }
             </div>
           }
-        }
-      </div>
-
-      <!-- ── SEÇÃO: GERAL ── -->
-      <div class="nav-section">
-        <span class="section-label">Geral</span>
-
-        @if (authService.hasAnyPermission(authService.PERMISSIONS.USUARIO)) {
-          <a routerLink="/AddUsuario" routerLinkActive="active">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m4-4a4 4 0 100-8 4 4 0 000 8z"/>
-            </svg>
-            Usuários
-          </a>
         }
       </div>
 
@@ -75,76 +61,12 @@
         <div class="nav-section">
           <span class="section-label">Catálogo</span>
 
-          <button
-            type="button"
-            class="submenu-toggle"
-            [class.open]="produtoOpen"
-            (click)="toggleProduto()">
-            <span class="menu-item-content">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
-              </svg>
-              Produtos
-            </span>
-            <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          <a routerLink="/products" routerLinkActive="active">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
             </svg>
-          </button>
-
-          @if (produtoOpen) {
-            <div class="submenu">
-              <a routerLink="/products" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="submenu-link">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
-                </svg>
-                Todos os Produtos
-              </a>
-              <a routerLink="/addProduto" routerLinkActive="active" class="submenu-link">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Adicionar Produto
-              </a>
-              <a routerLink="/variacoes" routerLinkActive="active" class="submenu-link">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 12h.01M7 17h.01M12 7h5m-5 5h5m-5 5h5"/>
-                </svg>
-                Variações
-              </a>
-              <a routerLink="/addCategoria" routerLinkActive="active" class="submenu-link">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 12h4m-4 5h10M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/>
-                </svg>
-                Categorias
-              </a>
-
-              <!-- Submenu de categorias dinâmicas -->
-              @if (categorias.length > 0) {
-                <div class="submenu-nested-header" (click)="toggleCategorias()">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0l-4-4m4 4l-4 4"/>
-                  </svg>
-                  <span>Por Categoria</span>
-                  <svg class="chevron-icon" [class.rotated]="categoriasOpen" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                  </svg>
-                </div>
-                @if (categoriasOpen) {
-                  <div class="submenu-nested">
-                    @for (cat of categorias; track cat.id) {
-                      <button type="button" class="submenu-cat-btn"
-                        (click)="navegarCategoria(cat.id)">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 12h4"/>
-                        </svg>
-                        {{ cat.nomeCategoria }}
-                      </button>
-                    }
-                  </div>
-                }
-              }
-            </div>
-          }
+            Produtos
+          </a>
         </div>
       }
 
@@ -229,25 +151,7 @@
         }
       </div>
 
-      <!-- RODAPÉ -->
-      <div class="menu-footer">
-        <button class="logout-btn" (click)="fecharSidebar()">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          Fechar menu
-        </button>
-      </div>
-
     }
 
   </nav>
 </aside>
-
-<!-- BOTÃO TOGGLE -->
-<button
-  class="toggle-btn"
-  *ngIf="!isOpen"
-  (click)="abrirSidebar()">
-  ☰
-</button>

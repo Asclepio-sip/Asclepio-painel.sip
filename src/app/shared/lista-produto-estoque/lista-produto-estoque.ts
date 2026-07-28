@@ -1,14 +1,16 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { CartService } from '../../service/cart.service';
-import { Estoque, EstoqueService } from '../../service/estoque.service';
-import { Loja, LojaService } from '../../service/loja/loja.service';
+import { Estoque } from '../../service/estoque.service';
+import { Loja } from '../../service/loja/loja.service';
+import { PedidosService } from '../../service/pedidos.service';
 
 @Component({
   selector: 'app-lista-produto-estoque',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './lista-produto-estoque.html',
   styleUrl: './lista-produto-estoque.css',
 })
@@ -22,8 +24,7 @@ export class ListaProdutoEstoque implements OnInit {
   erro = '';
 
   constructor(
-    private estoqueService: EstoqueService,
-    private lojaService: LojaService,
+    private pedidosService: PedidosService,
     private cartService: CartService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -34,7 +35,7 @@ export class ListaProdutoEstoque implements OnInit {
   }
 
   carregarLojas() {
-    this.lojaService.listar(0, 1000).subscribe({
+    this.pedidosService.listarLojas(0, 1000).subscribe({
       next: response => {
         this.lojas = response.content;
         this.cdr.detectChanges();
@@ -51,7 +52,7 @@ export class ListaProdutoEstoque implements OnInit {
 
     const lojaId = this.lojaSelecionadaId ?? undefined;
 
-    this.estoqueService.filtrar(lojaId).subscribe({
+    this.pedidosService.relatorioEstoque(lojaId).subscribe({
       next: produtos => {
         this.produtos = produtos.filter(produto => produto.quantidade > 0);
         this.carregando = false;

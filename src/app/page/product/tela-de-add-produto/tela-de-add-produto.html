@@ -1,3 +1,4 @@
+
 <div class="add-produto-container">
 
   <!-- Cabecalho da pagina -->
@@ -17,119 +18,173 @@
 
   <form class="form-wrapper" (ngSubmit)="salvar()">
 
-    <!-- Card: Informacoes do Produto -->
-    <div class="form-card">
-      <div class="card-header">
-        <div class="card-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
-          </svg>
-        </div>
-        <div>
-          <h3 class="card-title">Informacoes do Produto</h3>
-          <p class="card-subtitle">Dados basicos e identificacao do produto</p>
-        </div>
-      </div>
+    <div class="form-main">
 
-      <div class="card-body">
-        <div class="form-group">
-          <label class="form-label">Nome do Produto <span class="required">*</span></label>
-          <input class="form-input" type="text" [(ngModel)]="name" name="name" required
-            placeholder="Ex: Dipirona 500mg" autocomplete="off" />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Descricao</label>
-          <textarea
-            class="form-input form-textarea"
-            [class.description-near-limit]="descricao.length >= 2700"
-            rows="4"
-            [(ngModel)]="descricao"
-            name="descricao"
-            [attr.maxlength]="limiteDescricao"
-            placeholder="Descricao detalhada do produto"
-          ></textarea>
-          <div class="description-info" [class.warning]="descricao.length >= 2700">
-            <span *ngIf="descricao.length < 2700">Máximo de {{ limiteDescricao }} caracteres.</span>
-            <span *ngIf="descricao.length >= 2700">Atenção: você está próximo do limite.</span>
-            <strong>{{ descricao.length }}/{{ limiteDescricao }}</strong>
+      <!-- Card: Informacoes do Produto -->
+      <div class="form-card">
+        <div class="card-header">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="card-title">Informacoes do Produto</h3>
+            <p class="card-subtitle">Dados basicos e identificacao do produto</p>
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Marca</label>
-          <input class="form-input" type="text" [(ngModel)]="marca" name="marca" 
-            placeholder="Ex: Generico, Bayer, etc" />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Categoria <span class="required">*</span></label>
-          <div class="custom-select" [class.open]="dropdownAberto">
-            <button type="button" class="custom-select-trigger" (click)="toggleDropdown()">
-              <span [class.placeholder]="!categoriaSelecionada">
-                {{ categoriaSelecionada || 'Selecione uma categoria...' }}
-              </span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-              </svg>
-            </button>
-            <ul *ngIf="dropdownAberto" class="custom-select-list">
-              <li *ngFor="let cat of categorias" (click)="selecionarCategoria(cat)" class="custom-select-item">
-                {{ cat.nomeCategoria }}
-              </li>
-            </ul>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Nome do Produto <span class="required">*</span></label>
+            <input class="form-input" type="text" [(ngModel)]="name" name="name" required
+              placeholder="Ex: Dipirona 500mg" autocomplete="off" />
           </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Banner de dica -->
-    <div class="tip-banner">
-      <div class="tip-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-      </div>
-      <div class="tip-content">
-        <span class="tip-label">DICA PROMOFARMA</span>
-        <p class="tip-text">Produtos com imagens em alta qualidade e descricoes detalhadas tem 60% mais chances de venda.</p>
-      </div>
-    </div>
-
-    <!-- Card: Imagem do Produto -->
-    <div class="form-card">
-      <div class="card-header">
-        <div class="card-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-          </svg>
-        </div>
-        <div>
-          <h3 class="card-title">Imagem do Produto</h3>
-          <p class="card-subtitle">PNG, JPG, WEBP ate 5MB</p>
-        </div>
-      </div>
-
-      <div class="card-body">
-        <div class="upload-zone" (dragover)="onDragOver($event)" (drop)="onDrop($event)" (click)="fileInput.click()">
-          <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden #fileInput />
-
-          <ng-container *ngIf="!previewImagem">
-            <div class="upload-icon-wrap">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-              </svg>
+          <div class="form-group">
+            <label class="form-label">Descricao</label>
+            <textarea
+              class="form-input form-textarea"
+              [class.description-near-limit]="descricao.length >= 2700"
+              rows="4"
+              [(ngModel)]="descricao"
+              name="descricao"
+              [attr.maxlength]="limiteDescricao"
+              placeholder="Descricao detalhada do produto"
+            ></textarea>
+            <div class="description-info" [class.warning]="descricao.length >= 2700">
+              <span *ngIf="descricao.length < 2700">Máximo de {{ limiteDescricao }} caracteres.</span>
+              <span *ngIf="descricao.length >= 2700">Atenção: você está próximo do limite.</span>
+              <strong>{{ descricao.length }}/{{ limiteDescricao }}</strong>
             </div>
-            <p class="upload-main">Clique ou arraste a imagem aqui</p>
-            <p class="upload-hint">Recomendado: fundo branco, 1000x1000px</p>
-          </ng-container>
+          </div>
 
-          <ng-container *ngIf="previewImagem">
-            <img [src]="previewImagem" class="preview-img" />
-            <p class="upload-change">Clique para trocar a imagem</p>
-          </ng-container>
+          <div class="form-group">
+            <label class="form-label">Marca</label>
+            <input class="form-input" type="text" [(ngModel)]="marca" name="marca"
+              placeholder="Ex: Generico, Bayer, etc" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Categoria</label>
+            <div class="categoria-select-row">
+              <div class="custom-select" [class.open]="dropdownAberto">
+                <button type="button" class="custom-select-trigger" (click)="toggleDropdown()">
+                  <span [class.placeholder]="!categoriaSelecionada">
+                    {{ categoriaSelecionada || 'Selecione uma categoria...' }}
+                  </span>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </button>
+                <ul *ngIf="dropdownAberto" class="custom-select-list">
+                  <li (click)="limparCategoria()" class="custom-select-item custom-select-item-clear">
+                    Nenhuma categoria
+                  </li>
+                  <li *ngFor="let cat of categorias" (click)="selecionarCategoria(cat)" class="custom-select-item">
+                    {{ cat.nomeCategoriaPai ? cat.nomeCategoriaPai + ' / ' + cat.nomeCategoria : cat.nomeCategoria }}
+                  </li>
+                </ul>
+              </div>
+              <button type="button" class="btn-nova-categoria" title="Adicionar nova categoria" (click)="novaCategoria()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+
+      <!-- Card: Imagem do Produto -->
+      <div class="form-card">
+        <div class="card-header">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="card-title">Imagem do Produto</h3>
+            <p class="card-subtitle">PNG, JPG, WEBP ate 5MB</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="upload-zone" (dragover)="onDragOver($event)" (drop)="onDrop($event)" (click)="fileInput.click()">
+            <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden #fileInput />
+
+            <ng-container *ngIf="!previewImagem">
+              <div class="upload-icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                </svg>
+              </div>
+              <p class="upload-main">Clique ou arraste a imagem aqui</p>
+              <p class="upload-hint">Recomendado: fundo branco, 1000x1000px</p>
+            </ng-container>
+
+            <ng-container *ngIf="previewImagem">
+              <img [src]="previewImagem" class="preview-img" />
+              <p class="upload-change">Clique para trocar a imagem</p>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="form-side">
+
+      <!-- Card: Estoque Inicial -->
+      <div class="form-card">
+        <div class="card-header">
+          <div class="card-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="card-title">Estoque Inicial</h3>
+            <p class="card-subtitle">Variacao e disponibilidade do produto na loja</p>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">Nome da Variacao <span class="required">*</span></label>
+            <input class="form-input" type="text" [(ngModel)]="nomeVariacao" name="nomeVariacao" required
+              placeholder="Ex: Padrao, 500mg, Azul" autocomplete="off" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Codigo de Barras</label>
+            <input class="form-input" type="text" [(ngModel)]="codigoBarras" name="codigoBarras"
+              placeholder="Ex: 7891234567890" autocomplete="off" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Loja <span class="required">*</span></label>
+            <select class="form-input" [(ngModel)]="lojaId" name="lojaId" required>
+              <option [ngValue]="null">Selecione uma loja...</option>
+              <option *ngFor="let loja of lojas" [ngValue]="loja.id">{{ loja.nomeLoja }}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Quantidade <span class="required">*</span></label>
+            <input class="form-input" type="number" min="0" [(ngModel)]="quantidade" name="quantidade"
+              placeholder="Ex: 10" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Preco de Venda <span class="required">*</span></label>
+            <input class="form-input" type="number" min="0" step="0.01" [(ngModel)]="precoVenda" name="precoVenda"
+              placeholder="Ex: 19.90" />
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Barra de acoes -->
@@ -144,10 +199,10 @@
           <div class="progress-row">
             <div class="progress-bar">
               <div class="progress-fill"
-                [style.width.%]="((name ? 1 : 0) + (categoriaSelecionada ? 1 : 0) + (imagemFile ? 1 : 0)) / 3 * 100">
+                [style.width.%]="(camposPreenchidos / totalCamposObrigatorios) * 100">
               </div>
             </div>
-            <span class="progress-count">{{ (name ? 1 : 0) + (categoriaSelecionada ? 1 : 0) + (imagemFile ? 1 : 0) }}/3</span>
+            <span class="progress-count">{{ camposPreenchidos }}/{{ totalCamposObrigatorios }}</span>
           </div>
         </div>
       </div>

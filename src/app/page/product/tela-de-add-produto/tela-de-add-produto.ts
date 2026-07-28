@@ -5,6 +5,8 @@ import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 
 import { ProductService } from '../../../service/product.service';
+import { CategoriaService } from '../../../service/categoria.service';
+import { EstoqueService, EstoqueLoja } from '../../../service/estoque.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -34,18 +36,95 @@ export class TelaDeAddProduto implements OnInit {
 
   dropdownAberto = false;
 
+  nomeVariacao = '';
+  codigoBarras = '';
+  lojaId: number | null = null;
+  quantidade: number | null = null;
+  precoVenda: number | null = null;
+  lojas: EstoqueLoja[] = [];
+
+  readonly totalCamposObrigatorios = 6;
+
   constructor(
     private productService: ProductService,
+    private categoriaService: CategoriaService,
+    private estoqueService: EstoqueService,
     private router: Router,
     private elementRef: ElementRef
   ) {}
 
   ngOnInit() {
+    this.carregarCategorias();
+    this.carregarLojas();
+  }
+
+  private carregarLojas() {
+    this.estoqueService.listarLojas().subscribe({
+      next: response => this.lojas = response.content,
+      error: () => {
+        Swal.fire('Erro', 'Erro ao carregar lojas', 'error');
+      }
+    });
+  }
+
+  get camposPreenchidos(): number {
+    return (
+      (this.name.trim() ? 1 : 0) +
+      (this.imagemFile ? 1 : 0) +
+      (this.nomeVariacao.trim() ? 1 : 0) +
+      (this.lojaId ? 1 : 0) +
+      (this.quantidade && this.quantidade > 0 ? 1 : 0) +
+      (this.precoVenda && this.precoVenda > 0 ? 1 : 0)
+    );
+  }
+
+  private carregarCategorias() {
     this.productService.getCategoriasComId().subscribe({
       next: cats => this.categorias = cats,
       error: () => {
         Swal.fire('Erro', 'Erro ao carregar categorias', 'error');
       }
+    });
+  }
+
+  novaCategoria() {
+    this.dropdownAberto = false;
+
+    Swal.fire({
+      title: 'Nova categoria',
+      input: 'text',
+      inputLabel: 'Nome da categoria',
+      inputPlaceholder: 'Ex: Higiene Pessoal',
+      showCancelButton: true,
+      confirmButtonText: 'Criar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#C5794E',
+      inputValidator: (value) => {
+        if (!value || !value.trim()) {
+          return 'Digite o nome da categoria';
+        }
+        return null;
+      }
+    }).then((result) => {
+      if (!result.isConfirmed || !result.value) return;
+
+      this.categoriaService.criar({ nomeCategoria: result.value.trim() }).subscribe({
+        next: (categoria: any) => {
+          Swal.fire('Sucesso', 'Categoria criada!', 'success');
+          this.productService.getCategoriasComId().subscribe({
+            next: cats => {
+              this.categorias = cats;
+              const criada = categoria?.id
+                ? this.categorias.find(c => c.id === categoria.id)
+                : this.categorias.find(c => c.nomeCategoria === result.value.trim());
+              if (criada) this.selecionarCategoria(criada);
+            }
+          });
+        },
+        error: () => {
+          Swal.fire('Erro', 'Nao foi possivel criar a categoria', 'error');
+        }
+      });
     });
   }
 
@@ -80,8 +159,16 @@ export class TelaDeAddProduto implements OnInit {
   }
 
   selecionarCategoria(cat: any) {
-    this.categoriaSelecionada = cat.nomeCategoria;
+    this.categoriaSelecionada = cat.nomeCategoriaPai
+      ? `${cat.nomeCategoriaPai} / ${cat.nomeCategoria}`
+      : cat.nomeCategoria;
     this.categoriaId = cat.id;
+    this.dropdownAberto = false;
+  }
+
+  limparCategoria() {
+    this.categoriaSelecionada = '';
+    this.categoriaId = null;
     this.dropdownAberto = false;
   }
 
@@ -98,7 +185,7 @@ export class TelaDeAddProduto implements OnInit {
   }
 
   salvar() {
-    if (!this.name.trim() || !this.categoriaSelecionada || !this.imagemFile || !this.categoriaId) {
+    if (!this.name.trim() || !this.imagemFile) {
       Swal.fire('Atencao', 'Preencha todos os campos obrigatorios.', 'warning');
       return;
     }
@@ -112,22 +199,27 @@ export class TelaDeAddProduto implements OnInit {
       return;
     }
 
-    this.productService.addProduct({
+    if (!this.nomeVariacao.trim() || !this.lojaId || !this.quantidade || !this.precoVenda) {
+      Swal.fire('Atencao', 'Preencha os dados de estoque (variacao, loja, quantidade e preco).', 'warning');
+      return;
+    }
+
+    this.productService.criarProdutoCompleto({
       nome: this.name.trim(),
       descricao: this.descricao.trim(),
       marca: this.marca.trim(),
       categoriaId: this.categoriaId,
-      imagem: this.imagemFile!
+      imagem: this.imagemFile!,
+      nomeVariacao: this.nomeVariacao.trim(),
+      codigoBarras: this.codigoBarras.trim(),
+      lojaId: this.lojaId,
+      quantidade: this.quantidade,
+      precoVenda: this.precoVenda
     }).subscribe({
-      next: (produto) => {
-        Swal.fire('Sucesso', 'Produto cadastrado!', 'success')
+      next: () => {
+        Swal.fire('Sucesso', 'Produto e estoque cadastrados!', 'success')
           .then(() => {
-            if (produto?.id) {
-              this.router.navigate(['/products', produto.id, 'variacoes']);
-              return;
-            }
-
-            this.router.navigate(['/variacoes']);
+            this.router.navigate(['/products']);
           });
       },
       error: () => {

@@ -80,6 +80,18 @@ export interface EstoqueFiltros {
   sort?: string | string[];
 }
 
+export interface EstoqueLoja {
+  id: number;
+  nomeLoja: string;
+}
+
+export interface EstoqueLojaFiltros {
+  id?: number | null;
+  nomeLoja?: string;
+  page?: number;
+  size?: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -169,6 +181,22 @@ export class EstoqueService {
     );
   }
 
+
+  listarLojas(
+    filtros: EstoqueLojaFiltros = {}
+  ): Observable<PageResponse<EstoqueLoja>> {
+    let params = new HttpParams()
+      .set('page', filtros.page ?? 0)
+      .set('size', filtros.size ?? 1000);
+
+    params = this.adicionarParametro(params, 'id', filtros.id);
+    params = this.adicionarParametro(params, 'nomeLoja', filtros.nomeLoja);
+
+    return this.http.get<PageResponse<EstoqueLoja>>(
+      `${this.api}/loja`,
+      { params }
+    );
+  }
 
   atualizarEstoque(
   data: AtualizarEstoqueRequest

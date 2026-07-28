@@ -150,6 +150,10 @@ export class AddEditCartegoria implements OnInit {
     this.cdr.detectChanges();
   }
 
+  voltarParaProdutos() {
+    this.router.navigateByUrl('/products');
+  }
+
   obterCategoriaPaiId(cat: Categoria): number | null {
     return cat.categoriaPaiId ?? cat.categoriaPai?.id ?? null;
   }
@@ -162,6 +166,17 @@ export class AddEditCartegoria implements OnInit {
     }
 
     return this.categorias.find(c => c.id === categoriaPaiId)?.nomeCategoria ?? 'Subcategoria';
+  }
+
+  nomeCategoriaCompleto(cat: Categoria): string {
+    const categoriaPaiId = this.obterCategoriaPaiId(cat);
+
+    if (!categoriaPaiId) {
+      return cat.nomeCategoria;
+    }
+
+    const pai = this.categorias.find(c => c.id === categoriaPaiId);
+    return pai ? `${pai.nomeCategoria} / ${cat.nomeCategoria}` : cat.nomeCategoria;
   }
 
   private montarPayload(): CategoriaRequest {

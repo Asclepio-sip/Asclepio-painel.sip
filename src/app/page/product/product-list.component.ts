@@ -1,9 +1,9 @@
 ﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Product, ProductService } from '../../service/product.service';
-import { CategoriaService, Categoria } from '../../service/categoria.service';
+import { Categoria } from '../../service/categoria.service';
 import { NavbarAdministradorComponent } from "../../shared/navbar-administrador/navbar-administrador";
 
 @Component({
@@ -30,11 +30,11 @@ export class ProductListComponent implements OnInit {
     private produtoService: ProductService,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute,
-    private categoriaService: CategoriaService
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.categoriaService.listar().subscribe({
+    this.produtoService.getCategoriasProdutos().subscribe({
       next: cats => {
         this.categorias = cats;
         this.todosProdutos = this.preencherCategorias(this.todosProdutos);
@@ -80,6 +80,28 @@ export class ProductListComponent implements OnInit {
     if (this.paginaAtualProduto > 0) {
       this.carregarProdutos(this.paginaAtualProduto - 1);
     }
+  }
+
+  onFiltroCategoriaChange(categoriaId: number | null) {
+    this.router.navigate(['/products'], {
+      queryParams: { categoriaId: categoriaId ?? null }
+    });
+  }
+
+  nomeCategoriaCompleto(categoria: Categoria): string {
+    return categoria.nomeCategoriaPai
+      ? `${categoria.nomeCategoriaPai} / ${categoria.nomeCategoria}`
+      : categoria.nomeCategoria;
+  }
+
+  nomeCategoriaProduto(p: Product): string {
+    if (p.categoria) {
+      return this.nomeCategoriaCompleto(p.categoria);
+    }
+    if (p.categoriaNome) {
+      return p.categoriaNome;
+    }
+    return p.categoriaId ? `Categoria #${p.categoriaId}` : '';
   }
 
   private preencherCategorias(produtos: Product[]): Product[] {

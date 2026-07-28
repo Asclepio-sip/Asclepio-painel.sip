@@ -24,7 +24,7 @@ export class LoginComponent {
 
   entrar() {
     this.authService.login(this.login, this.password).subscribe({
-      next: () => this.router.navigate(['/products']),
+      next: () => this.router.navigate([this.authService.getHomeRoute()]),
       error: () => alert('Login ou senha inválidos')
     });
   }
