@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Permission, Role, User } from '../../service/UserAdmin.service';
 import { UserAdminService } from '../../service/UserAdmin.service';
-import { of, switchMap } from 'rxjs';
+import { forkJoin, of, switchMap } from 'rxjs';
 
 type PermissionAction = 'VIEW' | 'CREATE' | 'UPDATE' | 'DELETE';
 
@@ -23,9 +23,9 @@ interface PermissionGroup {
 export class AdminUsersComponent implements OnInit {
 
   users: User[] = [];
-  filteredUsers: User[] = [];
   roles: Role[] = [];
   permissions: Permission[] = [];
+  adminCount = 0;
 
   // Editar
   editUserId: string | null = null;
@@ -56,7 +56,10 @@ export class AdminUsersComponent implements OnInit {
   filterRole = '';
   showFiltros = false;
   currentPage = 1;
-  pageSize = 3;
+  pageSize = 10;
+  totalElements = 0;
+  totalPages = 1;
+  private buscaTimeout: any;
 
   // Tabela de permissÃµes
   permissionActions: { key: PermissionAction; label: string }[] = [
@@ -83,16 +86,22 @@ export class AdminUsersComponent implements OnInit {
   ngOnInit() {
     this.carregarRoles();
     this.carregarPermissoes();
-    this.carregarUsuarios();
+    this.carregarUsuarios(0);
   }
 
-  carregarUsuarios() {
+  carregarUsuarios(page: number = 0) {
     this.loading = true;
 
-    this.userService.listarUsuarios().subscribe({
-      next: users => {
-        this.users = users;
-        this.filtrarUsuarios();
+    this.userService.listarUsuarios(page, this.pageSize, {
+      login: this.searchTerm.trim() || undefined,
+      nomeRole: this.filterRole || undefined,
+      sort: this.sortBy === 'nome' ? 'username,asc' : undefined
+    }).subscribe({
+      next: response => {
+        this.users = response.users;
+        this.totalElements = response.totalElements;
+        this.totalPages = Math.max(1, response.totalPages);
+        this.currentPage = response.number + 1;
         this.loading = false;
         this.cd.detectChanges();
       },
@@ -107,6 +116,7 @@ export class AdminUsersComponent implements OnInit {
     this.userService.listarRoles().subscribe({
       next: roles => {
         this.roles = roles;
+        this.atualizarAdminCount();
         this.cd.detectChanges();
       },
       error: () => alert('Erro ao carregar roles')
@@ -126,29 +136,10 @@ export class AdminUsersComponent implements OnInit {
   // â”€â”€ Filtros, busca e paginaÃ§Ã£o â”€â”€
 
   filtrarUsuarios() {
-    let result = [...this.users];
-
-    if (this.searchTerm.trim()) {
-      const term = this.searchTerm.toLowerCase();
-      result = result.filter(u =>
-        u.login.toLowerCase().includes(term) ||
-        (u.email && u.email.toLowerCase().includes(term)) ||
-        (u.username && u.username.toLowerCase().includes(term))
-      );
-    }
-
-    if (this.filterRole) {
-      result = result.filter(u => this.getUserRoleName(u) === this.filterRole);
-    }
-
-    if (this.sortBy === 'nome') {
-      result.sort((a, b) => a.login.localeCompare(b.login));
-    } else if (this.sortBy === 'role') {
-      result.sort((a, b) => this.getUserRoleName(a).localeCompare(this.getUserRoleName(b)));
-    }
-
-    this.filteredUsers = result;
-    this.currentPage = 1;
+    clearTimeout(this.buscaTimeout);
+    this.buscaTimeout = setTimeout(() => {
+      this.carregarUsuarios(0);
+    }, 400);
   }
 
   toggleFiltros() {
@@ -172,11 +163,23 @@ export class AdminUsersComponent implements OnInit {
 
   // â”€â”€ KPIs â”€â”€
 
-  getAdminCount(): number {
-    return this.users.filter(u => {
-      const roleName = this.getUserRoleName(u).toUpperCase();
-      return roleName.includes('ADMIN') || roleName.includes('SUPER');
-    }).length;
+  private atualizarAdminCount() {
+    const adminRoles = this.roles.filter(r => /ADMIN|SUPER/i.test(r.nome));
+
+    if (adminRoles.length === 0) {
+      this.adminCount = 0;
+      return;
+    }
+
+    forkJoin(
+      adminRoles.map(role => this.userService.listarUsuarios(0, 1, { roleId: role.id }))
+    ).subscribe({
+      next: respostas => {
+        this.adminCount = respostas.reduce((soma, r) => soma + r.totalElements, 0);
+        this.cd.detectChanges();
+      },
+      error: () => {}
+    });
   }
 
   // â”€â”€ Avatar & Visual helpers â”€â”€
@@ -195,7 +198,7 @@ export class AdminUsersComponent implements OnInit {
   }
 
   getUserPermissionCount(user: User): number {
-    return user.permissions?.length ?? 0;
+    return user.totalPermissoes ?? user.permissions?.length ?? 0;
   }
 
   getPermissionPercent(user: User): number {
@@ -213,16 +216,15 @@ export class AdminUsersComponent implements OnInit {
   // â”€â”€ Pagination â”€â”€
 
   get paginatedUsers(): User[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.filteredUsers.slice(start, start + this.pageSize);
+    return this.users;
   }
 
   getPageStart(): number {
-    return Math.min(this.currentPage * this.pageSize, this.filteredUsers.length);
+    return Math.min(this.currentPage * this.pageSize, this.totalElements);
   }
 
   getTotalPages(): number {
-    return Math.max(1, Math.ceil(this.filteredUsers.length / this.pageSize));
+    return this.totalPages;
   }
 
   getPages(): number[] {
@@ -233,8 +235,8 @@ export class AdminUsersComponent implements OnInit {
   }
 
   changePage(page: number) {
-    if (page >= 1 && page <= this.getTotalPages()) {
-      this.currentPage = page;
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.carregarUsuarios(page - 1);
     }
   }
 
@@ -274,7 +276,8 @@ export class AdminUsersComponent implements OnInit {
       next: () => {
         alert('Usuario atualizado!');
         this.editUserId = null;
-        this.carregarUsuarios();
+        this.atualizarAdminCount();
+        this.carregarUsuarios(this.currentPage - 1);
       },
       error: () => alert('Erro ao atualizar usuario')
     });
@@ -344,9 +347,9 @@ export class AdminUsersComponent implements OnInit {
       roleId: this.criarRoleId,
       permissionIds: this.criarPermissionIds
     }).pipe(
-      switchMap(() => this.userService.listarUsuarios(0, 1000)),
-      switchMap(users => {
-        const usuarioCriado = users.find(u => u.login === this.criarLogin);
+      switchMap(() => this.userService.listarUsuarios(0, 20, { login: this.criarLogin })),
+      switchMap(response => {
+        const usuarioCriado = response.users.find(u => u.login === this.criarLogin);
         if (!usuarioCriado || this.criarPermissionIds.length === 0) return of(null);
         return this.userService.atualizarUsuario(usuarioCriado.id, {
           login: this.criarLogin,
@@ -360,7 +363,8 @@ export class AdminUsersComponent implements OnInit {
         alert('UsuÃ¡rio criado com sucesso!');
         this.showCriarModal = false;
         this.salvandoCriar = false;
-        this.carregarUsuarios();
+        this.atualizarAdminCount();
+        this.carregarUsuarios(0);
       },
       error: (err) => {
         this.salvandoCriar = false;

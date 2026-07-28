@@ -89,6 +89,41 @@
   color: #C5794E;
 }
 
+/* ── Filtro de categoria ── */
+.filtro-categoria {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+.filtro-categoria:focus-within {
+  border-color: #C5794E;
+}
+
+.filtro-categoria svg {
+  width: 16px;
+  height: 16px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.select-categoria {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #374151;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  max-width: 180px;
+}
+
 /* ── Categoria badge (filtro ativo) ── */
 .categoria-badge {
   display: inline-flex;
@@ -123,6 +158,7 @@
 .products-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .products-table thead tr {
@@ -142,7 +178,9 @@
 }
 
 .th-img { width: 72px; }
-.th-actions { width: 140px; text-align: right; }
+.th-name { width: 200px; }
+.th-variacoes { width: 110px; text-align: center; }
+.th-actions { width: 140px; text-align: center; }
 
 /* ── Rows ── */
 .product-row {
@@ -186,10 +224,11 @@
 }
 
 /* Name */
-.td-name { max-width: 320px; }
+.td-name { width: 200px; max-width: 200px; }
 
 .product-name {
   display: block;
+  width: 100%;
   font-size: 14px;
   font-weight: 600;
   color: #111827;
@@ -203,6 +242,28 @@
   font-size: 11.5px;
   color: #9ca3af;
   margin-top: 2px;
+}
+
+/* Variações */
+.td-variacoes { text-align: center; }
+
+.variation-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 8px;
+  background: #fdf6f0;
+  color: #C5794E;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.variation-count.no-var {
+  background: #f3f4f6;
+  color: #9ca3af;
 }
 
 /* Categoria */
@@ -224,20 +285,19 @@
 }
 
 /* Actions */
-.td-actions { text-align: right; }
+.td-actions { text-align: center; }
 
 .btn-variacoes {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
   background: #fdf6f0;
   color: #C5794E;
   border: 1.5px solid #f0cdb0;
   border-radius: 7px;
-  font-size: 12.5px;
-  font-weight: 600;
-  font-family: 'Poppins', sans-serif;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }

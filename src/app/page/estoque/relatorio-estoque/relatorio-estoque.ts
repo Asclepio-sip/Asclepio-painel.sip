@@ -4,15 +4,10 @@ import { FormsModule } from '@angular/forms';
 import {
   MovimentacaoEstoque,
   MovimentacaoEstoqueFiltros,
+  MovimentacaoLoja,
   RelatorioEstoqueService,
   TipoMovimentacaoEstoque
 } from '../../../service/Relatorio-estoque.service';
-import {
-  Loja,
-  LojaService
-} from '../../../service/loja/loja.service';
-import { EstoqueService } from '../../../service/estoque.service';
-import { ProductService } from '../../../service/product.service';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -42,7 +37,7 @@ export class RelatorioEstoque implements OnInit {
   ];
 
   movimentacoes: MovimentacaoEstoque[] = [];
-  lojas: Loja[] = [];
+  lojas: MovimentacaoLoja[] = [];
   carregando = false;
   erro = '';
   totalElementos = 0;
@@ -59,10 +54,7 @@ export class RelatorioEstoque implements OnInit {
   ];
 
   constructor(
-    private relatorioEstoqueService: RelatorioEstoqueService,
-    private lojaService: LojaService,
-    private estoqueService: EstoqueService,
-    private productService: ProductService
+    private relatorioEstoqueService: RelatorioEstoqueService
   ) {}
 
   ngOnInit() {
@@ -71,8 +63,8 @@ export class RelatorioEstoque implements OnInit {
   }
 
   carregarLojas() {
-    this.lojaService
-      .listar()
+    this.relatorioEstoqueService
+      .listarLojas()
       .subscribe({
         next: (response) => {
           this.lojas = response.content;
@@ -90,8 +82,8 @@ export class RelatorioEstoque implements OnInit {
 
     forkJoin({
       relatorio: this.relatorioEstoqueService.listar(this.filtros),
-      estoques: this.estoqueService.listar(0, 1000),
-      produtos: this.productService.loadProducts(0, 1000)
+      estoques: this.relatorioEstoqueService.relatorioEstoqueLojas(0, 1000),
+      produtos: this.relatorioEstoqueService.listarProdutos(0, 1000)
     })
       .subscribe({
         next: ({ relatorio: res, estoques, produtos }) => {

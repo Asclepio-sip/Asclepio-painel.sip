@@ -8,6 +8,12 @@ import { ListaProdutoEstoque } from '../../../shared/lista-produto-estoque/lista
 
 type FormaDePagamento = 'PIX' | 'DINHEIRO' | 'CARTAO';
 
+const FORMAS_DE_PAGAMENTO: { value: FormaDePagamento; label: string }[] = [
+  { value: 'PIX', label: 'PIX' },
+  { value: 'DINHEIRO', label: 'Dinheiro' },
+  { value: 'CARTAO', label: 'Cartao' }
+];
+
 @Component({
   selector: 'app-fazer-pedido',
   standalone: true,
@@ -19,6 +25,7 @@ export class FazerPedido implements OnInit, OnDestroy {
   itens: CartItem[] = [];
   nomeCliente = '';
   formaDePagamento: FormaDePagamento = 'PIX';
+  formasDePagamento = FORMAS_DE_PAGAMENTO;
   finalizando = false;
   erro = '';
   sucesso = '';
