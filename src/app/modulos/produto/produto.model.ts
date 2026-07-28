@@ -7,6 +7,7 @@ export interface Product {
   imagemBase64: string;
   categoria?: Categoria;
   variacoes: ProdutoVariacao[];
+  quantidadeVariacoes?: number;
   categoriaId?: number;
   nomeCategoria?: string | null;
   categoriaNome?: string;
@@ -18,6 +19,25 @@ export interface ProdutoAddDTO {
   marca?: string;
   categoriaId: number;
   imagem: File;
+}
+
+export interface ProdutoCompletoRequest {
+  nome: string;
+  descricao?: string;
+  marca?: string;
+  categoriaId?: number | null;
+  imagem: File;
+  nomeVariacao: string;
+  codigoBarras?: string;
+  lojaId: number;
+  quantidade: number;
+  precoVenda: number;
+}
+
+export interface ProdutoCompletoResponse {
+  produto: Product;
+  variacao: ProdutoVariacao;
+  estoqueId: number;
 }
 
 export interface ProdutoUpdateDTO {

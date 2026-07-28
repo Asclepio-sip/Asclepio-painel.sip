@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 
 import { ProductService } from '../../../service/product.service';
 import { CategoriaService } from '../../../service/categoria.service';
+import { EstoqueService, EstoqueLoja } from '../../../service/estoque.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -35,15 +36,46 @@ export class TelaDeAddProduto implements OnInit {
 
   dropdownAberto = false;
 
+  nomeVariacao = '';
+  codigoBarras = '';
+  lojaId: number | null = null;
+  quantidade: number | null = null;
+  precoVenda: number | null = null;
+  lojas: EstoqueLoja[] = [];
+
+  readonly totalCamposObrigatorios = 6;
+
   constructor(
     private productService: ProductService,
     private categoriaService: CategoriaService,
+    private estoqueService: EstoqueService,
     private router: Router,
     private elementRef: ElementRef
   ) {}
 
   ngOnInit() {
     this.carregarCategorias();
+    this.carregarLojas();
+  }
+
+  private carregarLojas() {
+    this.estoqueService.listarLojas().subscribe({
+      next: response => this.lojas = response.content,
+      error: () => {
+        Swal.fire('Erro', 'Erro ao carregar lojas', 'error');
+      }
+    });
+  }
+
+  get camposPreenchidos(): number {
+    return (
+      (this.name.trim() ? 1 : 0) +
+      (this.imagemFile ? 1 : 0) +
+      (this.nomeVariacao.trim() ? 1 : 0) +
+      (this.lojaId ? 1 : 0) +
+      (this.quantidade && this.quantidade > 0 ? 1 : 0) +
+      (this.precoVenda && this.precoVenda > 0 ? 1 : 0)
+    );
   }
 
   private carregarCategorias() {
@@ -134,6 +166,12 @@ export class TelaDeAddProduto implements OnInit {
     this.dropdownAberto = false;
   }
 
+  limparCategoria() {
+    this.categoriaSelecionada = '';
+    this.categoriaId = null;
+    this.dropdownAberto = false;
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     if (!this.elementRef.nativeElement.contains(event.target)) {
@@ -147,7 +185,7 @@ export class TelaDeAddProduto implements OnInit {
   }
 
   salvar() {
-    if (!this.name.trim() || !this.categoriaSelecionada || !this.imagemFile || !this.categoriaId) {
+    if (!this.name.trim() || !this.imagemFile) {
       Swal.fire('Atencao', 'Preencha todos os campos obrigatorios.', 'warning');
       return;
     }
@@ -161,22 +199,27 @@ export class TelaDeAddProduto implements OnInit {
       return;
     }
 
-    this.productService.addProduct({
+    if (!this.nomeVariacao.trim() || !this.lojaId || !this.quantidade || !this.precoVenda) {
+      Swal.fire('Atencao', 'Preencha os dados de estoque (variacao, loja, quantidade e preco).', 'warning');
+      return;
+    }
+
+    this.productService.criarProdutoCompleto({
       nome: this.name.trim(),
       descricao: this.descricao.trim(),
       marca: this.marca.trim(),
       categoriaId: this.categoriaId,
-      imagem: this.imagemFile!
+      imagem: this.imagemFile!,
+      nomeVariacao: this.nomeVariacao.trim(),
+      codigoBarras: this.codigoBarras.trim(),
+      lojaId: this.lojaId,
+      quantidade: this.quantidade,
+      precoVenda: this.precoVenda
     }).subscribe({
-      next: (produto) => {
-        Swal.fire('Sucesso', 'Produto cadastrado!', 'success')
+      next: () => {
+        Swal.fire('Sucesso', 'Produto e estoque cadastrados!', 'success')
           .then(() => {
-            if (produto?.id) {
-              this.router.navigate(['/products', produto.id, 'variacoes']);
-              return;
-            }
-
-            this.router.navigate(['/variacoes']);
+            this.router.navigate(['/products']);
           });
       },
       error: () => {

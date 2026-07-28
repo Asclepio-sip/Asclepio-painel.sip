@@ -49,7 +49,6 @@
         <h3>{{ produto.nomeProduto }}</h3>
 
         <div class="product-meta">
-          <span>{{ produto.nomeLoja }}</span>
           <span *ngIf="produto.nomeVariacao">{{ produto.nomeVariacao }}</span>
         </div>
 
@@ -72,5 +71,10 @@
         </button>
       </div>
     </article>
+
+    <a routerLink="/addProduto" class="product-card ghost-card" title="Cadastrar novo produto">
+      <span class="ghost-plus">+</span>
+      <span class="ghost-label">Novo Produto</span>
+    </a>
   </div>
 </div>

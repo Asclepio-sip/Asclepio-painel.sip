@@ -6,6 +6,12 @@
       <p class="breadcrumb">ADMIN / PRODUTOS / <span>CATEGORIAS</span></p>
       <h1 class="page-title">{{ editandoId ? 'Editar Categoria' : 'Categorias' }}</h1>
     </div>
+    <button type="button" class="btn-voltar" (click)="voltarParaProdutos()">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Voltar para Produtos
+    </button>
   </div>
 
   <div class="content-grid">
@@ -82,7 +88,7 @@
           </tr>
           <tr *ngFor="let cat of categorias" class="cat-row">
             <td class="td-id">{{ cat.id }}</td>
-            <td class="td-nome">{{ cat.nomeCategoria }}</td>
+            <td class="td-nome">{{ nomeCategoriaCompleto(cat) }}</td>
             <td><span class="tipo-badge" [class.sub]="cat.categoriaPaiId">{{ nomeCategoriaPai(cat) }}</span></td>
             <td class="td-actions">
               <button class="btn-edit" type="button" (click)="editar(cat)">

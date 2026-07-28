@@ -15,7 +15,7 @@
 /* ── Cabecalho ── */
 .page-header {
   width: 100%;
-  max-width: 680px;
+  max-width: 1040px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -51,10 +51,25 @@
 /* ── Formulario ── */
 .form-wrapper {
   width: 100%;
-  max-width: 680px;
+  max-width: 1040px;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  align-items: start;
+  gap: 16px;
+}
+
+.form-main {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
+}
+
+.form-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
 }
 
 /* ── Cards ── */
@@ -83,7 +98,7 @@
 .card-body { padding: 22px 24px; display: flex; flex-direction: column; gap: 16px; }
 
 /* ── Inputs ── */
-.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .form-label { font-size: 12.5px; font-weight: 600; color: #374151; }
 .required { color: #C5794E; }
 .form-input {
@@ -162,6 +177,7 @@
 }
 .custom-select-item { padding: 10px 14px; border-radius: 6px; font-size: 13.5px; color: #374151; cursor: pointer; transition: background .12s; }
 .custom-select-item:hover { background: #fdf6f0; color: #C5794E; }
+.custom-select-item-clear { color: #9ca3af; font-style: italic; border-bottom: 1px solid #f3f4f6; border-radius: 0; margin-bottom: 4px; padding-bottom: 12px; }
 
 /* ── Banner dica ── */
 .tip-banner {
@@ -201,6 +217,7 @@
 
 /* ── Barra de acoes ── */
 .action-bar {
+  grid-column: 1 / -1;
   background: #fff;
   border-radius: 14px;
   box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
@@ -229,7 +246,7 @@
 /* ── Rodape ── */
 .page-footer {
   width: 100%;
-  max-width: 680px;
+  max-width: 1040px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -242,6 +259,10 @@
 .footer-links { display: flex; gap: 16px; }
 .footer-links a { color: #9ca3af; text-decoration: none; font-size: 12px; font-weight: 500; letter-spacing: .04em; transition: color .15s; }
 .footer-links a:hover { color: #C5794E; }
+
+@media (max-width: 860px) {
+  .form-wrapper { grid-template-columns: 1fr; }
+}
 
 @media (max-width: 600px) {
   .add-produto-container { padding: 20px 12px 32px; }

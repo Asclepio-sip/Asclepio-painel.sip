@@ -3,8 +3,6 @@ import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../service/auth.service';
 import { PermissionGroups } from '../../core/security/permission-groups';
-import { Categoria } from '../../service/categoria.service';
-import { ProductService } from '../../service/product.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -20,37 +18,18 @@ export class SidebarComponent {
   estoquePermissions = PermissionGroups.estoque;
   pedidoOpen = false;
   pedidoPermissions = PermissionGroups.pedidos;
-  produtoOpen = false;
   gestaoPermissions = PermissionGroups.lojas;
-  categoriasOpen = false;
-  categorias: Categoria[] = [];
-  private categoriasCarregadas = false;
 
   showLogoutModal = false;
   closing = false;
 
   constructor(
     public authService: AuthService,
-    private router: Router,
-    private productService: ProductService
+    private router: Router
   ) {
     this.gestaoOpen = this.isGestaoRoute();
     this.estoqueOpen = this.isEstoqueRoute();
     this.pedidoOpen = this.isPedidoRoute();
-    this.produtoOpen = this.isProdutoRoute();
-  }
-
-  private carregarCategorias() {
-    if (this.categoriasCarregadas) {
-      return;
-    }
-
-    this.categoriasCarregadas = true;
-
-    this.productService.getCategoriasProdutos().subscribe({
-      next: cats => this.categorias = cats,
-      error: () => this.categoriasCarregadas = false
-    });
   }
 
   toggleGestao() {
@@ -63,22 +42,6 @@ export class SidebarComponent {
 
   togglePedido() {
     this.pedidoOpen = !this.pedidoOpen;
-  }
-
-  toggleProduto() {
-    this.produtoOpen = !this.produtoOpen;
-
-    if (this.produtoOpen) {
-      this.carregarCategorias();
-    }
-  }
-
-  toggleCategorias() {
-    this.categoriasOpen = !this.categoriasOpen;
-  }
-
-  navegarCategoria(categoriaId: number) {
-    this.router.navigate(['/products'], { queryParams: { categoriaId } });
   }
 
   private isEstoqueRoute() {
@@ -104,15 +67,6 @@ export class SidebarComponent {
       '/pedido',
       '/pedidos',
       '/fazer-pedido'
-    ].some(route => this.router.url.startsWith(route));
-  }
-
-  private isProdutoRoute() {
-    return [
-      '/products',
-      '/addProduto',
-      '/variacoes',
-      '/addCategoria'
     ].some(route => this.router.url.startsWith(route));
   }
 

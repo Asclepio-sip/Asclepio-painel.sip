@@ -208,6 +208,49 @@
   background: #b80026;
 }
 
+.ghost-card {
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 220px;
+  border: 1.5px dashed #d9dee5;
+  background: #f9fafb;
+  color: #667085;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ghost-card:hover {
+  border-color: #c5794e;
+  background: #fdf6f0;
+  color: #c5794e;
+}
+
+.ghost-plus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1.5px dashed #d9dee5;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  color: inherit;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.ghost-card:hover .ghost-plus {
+  border-color: #c5794e;
+}
+
+.ghost-label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .state {
   padding: 28px 16px;
   text-align: center;

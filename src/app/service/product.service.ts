@@ -8,6 +8,8 @@ import type {
   PageResponse,
   Product,
   ProdutoAddDTO,
+  ProdutoCompletoRequest,
+  ProdutoCompletoResponse,
   ProdutoFiltro,
   ProdutoUpdateDTO,
   ProdutoVariacao,
@@ -19,6 +21,8 @@ export type {
   PageResponse,
   Product,
   ProdutoAddDTO,
+  ProdutoCompletoRequest,
+  ProdutoCompletoResponse,
   ProdutoFiltro,
   ProdutoUpdateDTO,
   ProdutoVariacao,
@@ -152,6 +156,25 @@ export class ProductService {
 
     return this.http.post<Product>(
       this.API,
+      formData
+    );
+  }
+
+  criarProdutoCompleto(produto: ProdutoCompletoRequest) {
+    const formData = new FormData();
+    formData.append('nome', produto.nome);
+    formData.append('descricao', produto.descricao || '');
+    formData.append('marca', produto.marca || '');
+    formData.append('categoriaId', produto.categoriaId != null ? produto.categoriaId.toString() : '');
+    formData.append('imagem', produto.imagem);
+    formData.append('nomeVariacao', produto.nomeVariacao);
+    formData.append('codigoBarras', produto.codigoBarras || '');
+    formData.append('lojaId', produto.lojaId.toString());
+    formData.append('quantidade', produto.quantidade.toString());
+    formData.append('precoVenda', produto.precoVenda.toString());
+
+    return this.http.post<ProdutoCompletoResponse>(
+      `${this.API}/criar`,
       formData
     );
   }
@@ -407,7 +430,8 @@ export class ProductService {
         '',
       variacoes: (produto.variacoes ?? []).map((variacao: any) =>
         this.normalizarVariacao(variacao)
-      )
+      ),
+      quantidadeVariacoes: produto.quantidadeVariacoes ?? produto.variacoes?.length ?? 0
     };
   }
 

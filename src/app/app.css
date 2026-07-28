@@ -3,12 +3,47 @@
 .private-shell {
 	display: flex;
 	align-items: stretch;
-	min-height: calc(100vh - 72px);
+	height: calc(100vh - 72px);
+	overflow: hidden;
 }
 
 .private-content {
 	flex: 1;
 	min-width: 0;
-	min-height: calc(100vh - 72px);
+	height: calc(100vh - 72px);
+	overflow-y: auto;
+}
+
+.fab-novo-pedido {
+	position: fixed;
+	right: 28px;
+	bottom: 28px;
+	z-index: 40;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 14px 22px;
+	background: #C5794E;
+	color: #fff;
+	border: none;
+	border-radius: 999px;
+	font-family: 'Poppins', sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	box-shadow: 0 4px 14px rgba(197, 121, 78, 0.4);
+	cursor: pointer;
+	transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.fab-novo-pedido svg {
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+}
+
+.fab-novo-pedido:hover {
+	background: #a8622d;
+	box-shadow: 0 6px 18px rgba(197, 121, 78, 0.5);
+	transform: translateY(-1px);
 }
 

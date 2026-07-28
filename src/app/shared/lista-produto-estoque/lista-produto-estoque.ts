@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { CartService } from '../../service/cart.service';
 import { Estoque } from '../../service/estoque.service';
 import { Loja } from '../../service/loja/loja.service';
@@ -9,7 +10,7 @@ import { PedidosService } from '../../service/pedidos.service';
 @Component({
   selector: 'app-lista-produto-estoque',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './lista-produto-estoque.html',
   styleUrl: './lista-produto-estoque.css',
 })
