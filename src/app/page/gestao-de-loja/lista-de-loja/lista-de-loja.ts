@@ -54,10 +54,6 @@ export class ListaDeLoja implements OnInit {
     this.router.navigate(['/editar-loja', loja.id]);
   }
 
-  adicionarFuncionario(loja: Loja) {
-    this.router.navigate(['/addloja', loja.id, 'funcionarios']);
-  }
-
   relacionarBairro(loja: Loja) {
 
   this.router.navigate([
@@ -65,4 +61,8 @@ export class ListaDeLoja implements OnInit {
     loja.id
   ]);
 }
+
+  formasPagamento(loja: Loja) {
+    this.router.navigate(['/loja', loja.id, 'formas-pagamento']);
+  }
 }

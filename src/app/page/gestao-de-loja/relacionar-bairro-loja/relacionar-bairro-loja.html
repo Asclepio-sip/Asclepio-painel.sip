@@ -1,101 +1,158 @@
-<div class="container">
+<div class="bairro-loja-container">
 
-  <div class="card">
-
-    <h2>
-      Relacionar Bairro à Loja
-    </h2>
-
-    <div class="form-group">
-
-      <label>
-        Bairro
-      </label>
-
-      <select
-        [(ngModel)]="form.bairroId"
-      >
-        <option [value]="0">
-          Selecione
-        </option>
-
-        <option
-          *ngFor="let bairro of bairros"
-          [value]="bairro.id"
-        >
-          {{ bairro.nome }}
-        </option>
-
-      </select>
-
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <div class="breadcrumb">ADMIN / GESTÃO DE LOJA / <span>BAIRROS DA LOJA</span></div>
+      <h1 class="page-title">Bairros Atendidos{{ lojaNome ? ' — ' + lojaNome : '' }}</h1>
+      <p class="page-subtitle">Relacione bairros à loja e defina o valor do frete de cada um</p>
     </div>
-
-    <div class="form-group">
-
-      <label>
-        Valor do Frete
-      </label>
-
-      <input
-        type="number"
-        [(ngModel)]="form.valorFrete"
-      />
-
-    </div>
-
-    <div class="acoes">
-
-      <button
-        class="btn-salvar"
-        (click)="salvar()"
-      >
-        Adicionar
-      </button>
-
-      <button
-        class="btn-voltar"
-        (click)="voltar()"
-      >
-        Voltar
-      </button>
-
-    </div>
-
+    <button class="btn-back" (click)="voltar()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Voltar
+    </button>
   </div>
 
-  <div class="lista">
+  <!-- Layout -->
+  <div class="content-grid">
 
-    <h3>
-      Bairros Relacionados
-    </h3>
-
-    <div
-      *ngFor="let item of bairrosRelacionados"
-      class="bairro-item"
-    >
-
-      <div>
-
-        <strong>
-          {{ getNomeBairro(item.bairroId) }}
-        </strong>
-
-        <p>
-          Frete:
-          R$ {{ item.valorFrete }}
-        </p>
-
+    <!-- Form Card -->
+    <div class="form-card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C5794E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div>
+          <p class="card-title">Relacionar Bairro</p>
+          <p class="card-subtitle">Escolha o bairro e o valor do frete</p>
+        </div>
       </div>
 
-      <button
-        class="btn-delete"
-        (click)="deletar(item.id)"
-      >
-        Remover
-      </button>
+      <div class="card-body">
 
+        <div class="form-group">
+          <label class="form-label">Bairro <span class="required">*</span></label>
+          <select class="form-input" [(ngModel)]="form.bairroId">
+            <option [value]="0">Selecione um bairro</option>
+            <option *ngFor="let bairro of bairros" [value]="bairro.id">
+              {{ bairro.nome }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Valor do Frete <span class="required">*</span></label>
+          <div class="input-icon-wrap">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            <input
+              type="number"
+              class="form-input"
+              [(ngModel)]="form.valorFrete"
+              placeholder="0,00"
+            />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-save" type="button" [disabled]="salvando" (click)="salvar()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            {{ salvando ? 'Salvando...' : 'Relacionar Bairro' }}
+          </button>
+        </div>
+
+        <div class="divider">
+          <span>ou cadastre um bairro novo</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Novo Bairro</label>
+          <div class="novo-bairro-form">
+            <input
+              type="text"
+              class="form-input"
+              [(ngModel)]="novoBairroNome"
+              placeholder="Ex: Centro, Jardim Paulista..."
+            />
+            <button class="btn-criar-bairro" type="button" [disabled]="criandoBairro" (click)="criarBairro()">
+              {{ criandoBairro ? '...' : 'Criar' }}
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card">
+      <div class="card-header">
+        <div class="card-icon">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C5794E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </div>
+        <div>
+          <p class="card-title">Bairros Relacionados</p>
+          <p class="card-subtitle">{{ bairrosRelacionados.length }} bairro{{ bairrosRelacionados.length !== 1 ? 's' : '' }} atendido{{ bairrosRelacionados.length !== 1 ? 's' : '' }}</p>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="carregando" class="loading-state">
+        <div class="spinner"></div>
+        <span>Carregando bairros...</span>
+      </div>
+
+      <!-- Empty -->
+      <div *ngIf="!carregando && bairrosRelacionados.length === 0" class="empty-state">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <p>Nenhum bairro relacionado ainda</p>
+      </div>
+
+      <!-- Table -->
+      <div *ngIf="!carregando && bairrosRelacionados.length > 0" class="table-wrap">
+        <table class="bairro-table">
+          <thead>
+            <tr>
+              <th>Bairro</th>
+              <th>Valor do Frete</th>
+              <th style="text-align:center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of bairrosRelacionados">
+              <td>
+                <div class="bairro-name-cell">
+                  <div class="bairro-dot"></div>
+                  {{ getNomeBairro(item.bairroId) }}
+                </div>
+              </td>
+
+              <td>
+                <span *ngIf="edicaoFreteId !== item.id">{{ item.valorFrete | currency:'BRL' }}</span>
+                <input
+                  *ngIf="edicaoFreteId === item.id"
+                  type="number"
+                  class="form-input input-frete"
+                  [(ngModel)]="edicaoFreteValor"
+                />
+              </td>
+
+              <td style="text-align:center">
+                <ng-container *ngIf="edicaoFreteId !== item.id">
+                  <button class="btn-editar" (click)="editarFrete(item)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Editar Frete
+                  </button>
+                </ng-container>
+
+                <ng-container *ngIf="edicaoFreteId === item.id">
+                  <button class="btn-salvar-frete" (click)="salvarFrete(item)">Salvar</button>
+                  <button class="btn-cancelar-frete" (click)="cancelarEdicaoFrete()">Cancelar</button>
+                </ng-container>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
   </div>
-
 </div>

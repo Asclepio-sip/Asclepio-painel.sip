@@ -58,8 +58,10 @@ export interface CriarPedidoBalcaoRequest {
   lojaId: number;
   nomeCliente: string;
   email?: string;
+  telefone?: string;
+  clienteId?: string;
   itens: CriarPedidoItemRequest[];
-  formaDePagamento: 'PIX' | 'DINHEIRO' | 'CARTAO';
+  formaDePagamento: string;
 }
 
 export interface PedidoFiltro {

@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { map } from 'rxjs';
+import { Role, Permission } from '../models/user-loja.model';
+
+export type { Role, Permission };
 
 export interface User {
   id: string;
@@ -9,34 +12,11 @@ export interface User {
   username?: string;
   email?: string;
   ativo?: boolean;
-  role?: string | Role | Permission[];
-  roleId?: string;
-  roleName?: string;
-  totalPermissoes?: number;
-  permissions?: Permission[];
-  permissionsExtras?: Permission[];
-  permissionExtras?: Permission[];
-  permissionIds?: string[];
-}
-
-export interface Role {
-  id: string;
-  nome: string;
-  descricao: string;
-  permissions: Permission[];
-}
-
-export interface Permission {
-  id: string;
-  nome: string;
-  descricao: string;
 }
 
 export interface ListarUsuariosFiltros {
   login?: string;
   ativo?: boolean;
-  roleId?: string;
-  nomeRole?: string;
   sort?: string | string[];
 }
 
@@ -78,8 +58,6 @@ export class UserAdminService {
       .set('size', size);
 
     params = this.adicionarParametro(params, 'login', filtros.login);
-    params = this.adicionarParametro(params, 'roleId', filtros.roleId);
-    params = this.adicionarParametro(params, 'nomeRole', filtros.nomeRole);
 
     if (filtros.ativo !== undefined && filtros.ativo !== null) {
       params = params.set('ativo', filtros.ativo);
@@ -127,13 +105,11 @@ export class UserAdminService {
     data: {
       login: string;
       password: string;
-      roleId: string;
       Email: string;
-      permissionIds?: string[];
     }
   ) {
 
-    return this.http.post<{ token: string }>(
+    return this.http.post<User>(
       `${this.API}/user`,
       data
     );
@@ -144,9 +120,7 @@ export class UserAdminService {
     data: {
       login: string;
       password?: string;
-      roleId: string;
       Email: string;
-      permissionIds: string[];
     }
   ) {
 
@@ -171,16 +145,9 @@ export class UserAdminService {
   }
 
   private normalizarUsuario(user: User): User {
-    const rolePermissions = Array.isArray(user.role) ? user.role : [];
-    const extraPermissions = user.permissionsExtras ?? user.permissionExtras ?? [];
-    const permissions = user.permissions ?? rolePermissions;
-
     return {
       ...user,
-      login: user.login ?? user.username ?? user.email ?? 'Sem login',
-      permissions,
-      permissionsExtras: extraPermissions,
-      permissionIds: user.permissionIds ?? extraPermissions.map(permission => permission.id)
+      login: user.login ?? user.username ?? user.email ?? 'Sem login'
     };
   }
 

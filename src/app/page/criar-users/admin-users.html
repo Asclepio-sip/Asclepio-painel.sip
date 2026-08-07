@@ -9,15 +9,21 @@
       </div>
       <h1>Usuários e Permissões</h1>
     </div>
-    <button class="btn-add-member" type="button" (click)="abrirModalCriar()">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-        <circle cx="8.5" cy="7" r="4"/>
-        <line x1="20" y1="8" x2="20" y2="14"/>
-        <line x1="23" y1="11" x2="17" y2="11"/>
-      </svg>
-      Adicionar Membro
-    </button>
+    <div class="header-actions">
+      <button class="btn-back" type="button" (click)="voltar()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+      <button class="btn-add-member" type="button" (click)="abrirModalCriar()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="8.5" cy="7" r="4"/>
+          <line x1="20" y1="8" x2="20" y2="14"/>
+          <line x1="23" y1="11" x2="17" y2="11"/>
+        </svg>
+        Adicionar Membro
+      </button>
+    </div>
   </div>
 
   <!-- KPI Cards -->
@@ -32,8 +38,8 @@
         </svg>
       </div>
       <div class="kpi-content">
-        <span class="kpi-label">TOTAL USUÁRIOS</span>
-        <span class="kpi-value">{{ totalElements | number:'2.0-0' }}</span>
+        <span class="kpi-label">MEMBROS DESTA LOJA</span>
+        <span class="kpi-value">{{ membros.length | number:'2.0-0' }}</span>
       </div>
     </div>
     <div class="kpi-card">
@@ -56,7 +62,7 @@
         <circle cx="11" cy="11" r="8"/>
         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
-      <input type="text" placeholder="Buscar por nome, login ou email..." [(ngModel)]="searchTerm" (input)="filtrarUsuarios()" />
+      <input type="text" placeholder="Buscar por login ou email..." [(ngModel)]="searchTerm" (input)="filtrarUsuarios()" />
     </div>
     <button class="btn-filter" type="button" (click)="toggleFiltros()">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -71,21 +77,25 @@
       <select [(ngModel)]="sortBy" (ngModelChange)="filtrarUsuarios()">
         <option value="recente">Recente</option>
         <option value="nome">Nome</option>
-        <option value="role">Role</option>
+        <option value="role">Cargo</option>
       </select>
     </div>
   </div>
 
   <!-- Filtros expandidos -->
-  <div class="filters-expanded" *ngIf="showFiltros">
+  @if (showFiltros) {
+  <div class="filters-expanded">
     <div class="filter-group">
-      <label>Role:</label>
+      <label>Cargo:</label>
       <select [(ngModel)]="filterRole" (ngModelChange)="filtrarUsuarios()">
-        <option value="">Todas</option>
-        <option *ngFor="let role of roles" [value]="role.nome">{{ role.nome }}</option>
+        <option value="">Todos</option>
+        @for (role of roles; track role.id) {
+        <option [value]="role.nome">{{ role.nome }}</option>
+        }
       </select>
     </div>
   </div>
+  }
 
   <!-- Table -->
   <div class="table-wrapper">
@@ -93,64 +103,72 @@
       <thead>
         <tr>
           <th>INFORMAÇÕES DO USUÁRIO</th>
-          <th>ROLE / CARGO</th>
-          <th>MÓDULOS / PERMISSÕES</th>
+          <th>CARGO NESTA LOJA</th>
+          <th>PERMISSÕES DO CARGO</th>
           <th>AÇÕES</th>
         </tr>
       </thead>
 
       <tbody>
-        <tr *ngFor="let user of paginatedUsers">
+        @for (membro of paginatedUsers; track membro.id) {
+        <tr>
           <td>
             <div class="user-info">
-              <div class="user-avatar" [style.background]="getAvatarColor(user)">
-                {{ user.login.charAt(0).toUpperCase() }}
+              <div class="user-avatar" [style.background]="getAvatarColor(membro)">
+                {{ membro.user.login.charAt(0).toUpperCase() }}
               </div>
               <div class="user-details">
-                <span class="user-name">{{ user.login }}</span>
-                <span class="user-email">{{ user.email || user.login + '@promofarma.com.br' }}</span>
+                <span class="user-name">{{ membro.user.login }}</span>
+                <span class="user-email">{{ membro.user.email || membro.user.login + '@promofarma.com.br' }}</span>
               </div>
             </div>
           </td>
           <td>
-            <span class="role-badge" [ngClass]="getRoleBadgeClass(user)">
-              {{ getUserRoleName(user) | uppercase }}
+            <span class="role-badge" [ngClass]="getRoleBadgeClass(membro)">
+              {{ membro.role.nome | uppercase }}
             </span>
           </td>
           <td>
             <div class="permission-bar-container">
               <div class="permission-bar">
-                <div class="permission-bar-fill" [style.width.%]="getPermissionPercent(user)" [style.background]="getPermissionBarColor(user)"></div>
+                <div class="permission-bar-fill" [style.width.%]="getRolePermissionPercent(membro.role)" [style.background]="getPermissionBarColor(membro.role)"></div>
               </div>
-              <span class="permission-count">{{ getUserPermissionCount(user) }}/{{ permissions.length }} módulos</span>
+              <span class="permission-count">{{ getRolePermissionCount(membro.role) }}/{{ permissions.length }} módulos</span>
             </div>
           </td>
           <td>
             <div class="action-buttons">
-              <button class="btn-action btn-acessos" type="button" (click)="editar(user)">Ajustar Acessos</button>
+              <button class="btn-action btn-acessos" type="button" (click)="editar(membro)">Alterar Cargo</button>
+              <button class="btn-action btn-remover" type="button" (click)="remover(membro)">Remover</button>
             </div>
           </td>
         </tr>
+        }
       </tbody>
     </table>
 
-    <div *ngIf="loading" class="empty-state">
+    @if (loading) {
+    <div class="empty-state">
       <div class="spinner"></div>
       <p>Carregando usuários...</p>
     </div>
+    }
 
-    <div *ngIf="!loading && totalElements === 0" class="empty-state">
+    @if (!loading && totalElements === 0) {
+    <div class="empty-state">
       <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
         <circle cx="9" cy="7" r="4"/>
         <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
         <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
       </svg>
-      <p>Nenhum usuário encontrado</p>
+      <p>Nenhum usuário encontrado nesta loja</p>
     </div>
+    }
 
     <!-- Pagination -->
-    <div class="pagination" *ngIf="!loading && totalElements > 0">
+    @if (!loading && totalElements > 0) {
+    <div class="pagination">
       <span class="pagination-info">MOSTRANDO {{ getPageStart() }} DE {{ totalElements }} USUÁRIOS</span>
       <div class="pagination-controls">
         <button class="page-btn" [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">
@@ -158,23 +176,27 @@
             <polyline points="15 18 9 12 15 6"/>
           </svg>
         </button>
-        <button *ngFor="let p of getPages()" class="page-btn" [class.active]="p === currentPage" (click)="changePage(p)">{{ p }}</button>
-        <button class="page-btn" [disabled]="currentPage === getTotalPages()" (click)="changePage(currentPage + 1)">
+        @for (p of getPages(); track p) {
+        <button class="page-btn" [class.active]="p === currentPage" (click)="changePage(p)">{{ p }}</button>
+        }
+        <button class="page-btn" [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="9 18 15 12 9 6"/>
           </svg>
         </button>
       </div>
     </div>
+    }
   </div>
 
   <!-- ─────────────────────────────────────────── -->
-  <!-- MODAL: Editar Usuário -->
+  <!-- MODAL: Alterar Cargo -->
   <!-- ─────────────────────────────────────────── -->
-  <div *ngIf="editUserId" class="modal-overlay" (click)="cancelar()">
-    <div class="edit-modal modal-lg" (click)="$event.stopPropagation()">
+  @if (editUserLoja) {
+  <div class="modal-overlay" (click)="cancelar()">
+    <div class="edit-modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>Editar Usuário</h3>
+        <h3>Alterar Cargo</h3>
         <button class="btn-close" type="button" (click)="cancelar()">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -184,77 +206,33 @@
       </div>
 
       <div class="modal-body">
-        <div class="modal-form-row">
-          <div class="form-group">
-            <label for="edit-login">Login</label>
-            <input id="edit-login" type="text" [(ngModel)]="editLogin" placeholder="Digite o login" />
-          </div>
-          <div class="form-group">
-            <label for="edit-email">Email</label>
-            <input id="edit-email" type="email" [(ngModel)]="editEmail" placeholder="Digite o email" />
-          </div>
-          <div class="form-group">
-            <label for="edit-password">Nova senha</label>
-            <input id="edit-password" type="password" [(ngModel)]="editPassword" placeholder="Deixe em branco para não alterar" />
-          </div>
-          <div class="form-group">
-            <label for="edit-role">Role</label>
-            <select id="edit-role" [(ngModel)]="editRoleId" (ngModelChange)="onEditRoleChange()">
-              <option value="">Selecione uma role</option>
-              <option *ngFor="let role of roles" [value]="role.id">{{ role.nome }}</option>
-            </select>
-          </div>
+        <p class="card-subtitle">
+          {{ editUserLoja.user.login }} @if (editUserLoja.user.email) { <span>({{ editUserLoja.user.email }})</span> }
+        </p>
+
+        <div class="form-group">
+          <label for="edit-role">Cargo nesta loja</label>
+          <select id="edit-role" [(ngModel)]="editRoleId">
+            <option value="">Selecione um cargo</option>
+            @for (role of roles; track role.id) {
+            <option [value]="role.id">{{ role.nome }}</option>
+            }
+          </select>
         </div>
 
-        <!-- Tabela de Permissões -->
+        @if (getRoleById(editRoleId); as roleSelecionada) {
         <div class="permissions-panel">
-          <div class="permissions-header">
-            <div>
-              <h4>Permissões</h4>
-              <p>{{ getEditTotalSelecionadas() }} de {{ permissions.length }} selecionadas</p>
-            </div>
-            <label class="select-all">
-              <input type="checkbox" [checked]="isEditTudoSelecionado()" (change)="toggleEditTodasPermissoes($event)" />
-              Marcar tudo
-            </label>
-          </div>
-          <div class="permissions-table-wrap">
-            <table class="permissions-table">
-              <thead>
-                <tr>
-                  <th>Modulo</th>
-                  <th *ngFor="let action of permissionActions">{{ action.label }}</th>
-                  <th>Linha</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let group of editPermissionGroups">
-                  <td class="module-cell">{{ group.recurso }}</td>
-                  <td *ngFor="let action of permissionActions">
-                    <ng-container *ngIf="getPermission(group, action.key) as permission; else noPermission">
-                      <label class="check-cell" [title]="permission.descricao">
-                        <input type="checkbox"
-                          [checked]="isEditPermissionSelected(permission.id)"
-                          [disabled]="isEditRolePermission(permission.id)"
-                          (change)="toggleEditPermission(permission.id, $event)" />
-                        <span *ngIf="isEditRolePermission(permission.id)" class="inherited-label">role</span>
-                      </label>
-                    </ng-container>
-                    <ng-template #noPermission><span class="empty-permission">&mdash;</span></ng-template>
-                  </td>
-                  <td>
-                    <label class="check-cell row-check">
-                      <input type="checkbox"
-                        [checked]="isEditGrupoSelecionado(group)"
-                        [indeterminate]="isEditGrupoParcial(group)"
-                        (change)="toggleEditGrupo(group, $event)" />
-                    </label>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <h4>Esse cargo permite</h4>
+          <div class="role-permission-tags">
+            @for (permission of roleSelecionada.permissions; track permission.id) {
+            <span class="role-permission-tag">{{ permission.nome }}</span>
+            }
+            @if (!roleSelecionada.permissions.length) {
+            <span class="empty-permission">Nenhuma permissão configurada</span>
+            }
           </div>
         </div>
+        }
       </div>
 
       <div class="modal-footer">
@@ -268,14 +246,16 @@
       </div>
     </div>
   </div>
+  }
 
   <!-- ─────────────────────────────────────────── -->
-  <!-- MODAL: Criar Usuário -->
+  <!-- MODAL: Adicionar Membro -->
   <!-- ─────────────────────────────────────────── -->
-  <div *ngIf="showCriarModal" class="modal-overlay" (click)="fecharModalCriar()">
-    <div class="edit-modal modal-lg" (click)="$event.stopPropagation()">
+  @if (showCriarModal) {
+  <div class="modal-overlay" (click)="fecharModalCriar()">
+    <div class="edit-modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>Criar Usuário</h3>
+        <h3>Adicionar Membro à Loja</h3>
         <button class="btn-close" type="button" (click)="fecharModalCriar()">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -285,77 +265,70 @@
       </div>
 
       <div class="modal-body">
-        <div class="modal-form-row">
-          <div class="form-group">
-            <label for="criar-login">Login</label>
-            <input id="criar-login" type="text" [(ngModel)]="criarLogin" placeholder="Ex: suporte1" />
-          </div>
-          <div class="form-group">
-            <label for="criar-email">Email</label>
-            <input id="criar-email" type="email" [(ngModel)]="criarEmail" placeholder="Ex: suporte@empresa.com" />
-          </div>
-          <div class="form-group">
-            <label for="criar-password">Senha</label>
-            <input id="criar-password" type="password" [(ngModel)]="criarPassword" placeholder="Digite a senha" />
-          </div>
-          <div class="form-group">
-            <label for="criar-role">Role</label>
-            <select id="criar-role" [(ngModel)]="criarRoleId" (ngModelChange)="onCriarRoleChange()">
-              <option value="">Selecione uma role</option>
-              <option *ngFor="let role of roles" [value]="role.id">{{ role.nome }}</option>
-            </select>
-          </div>
+        <div class="modo-toggle">
+          <button type="button" class="btn-filter" [class.active]="modoCriar === 'existente'" (click)="modoCriar = 'existente'">Usuário existente</button>
+          <button type="button" class="btn-filter" [class.active]="modoCriar === 'novo'" (click)="modoCriar = 'novo'">Novo usuário</button>
         </div>
 
-        <!-- Tabela de Permissões -->
-        <div class="permissions-panel">
-          <div class="permissions-header">
-            <div>
-              <h4>Permissões</h4>
-              <p>{{ getCriarTotalSelecionadas() }} de {{ permissions.length }} selecionadas</p>
-            </div>
-            <label class="select-all">
-              <input type="checkbox" [checked]="isCriarTudoSelecionado()" (change)="toggleCriarTodasPermissoes($event)" />
-              Marcar tudo
-            </label>
+        @if (modoCriar === 'existente') {
+        <div class="form-group">
+          <label for="busca-usuario">Buscar por login ou email</label>
+          <input id="busca-usuario" type="text" [(ngModel)]="buscaUsuarioTermo" (input)="buscarUsuarios()" placeholder="Digite para buscar..." />
+        </div>
+
+        @if (resultadosBusca.length) {
+        <ul class="lista-resultados-busca">
+          @for (user of resultadosBusca; track user.id) {
+          <li (click)="selecionarUsuarioExistente(user)">{{ user.login }} @if (user.email) { <span>— {{ user.email }}</span> }</li>
+          }
+        </ul>
+        }
+
+        @if (usuarioSelecionado) {
+        <p class="card-subtitle">Selecionado: <strong>{{ usuarioSelecionado.login }}</strong></p>
+        }
+        }
+
+        @if (modoCriar === 'novo') {
+        <div class="modal-form-row">
+          <div class="form-group">
+            <label for="novo-login">Login</label>
+            <input id="novo-login" type="text" [(ngModel)]="novoLogin" placeholder="Ex: suporte1" />
           </div>
-          <div class="permissions-table-wrap">
-            <table class="permissions-table">
-              <thead>
-                <tr>
-                  <th>Modulo</th>
-                  <th *ngFor="let action of permissionActions">{{ action.label }}</th>
-                  <th>Linha</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let group of criarPermissionGroups">
-                  <td class="module-cell">{{ group.recurso }}</td>
-                  <td *ngFor="let action of permissionActions">
-                    <ng-container *ngIf="getPermission(group, action.key) as permission; else noPerm">
-                      <label class="check-cell" [title]="permission.descricao">
-                        <input type="checkbox"
-                          [checked]="isCriarPermissionSelected(permission.id)"
-                          [disabled]="isCriarRolePermission(permission.id)"
-                          (change)="toggleCriarPermission(permission.id, $event)" />
-                        <span *ngIf="isCriarRolePermission(permission.id)" class="inherited-label">role</span>
-                      </label>
-                    </ng-container>
-                    <ng-template #noPerm><span class="empty-permission">&mdash;</span></ng-template>
-                  </td>
-                  <td>
-                    <label class="check-cell row-check">
-                      <input type="checkbox"
-                        [checked]="isCriarGrupoSelecionado(group)"
-                        [indeterminate]="isCriarGrupoParcial(group)"
-                        (change)="toggleCriarGrupo(group, $event)" />
-                    </label>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="form-group">
+            <label for="novo-email">Email</label>
+            <input id="novo-email" type="email" [(ngModel)]="novoEmail" placeholder="Ex: suporte@empresa.com" />
+          </div>
+          <div class="form-group">
+            <label for="novo-password">Senha</label>
+            <input id="novo-password" type="password" [(ngModel)]="novoPassword" placeholder="Digite a senha" />
           </div>
         </div>
+        }
+
+        <div class="form-group">
+          <label for="criar-role">Cargo nesta loja</label>
+          <select id="criar-role" [(ngModel)]="criarRoleId">
+            <option value="">Selecione um cargo</option>
+            @for (role of roles; track role.id) {
+            <option [value]="role.id">{{ role.nome }}</option>
+            }
+          </select>
+        </div>
+
+        @if (getRoleById(criarRoleId); as roleSelecionada) {
+        <div class="permissions-panel">
+          <h4>Esse cargo permite</h4>
+          <div class="role-permission-tags">
+            @for (permission of roleSelecionada.permissions; track permission.id) {
+            <span class="role-permission-tag">{{ permission.nome }}</span>
+            }
+            @if (!roleSelecionada.permissions.length) {
+            <span class="empty-permission">Nenhuma permissão configurada</span>
+            }
+          </div>
+        </div>
+        }
       </div>
 
       <div class="modal-footer">
@@ -364,10 +337,10 @@
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
-          {{ salvandoCriar ? 'Criando...' : 'Criar Usuário' }}
+          {{ salvandoCriar ? 'Salvando...' : 'Adicionar Membro' }}
         </button>
       </div>
     </div>
   </div>
+  }
 </div>
-

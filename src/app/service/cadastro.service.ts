@@ -4,10 +4,24 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface CriarContaRequest {
+  // Usuário
   login: string;
   password: string;
   email: string;
+
+  // Empresa
   nomeEmpresa: string;
+
+  // Loja
+  nomeLoja: string;
+  cep: string;
+  cnpj?: string;
+  telefone: string;
+  textoDescricao?: string;
+  tipoAtendimento: string;
+
+  // Formas de pagamento
+  formasPagamento: string[];
 }
 
 export interface CriarContaResponse {

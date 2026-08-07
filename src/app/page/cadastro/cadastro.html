@@ -57,6 +57,8 @@
   <div class="login-form-side">
     <div class="login-card">
 
+      @if (!sucesso) {
+
       <div class="card-top">
         <div class="card-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C5794E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
@@ -65,37 +67,35 @@
         <p class="card-subtitle">Comece a organizar sua rede em poucos minutos</p>
       </div>
 
-      <form (ngSubmit)="cadastrar()" class="login-form-body">
+      <!-- Indicador de etapas -->
+      <div class="step-indicator">
+        <div class="step-dot" [class.active]="step === 1" [class.done]="step > 1">
+          <span>1</span>
+        </div>
+        <div class="step-line" [class.done]="step > 1"></div>
+        <div class="step-dot" [class.active]="step === 2" [class.done]="step > 2">
+          <span>2</span>
+        </div>
+        <div class="step-line" [class.done]="step > 2"></div>
+        <div class="step-dot" [class.active]="step === 3">
+          <span>3</span>
+        </div>
+      </div>
+      <div class="step-labels">
+        <span [class.active]="step === 1">Sua conta</span>
+        <span [class.active]="step === 2">Empresa e loja</span>
+        <span [class.active]="step === 3">Pagamento</span>
+      </div>
 
+      <form (ngSubmit)="step === 3 ? cadastrar() : avancar()" class="login-form-body">
+
+        <!-- ── Etapa 1: Conta ── -->
+        @if (step === 1) {
         <div class="form-group">
           <label class="form-label">Login</label>
           <div class="input-icon-wrap">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <input
-              type="text"
-              class="form-input"
-              placeholder="Seu login"
-              [(ngModel)]="login"
-              name="login"
-              required
-              autocomplete="username"
-            />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Nome da empresa</label>
-          <div class="input-icon-wrap">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V7l9-4 9 4v14"/><path d="M9 21v-8h6v8"/><path d="M9 9h.01M12 9h.01M15 9h.01M9 12h.01M12 12h.01M15 12h.01"/></svg>
-            <input
-              type="text"
-              class="form-input"
-              placeholder="Nome da empresa"
-              [(ngModel)]="nome"
-              name="nome"
-              required
-              autocomplete="organization"
-            />
+            <input type="text" class="form-input" placeholder="Seu login" [(ngModel)]="login" name="login" required autocomplete="username" />
           </div>
         </div>
 
@@ -103,15 +103,7 @@
           <label class="form-label">E-mail</label>
           <div class="input-icon-wrap">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            <input
-              type="email"
-              class="form-input"
-              placeholder="seu@email.com"
-              [(ngModel)]="email"
-              name="email"
-              required
-              autocomplete="email"
-            />
+            <input type="email" class="form-input" placeholder="seu@email.com" [(ngModel)]="email" name="email" required autocomplete="email" />
           </div>
         </div>
 
@@ -119,16 +111,7 @@
           <label class="form-label">Senha</label>
           <div class="input-icon-wrap">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <input
-              type="password"
-              class="form-input"
-              placeholder="••••••••"
-              [(ngModel)]="senha"
-              name="senha"
-              required
-              minlength="6"
-              autocomplete="new-password"
-            />
+            <input type="password" class="form-input" placeholder="••••••••" [(ngModel)]="senha" name="senha" required minlength="6" autocomplete="new-password" />
           </div>
         </div>
 
@@ -136,29 +119,129 @@
           <label class="form-label">Confirmar senha</label>
           <div class="input-icon-wrap">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <input
-              type="password"
-              class="form-input"
-              placeholder="••••••••"
-              [(ngModel)]="confirmarSenha"
-              name="confirmarSenha"
-              required
-              autocomplete="new-password"
-            />
+            <input type="password" class="form-input" placeholder="••••••••" [(ngModel)]="confirmarSenha" name="confirmarSenha" required autocomplete="new-password" />
+          </div>
+        </div>
+        }
+
+        <!-- ── Etapa 2: Empresa & Loja ── -->
+        @if (step === 2) {
+        <div class="form-group">
+          <label class="form-label">Nome da empresa</label>
+          <div class="input-icon-wrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V7l9-4 9 4v14"/><path d="M9 21v-8h6v8"/></svg>
+            <input type="text" class="form-input" placeholder="Nome da empresa" [(ngModel)]="nomeEmpresa" name="nomeEmpresa" required autocomplete="organization" />
           </div>
         </div>
 
-        <p class="form-error" *ngIf="erro">{{ erro }}</p>
+        <div class="form-group">
+          <label class="form-label">Nome da loja</label>
+          <div class="input-icon-wrap">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+            <input type="text" class="form-input" placeholder="Ex: Farmácia Central" [(ngModel)]="nomeLoja" name="nomeLoja" required />
+          </div>
+        </div>
 
-        <button type="submit" class="btn-login" [disabled]="carregando">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          {{ carregando ? 'Criando conta...' : 'Criar conta' }}
-        </button>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">CEP</label>
+            <div class="input-icon-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <input type="text" class="form-input" placeholder="00000-000" [(ngModel)]="cep" name="cep" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">CNPJ (opcional)</label>
+            <div class="input-icon-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <input type="text" class="form-input" placeholder="00.000.000/0000-00" [(ngModel)]="cnpj" name="cnpj" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Telefone</label>
+            <div class="input-icon-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+              <input type="text" class="form-input" placeholder="(81) 99999-9999" [(ngModel)]="telefone" name="telefone" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tipo de atendimento</label>
+            <select class="form-input form-select" [(ngModel)]="tipoAtendimento" name="tipoAtendimento" required>
+              <option value="">Selecione...</option>
+              <option value="ENTREGA">Entrega</option>
+              <option value="RETIRADA">Retirada</option>
+              <option value="AMBOS">Ambos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Descrição da loja (opcional)</label>
+          <textarea class="form-input form-textarea" placeholder="Conte um pouco sobre sua loja" [(ngModel)]="textoDescricao" name="textoDescricao" rows="3"></textarea>
+        </div>
+        }
+
+        <!-- ── Etapa 3: Formas de pagamento ── -->
+        @if (step === 3) {
+        <div class="form-group">
+          <label class="form-label">Quais formas de pagamento sua loja aceita?</label>
+          <div class="pagamento-grid">
+            @for (forma of formasDisponiveis; track forma) {
+            <label class="pagamento-chip" [class.selected]="isFormaSelecionada(forma)">
+              <input type="checkbox" [checked]="isFormaSelecionada(forma)" (change)="toggleFormaPagamento(forma)" />
+              {{ getFormaPagamentoLabel(forma) }}
+            </label>
+            }
+          </div>
+        </div>
+        }
+
+        @if (erro) {
+        <div class="form-error">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>{{ erro }}</span>
+        </div>
+        }
+
+        <div class="wizard-actions">
+          @if (step > 1) {
+          <button type="button" class="btn-voltar" (click)="voltar()">Voltar</button>
+          }
+
+          @if (step < 3) {
+          <button type="submit" class="btn-login">
+            Avançar
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+          }
+
+          @if (step === 3) {
+          <button type="submit" class="btn-login" [disabled]="carregando">
+            {{ carregando ? 'Criando conta...' : 'Criar conta' }}
+          </button>
+          }
+        </div>
       </form>
 
       <p class="card-switch">
         Já tem uma conta? <a routerLink="/login">Entrar</a>
       </p>
+
+      }
+
+      @if (sucesso) {
+      <div class="sucesso-card">
+        <div class="sucesso-icon">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <h2 class="card-title">Conta criada com sucesso!</h2>
+        <p class="card-subtitle">Sua empresa e sua primeira loja já estão prontas. Agora é só começar a usar o painel.</p>
+        <button type="button" class="btn-login" (click)="irParaPainel()">Ir para o painel</button>
+      </div>
+      }
 
       <p class="card-footer-text">PromoFarma &copy; {{ currentYear }} — Todos os direitos reservados</p>
 

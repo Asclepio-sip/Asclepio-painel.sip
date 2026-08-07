@@ -1,0 +1,78 @@
+<div class="pagamento-container">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <div class="breadcrumb">ADMIN / GESTÃO DE LOJA / <span>FORMAS DE PAGAMENTO</span></div>
+      <h1 class="page-title">Formas de Pagamento</h1>
+      <p class="page-subtitle">Escolha quais formas de pagamento sua loja aceita hoje</p>
+    </div>
+    <button class="btn-back" (click)="voltar()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Voltar
+    </button>
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#C5794E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      </div>
+      <div>
+        <p class="card-title">Formas Aceitas</p>
+        <p class="card-subtitle">Ative ou desative cada forma de pagamento</p>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="carregando" class="loading-state">
+      <div class="spinner"></div>
+      <span>Carregando formas de pagamento...</span>
+    </div>
+
+    <!-- Empty -->
+    <div *ngIf="!carregando && formas.length === 0" class="empty-state">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      <p>Nenhuma forma de pagamento configurada</p>
+    </div>
+
+    <!-- Lista -->
+    <div *ngIf="!carregando && formas.length > 0" class="formas-list">
+      <div
+        class="forma-item"
+        *ngFor="let forma of formas"
+        [class.ativo]="forma.ativo"
+      >
+        <div class="forma-info">
+          <div class="forma-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" [attr.stroke]="forma.ativo ? '#C5794E' : '#9ca3af'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path [attr.d]="getIcone(forma.formaPagamento)"/></svg>
+          </div>
+          <div>
+            <p class="forma-nome">{{ getLabel(forma) }}</p>
+            <p class="forma-status">{{ forma.ativo ? 'Aceito na loja' : 'Não aceito' }}</p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="switch"
+          [class.checked]="forma.ativo"
+          role="switch"
+          [attr.aria-checked]="forma.ativo"
+          (click)="alternar(forma)"
+        >
+          <span class="switch-knob"></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card-footer" *ngIf="!carregando && formas.length > 0">
+      <button class="btn-save" type="button" [disabled]="salvando" (click)="salvar()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        {{ salvando ? 'Salvando...' : 'Salvar Alterações' }}
+      </button>
+    </div>
+  </div>
+
+</div>

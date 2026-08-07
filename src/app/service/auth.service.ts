@@ -1,18 +1,34 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs';
+import { map, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { PermissionGroups } from '../core/security/permission-groups';
 import { AppPermissions } from '../core/security/app-permissions';
 
 interface JwtPayload {
   sub: string;
-  role?: unknown;
+  empresaId?: number;
+  lojaId?: number;
   permissions?: unknown[];
   authorities?: unknown[];
   roles?: unknown[];
   exp?: number;
 }
+
+export interface LojaEscolha {
+  id: number;
+  nomeLoja: string;
+}
+
+interface LoginApiResponse {
+  token?: string;
+  escolherLoja?: boolean;
+  lojas?: LojaEscolha[];
+}
+
+export type LoginResult =
+  | { requiresLojaSelection: false }
+  | { requiresLojaSelection: true; lojas: LojaEscolha[] };
 
 @Injectable({
   providedIn: 'root'
@@ -29,15 +45,33 @@ export class AuthService {
     GESTAO: PermissionGroups.gestao,
   } as const;
 
-  
+
 
   constructor(private http: HttpClient) {}
 
   login(login: string, password: string) {
     return this.http
-      .post<{ token: string }>(
+      .post<LoginApiResponse>(
         `${this.API}/user/login`,
         { login, password }
+      )
+      .pipe(
+        map((res): LoginResult => {
+          if (res.token) {
+            sessionStorage.setItem('token', res.token);
+            return { requiresLojaSelection: false };
+          }
+
+          return { requiresLojaSelection: true, lojas: res.lojas ?? [] };
+        })
+      );
+  }
+
+  escolherLoja(lojaId: number) {
+    return this.http
+      .post<{ token: string }>(
+        `${this.API}/auth/escolher-loja`,
+        { lojaId }
       )
       .pipe(
         tap(res => {
@@ -55,7 +89,15 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+
+    const exp = this.getPayload()?.exp;
+    if (exp && Date.now() >= exp * 1000) {
+      return false;
+    }
+
+    return true;
   }
 
   private getPayload(): JwtPayload | null {
@@ -81,10 +123,12 @@ export class AuthService {
     return this.getPayload()?.sub ?? null;
   }
 
-  getRole(): string | null {
-    const role = this.getPayload()?.role;
+  getEmpresaId(): number | null {
+    return this.getPayload()?.empresaId ?? null;
+  }
 
-    return typeof role === 'string' ? role : null;
+  getLojaId(): number | null {
+    return this.getPayload()?.lojaId ?? null;
   }
 
   getPermissions(): string[] {
@@ -98,13 +142,12 @@ export class AuthService {
       ...this.normalizarPermissoes(payload.permissions),
       ...this.normalizarPermissoes(payload.authorities),
       ...this.normalizarPermissoes(payload.roles),
-      ...this.normalizarPermissoes(payload.role),
     ];
   }
 
 
   isSuperAdmin(): boolean {
-    return this.getRole() === 'SUPER_ADMIN';
+    return this.hasPermission('SUPER_ADMIN');
   }
 
   hasPermission(permission: string): boolean {
