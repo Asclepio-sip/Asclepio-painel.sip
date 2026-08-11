@@ -17,32 +17,6 @@
         <h2>Carrinho</h2>
       </div>
 
-      <label class="field">
-        <span>Cliente</span>
-        <input
-          type="text"
-          name="nomeCliente"
-          [(ngModel)]="nomeCliente"
-          placeholder="Nome do cliente"
-          autocomplete="off"
-        />
-      </label>
-
-      <div class="field">
-        <span>Pagamento</span>
-        <div class="payment-options">
-          <button
-            type="button"
-            *ngFor="let forma of formasDePagamento"
-            class="payment-btn"
-            [class.active]="formaDePagamento === forma.value"
-            (click)="formaDePagamento = forma.value"
-          >
-            {{ forma.label }}
-          </button>
-        </div>
-      </div>
-
       <div class="cart-items" *ngIf="itens.length > 0; else carrinhoVazio">
         <article class="cart-item" *ngFor="let item of itens">
           <div class="item-main">
@@ -71,9 +45,6 @@
         <div class="empty-cart">Carrinho vazio</div>
       </ng-template>
 
-      <div class="message error" *ngIf="erro">{{ erro }}</div>
-      <div class="message success" *ngIf="sucesso">{{ sucesso }}</div>
-
       <footer class="cart-footer">
         <div class="total-row">
           <span>Total</span>
@@ -83,10 +54,10 @@
         <button
           class="finish-btn"
           type="button"
-          (click)="finalizarPedido()"
-          [disabled]="finalizando || itens.length === 0"
+          (click)="prosseguir()"
+          [disabled]="itens.length === 0"
         >
-          {{ finalizando ? 'Finalizando...' : 'Finalizar venda' }}
+          Prosseguir
         </button>
       </footer>
     </aside>

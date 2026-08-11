@@ -5,9 +5,31 @@
   box-sizing: border-box;
 }
 
-.card {
-  max-width: 600px;
+.page-wrapper {
+  max-width: 920px;
   margin: 40px auto;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.card {
   background: #ffffff;
   border-radius: 12px;
   padding: 32px;
@@ -26,18 +48,86 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-/* Botão de ativar edição */
-.card > button[type="button"] {
+/* Acoes do topo (fora dos cards) */
+.top-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-voltar,
+.btn-acao-topo {
   font-family: 'Poppins', sans-serif;
   width: fit-content;
-  padding: 9px 18px;
+  padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid #e2e8f0;
-  background: #f4f6f8;
-  color: #111;
-  font-size: 0.85rem;
+  background: #fff;
+  color: #374151;
+  font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
+  transition: all .15s;
+}
+
+.btn-voltar:hover,
+.btn-acao-topo:hover {
+  border-color: #111;
+  color: #111;
+}
+
+/* Card de tipo de atendimento */
+.toggle-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.toggle-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toggle-item span {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.toggle-switch {
+  width: 46px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: #e2e8f0;
+  position: relative;
+  cursor: pointer;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+
+.toggle-switch.on {
+  background: #C5794E;
+}
+
+.toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+  transition: transform .2s;
+}
+
+.toggle-switch.on .toggle-knob {
+  transform: translateX(20px);
 }
 
 /* Campos */
@@ -56,7 +146,8 @@
 }
 
 .field input,
-.field select {
+.field select,
+.field textarea {
   font-family: 'Poppins', sans-serif;
   width: 100%;
   padding: 10px 14px;
@@ -66,15 +157,18 @@
   color: #111;
   background: #fff;
   outline: none;
+  resize: vertical;
 }
 
 .field input:focus,
-.field select:focus {
+.field select:focus,
+.field textarea:focus {
   border-color: #111;
 }
 
 .field input:disabled,
-.field select:disabled {
+.field select:disabled,
+.field textarea:disabled {
   background: #f4f6f8;
   color: #aaa;
   cursor: not-allowed;

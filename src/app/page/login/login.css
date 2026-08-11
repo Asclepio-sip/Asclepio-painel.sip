@@ -205,6 +205,22 @@
   box-shadow: 0 4px 12px rgba(197,121,78,.3);
 }
 
+.btn-cancel {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  padding: 13px 20px;
+  background: #fff; color: #6b7280;
+  border: 1.5px solid #e5e7eb; border-radius: 5px;
+  font-size: 14px; font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-cancel:hover {
+  border-color: #C5794E;
+  color: #C5794E;
+}
+
 .card-footer-text {
   margin-top: 24px;
   font-size: 11.5px; color: #d1d5db;

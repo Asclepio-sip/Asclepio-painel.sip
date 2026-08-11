@@ -24,6 +24,7 @@ export class Navbar implements OnInit, AfterViewChecked {
   closing = false;
   showMenu = false;
   activeCategory = '';
+  nomeExibicao = '';
 
 toastMessage: string | null = null;
 toastTimeout: any;
@@ -65,6 +66,8 @@ fecharToast() {
 
   ngOnInit() {
     this.initIcons();
+
+    this.nomeExibicao = this.authService.getNomeExibicao();
   }
 
   ngAfterViewChecked() {

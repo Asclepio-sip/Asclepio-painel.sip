@@ -4,14 +4,24 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface CriarContaRequest {
-  login: string;
+  // Usuário
+  nome: string;
   password: string;
   email: string;
-  nomeEmpresa: string;
-}
 
-export interface CriarContaResponse {
-  token: string;
+  // Empresa
+  nomeEmpresa: string;
+
+  // Loja
+  nomeLoja: string;
+  cep: string;
+  cnpj?: string;
+  telefone: string;
+  textoDescricao?: string;
+  tipoAtendimento: string;
+
+  // Formas de pagamento
+  formasPagamento: string[];
 }
 
 @Injectable({
@@ -23,8 +33,8 @@ export class CadastroService {
 
   constructor(private http: HttpClient) {}
 
-  criarConta(payload: CriarContaRequest): Observable<CriarContaResponse> {
-    return this.http.post<CriarContaResponse>(
+  criarConta(payload: CriarContaRequest): Observable<void> {
+    return this.http.post<void>(
       `${this.apiUrl}/user/CriarConta`,
       payload
     );

@@ -38,7 +38,7 @@
             <div class="form-row form-row-produto">
               <div class="form-group">
                 <label class="form-label">Selecionar Loja</label>
-                <select class="form-input" [(ngModel)]="lojaSelecionada" name="loja">
+                <select class="form-input" [(ngModel)]="lojaSelecionada" name="loja" [disabled]="lojaSessaoTravada">
                   <option [ngValue]="undefined">Selecione uma loja</option>
                   <option *ngFor="let loja of lojas" [ngValue]="loja">{{ loja.nomeLoja }}</option>
                 </select>

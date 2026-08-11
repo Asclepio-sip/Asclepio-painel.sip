@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, OnInit, AfterViewInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
 import { CommonModule } from '@angular/common';
@@ -22,12 +22,16 @@ export class NavbarAdministradorComponent implements OnInit {
 
   showLogoutModal = false;
   closing = false;
+  nomeExibicao = '';
+  nomeLoja = '';
 
-
-  constructor(public authService: AuthService) {}
+  constructor(
+    public authService: AuthService
+  ) {}
 
   ngOnInit() {
-    // Inicialização do componente
+    this.nomeExibicao = this.authService.getNomeExibicao();
+    this.nomeLoja = this.authService.getNomeLoja() ?? (this.authService.isGerente() ? 'Todas as lojas' : '');
   }
 
   toggleSidebar() {

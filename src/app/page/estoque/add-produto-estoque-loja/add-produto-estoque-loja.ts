@@ -1,6 +1,9 @@
 ﻿import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import Swal from 'sweetalert2';
+import { AuthService } from '../../../service/auth.service';
 import { EstoqueService, EstoqueRequest, EstoqueLoja } from '../../../service/estoque.service';
 import { ProductService, Product, ProdutoVariacao } from '../../../service/product.service';
 
@@ -9,7 +12,8 @@ import { ProductService, Product, ProdutoVariacao } from '../../../service/produ
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   templateUrl: './add-produto-estoque-loja.html',
   styleUrls: ['./add-produto-estoque-loja.css']
@@ -22,6 +26,8 @@ export class AddProdutoEstoqueLoja implements OnInit, OnDestroy {
   produtoSelecionado?: Product;
   variacaoSelecionada?: ProdutoVariacao;
   lojaSelecionada?: EstoqueLoja;
+  /** Loja da sessao do funcionario (JWT). Se definida, trava a loja nela. */
+  lojaSessaoTravada = false;
   carregandoVariacoes = false;
   carregandoProdutos = false;
 
@@ -40,7 +46,9 @@ export class AddProdutoEstoqueLoja implements OnInit, OnDestroy {
   constructor(
     private produtoService: ProductService,
     private estoqueService: EstoqueService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -77,10 +85,20 @@ export class AddProdutoEstoqueLoja implements OnInit, OnDestroy {
   }
 
   carregarLojas() {
-    this.estoqueService.listarLojas().subscribe(response => {
-      this.lojas = response.content;
-      this.cdr.detectChanges();
-    });
+    const lojaSessaoId = this.authService.getLojaId();
+    this.lojaSessaoTravada = lojaSessaoId !== null;
+
+    this.estoqueService
+      .listarLojas(this.lojaSessaoTravada ? { id: lojaSessaoId } : {})
+      .subscribe(response => {
+        this.lojas = response.content;
+
+        if (this.lojaSessaoTravada) {
+          this.lojaSelecionada = this.lojas[0];
+        }
+
+        this.cdr.detectChanges();
+      });
   }
 
   onBuscaProdutoChange() {
@@ -142,7 +160,7 @@ export class AddProdutoEstoqueLoja implements OnInit, OnDestroy {
       error: err => {
         console.error('Erro ao carregar variacoes do produto', err);
         this.carregandoVariacoes = false;
-        alert('Erro ao carregar as variacoes do produto');
+        Swal.fire('Erro', 'Nao foi possivel carregar as variacoes do produto.', 'error');
         this.cdr.detectChanges();
       }
     });
@@ -150,22 +168,22 @@ export class AddProdutoEstoqueLoja implements OnInit, OnDestroy {
 
   salvar() {
     if (!this.lojaSelecionada) {
-      alert('Selecione uma loja');
+      Swal.fire('Atencao', 'Selecione uma loja.', 'warning');
       return;
     }
 
     if (!this.produtoSelecionado) {
-      alert('Selecione um produto');
+      Swal.fire('Atencao', 'Selecione um produto.', 'warning');
       return;
     }
 
     if (!this.variacaoSelecionada) {
-      alert('Selecione uma variacao');
+      Swal.fire('Atencao', 'Selecione uma variacao.', 'warning');
       return;
     }
 
     if (!this.quantidade || !this.precoVenda) {
-      alert('Informe quantidade e preco');
+      Swal.fire('Atencao', 'Informe quantidade e preco.', 'warning');
       return;
     }
 
@@ -182,14 +200,58 @@ export class AddProdutoEstoqueLoja implements OnInit, OnDestroy {
 
     this.estoqueService.salvar(data).subscribe({
       next: () => {
-        alert('Estoque cadastrado!');
+        Swal.fire('Cadastrado!', 'O estoque foi cadastrado com sucesso.', 'success');
         this.resetForm();
       },
       error: err => {
         console.error('Erro ao cadastrar estoque', err);
-        alert('Erro ao cadastrar estoque');
+        const mensagem = this.extrairMensagemErro(err);
+        const jaCadastrado = this.mensagemIndicaEstoqueJaCadastrado(mensagem);
+
+        Swal.fire({
+          title: 'Erro',
+          text: mensagem,
+          icon: 'error',
+          showCancelButton: jaCadastrado,
+          confirmButtonText: jaCadastrado ? 'Ir para Atualizar Estoque' : 'OK',
+          cancelButtonText: 'Fechar',
+          confirmButtonColor: '#2563eb',
+          cancelButtonColor: '#6b7280'
+        }).then(result => {
+          if (jaCadastrado && result.isConfirmed) {
+            this.router.navigate(['/atualizar-estoque']);
+          }
+        });
       }
     });
+  }
+
+  private mensagemIndicaEstoqueJaCadastrado(mensagem: string): boolean {
+    const msg = mensagem.toLowerCase();
+    return msg.includes('já') || msg.includes('existe') || msg.includes('cadastrad');
+  }
+
+  private extrairMensagemErro(err: any): string {
+    if (err?.status === 0) {
+      return 'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.';
+    }
+
+    const corpo = err?.error;
+
+    if (corpo && typeof corpo === 'object' && typeof corpo.message === 'string') {
+      return corpo.message;
+    }
+
+    if (typeof corpo === 'string' && corpo.trim()) {
+      try {
+        const parsed = JSON.parse(corpo);
+        if (parsed?.message) return parsed.message;
+      } catch {
+        // corpo não é JSON, ignora e cai no fallback abaixo
+      }
+    }
+
+    return 'Não foi possível cadastrar o estoque. Tente novamente.';
   }
 
   resetForm() {

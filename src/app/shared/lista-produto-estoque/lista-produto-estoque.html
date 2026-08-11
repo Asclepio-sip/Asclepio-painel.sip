@@ -1,6 +1,6 @@
 <div class="stock-list">
   <div class="filters">
-    <label class="field">
+    <label class="field" *ngIf="!travadoNaLoja">
       <span>Loja</span>
       <select [(ngModel)]="lojaSelecionadaId" (ngModelChange)="carregarProdutos()">
         <option [ngValue]="null">Todas as lojas</option>
@@ -32,8 +32,15 @@
     {{ erro }}
   </div>
 
-  <div *ngIf="!carregando && !erro && produtosFiltrados().length === 0" class="state">
-    Nenhum produto encontrado para os filtros selecionados.
+  <div *ngIf="!carregando && !erro && produtosFiltrados().length === 0" class="product-grid">
+    <div class="state empty-state">
+      Nenhum produto encontrado para os filtros selecionados.
+    </div>
+
+    <a routerLink="/addProduto" class="product-card ghost-card" title="Cadastrar novo produto">
+      <span class="ghost-plus">+</span>
+      <span class="ghost-label">Novo Produto</span>
+    </a>
   </div>
 
   <div *ngIf="!carregando && !erro && produtosFiltrados().length > 0" class="product-grid">
