@@ -7,6 +7,10 @@
         <span class="nav-brand-sub">Painel Administrativo</span>
       </div>
     </a>
+
+    @if (authService.isAuthenticated() && nomeLoja) {
+      <span class="nav-loja-badge">{{ nomeLoja }}</span>
+    }
   </div>
 
   <div class="actions">
@@ -17,7 +21,7 @@
 
     @if (authService.isAuthenticated()) {
       <button class="user-btn">
-        Olá, {{ authService.getUserName() || 'suporte' }}
+        Olá, {{ nomeExibicao || 'suporte' }}
       </button>
       <button class="logout-btn" (click)="logout()">Sair</button>
     }

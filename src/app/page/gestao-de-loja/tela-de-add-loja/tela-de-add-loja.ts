@@ -1,4 +1,5 @@
 ﻿import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
@@ -9,7 +10,7 @@ import { LojaService } from '../../../service/loja/loja.service';
   standalone: true,
   templateUrl: './tela-de-add-loja.html',
   styleUrl: './tela-de-add-loja.css',
-  imports: [FormsModule]
+  imports: [CommonModule, FormsModule]
 })
 export class TelaDeAddLoja {
 
@@ -38,15 +39,13 @@ export class TelaDeAddLoja {
 
       telefone: this.telefone,
 
-      TextoDescricao: this.textoDescricao || null,
+      textoDescricao: this.textoDescricao || null,
 
       tipoAtendimento: this.tipoAtendimento,
 
       valorMinimoFreteGratis:
         this.valorMinimoFreteGratis ?? 0
     };
-
-    console.log(novaLoja);
 
     this.lojaService.criar(novaLoja).subscribe({
 

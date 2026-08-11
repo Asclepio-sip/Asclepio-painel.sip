@@ -1,6 +1,6 @@
 <div class="stock-list">
   <div class="filters">
-    <label class="field">
+    <label class="field" *ngIf="!travadoNaLoja">
       <span>Loja</span>
       <select [(ngModel)]="lojaSelecionadaId" (ngModelChange)="carregarProdutos()">
         <option [ngValue]="null">Todas as lojas</option>

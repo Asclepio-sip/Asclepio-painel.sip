@@ -9,14 +9,19 @@ export type { Role, Permission };
 export interface User {
   id: string;
   login: string;
+  nome?: string;
   username?: string;
   email?: string;
   ativo?: boolean;
+  totalLojas?: number;
+  totalPermissoes?: number;
 }
 
 export interface ListarUsuariosFiltros {
   login?: string;
   ativo?: boolean;
+  roleId?: string;
+  nomeRole?: string;
   sort?: string | string[];
 }
 
@@ -58,6 +63,8 @@ export class UserAdminService {
       .set('size', size);
 
     params = this.adicionarParametro(params, 'login', filtros.login);
+    params = this.adicionarParametro(params, 'roleId', filtros.roleId);
+    params = this.adicionarParametro(params, 'nomeRole', filtros.nomeRole);
 
     if (filtros.ativo !== undefined && filtros.ativo !== null) {
       params = params.set('ativo', filtros.ativo);
@@ -103,13 +110,14 @@ export class UserAdminService {
 
   criarUsuario(
     data: {
-      login: string;
+      nome: string;
       password: string;
-      Email: string;
+      email: string;
+      lojas: { lojaId: number; roleId: string }[];
     }
   ) {
 
-    return this.http.post<User>(
+    return this.http.post<{ username: string; email: string }>(
       `${this.API}/user`,
       data
     );

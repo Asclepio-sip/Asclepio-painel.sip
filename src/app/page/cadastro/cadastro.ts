@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
+import Swal from 'sweetalert2';
 import { CadastroService } from '../../service/cadastro.service';
 import { FORMA_PAGAMENTO_LABELS } from '../../service/loja/forma-pagamento.service';
 
@@ -32,13 +33,12 @@ export class CadastroComponent {
   readonly formasDisponiveis = FORMAS_PAGAMENTO_DISPONIVEIS;
 
   step: Step = 1;
-  sucesso = false;
   erro = '';
   carregando = false;
   currentYear = new Date().getFullYear();
 
   // Etapa 1 — Conta
-  login = '';
+  nome = '';
   email = '';
   senha = '';
   confirmarSenha = '';
@@ -57,7 +57,8 @@ export class CadastroComponent {
 
   constructor(
     private router: Router,
-    private cadastroService: CadastroService
+    private cadastroService: CadastroService,
+    private cd: ChangeDetectorRef
   ) {}
 
   getFormaPagamentoLabel(forma: string): string {
@@ -78,8 +79,8 @@ export class CadastroComponent {
     this.erro = '';
 
     if (this.step === 1) {
-      if (!this.login.trim() || !this.email.trim() || !this.senha) {
-        this.erro = 'Preencha login, e-mail e senha.';
+      if (!this.nome.trim() || !this.email.trim() || !this.senha) {
+        this.erro = 'Preencha nome, e-mail e senha.';
         return;
       }
       if (this.senha !== this.confirmarSenha) {
@@ -117,8 +118,16 @@ export class CadastroComponent {
 
     this.carregando = true;
 
+    Swal.fire({
+      title: 'Criando conta...',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
+    });
+
     this.cadastroService.criarConta({
-      login: this.login.trim(),
+      nome: this.nome.trim(),
       password: this.senha,
       email: this.email.trim(),
       nomeEmpresa: this.nomeEmpresa.trim(),
@@ -130,28 +139,50 @@ export class CadastroComponent {
       tipoAtendimento: this.tipoAtendimento,
       formasPagamento: this.formasPagamento
     }).subscribe({
-      next: (res) => {
-        sessionStorage.setItem('token', res.token);
+      next: () => {
         this.carregando = false;
-        this.sucesso = true;
+        Swal.fire('Sucesso', 'Conta criada com sucesso!', 'success').then(() => {
+          this.router.navigate(['/login']);
+        });
       },
       error: (err: HttpErrorResponse) => {
         this.carregando = false;
-        this.erro = this.extrairMensagemErro(err);
 
-        const mensagem = this.erro.toLowerCase();
-        if (mensagem.includes('e-mail') || mensagem.includes('email') || mensagem.includes('login')) {
+        const mensagem = this.extrairMensagemErro(err);
+        Swal.fire('Erro', mensagem, 'error');
+
+        if (mensagem.toLowerCase().includes('e-mail') || mensagem.toLowerCase().includes('email') || mensagem.toLowerCase().includes('login')) {
           this.step = 1;
         }
+        this.cd.detectChanges();
       }
     });
   }
 
-  irParaPainel() {
-    this.router.navigate(['/products']);
-  }
-
   private extrairMensagemErro(err: HttpErrorResponse): string {
-    return err.error?.message || 'Não foi possível criar a conta. Tente novamente.';
+    // status 0 = a requisição nem chegou a ter uma resposta legível pelo navegador
+    // (sem conexão, ou o backend bloqueou por CORS na resposta de erro).
+    if (err.status === 0) {
+      return 'Não foi possível conectar ao servidor. Verifique sua internet e tente novamente.';
+    }
+
+    const corpo = err.error;
+
+    if (corpo && typeof corpo === 'object' && typeof corpo.message === 'string') {
+      return corpo.message;
+    }
+
+    // Se o backend não respondeu com Content-Type application/json, o corpo
+    // chega como texto puro em vez de já vir parseado como objeto.
+    if (typeof corpo === 'string' && corpo.trim()) {
+      try {
+        const parsed = JSON.parse(corpo);
+        if (parsed?.message) return parsed.message;
+      } catch {
+        // corpo não é JSON, ignora e cai no fallback abaixo
+      }
+    }
+
+    return 'Não foi possível criar a conta. Tente novamente.';
   }
 }

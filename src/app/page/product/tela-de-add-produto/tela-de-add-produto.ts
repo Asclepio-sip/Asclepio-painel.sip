@@ -8,6 +8,8 @@ import { ProductService } from '../../../service/product.service';
 import { CategoriaService } from '../../../service/categoria.service';
 import { EstoqueService, EstoqueLoja } from '../../../service/estoque.service';
 
+const TAMANHO_MAXIMO_IMAGEM = 15 * 1024 * 1024;
+
 @Component({
   encapsulation: ViewEncapsulation.None,
   selector: 'app-tela-de-add-produto',
@@ -44,6 +46,8 @@ export class TelaDeAddProduto implements OnInit {
   lojas: EstoqueLoja[] = [];
 
   readonly totalCamposObrigatorios = 6;
+
+  salvando = false;
 
   constructor(
     private productService: ProductService,
@@ -129,8 +133,9 @@ export class TelaDeAddProduto implements OnInit {
   }
 
   onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) this.processarImagem(file);
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) this.processarImagem(file, input);
   }
 
   onDragOver(event: DragEvent) {
@@ -139,13 +144,23 @@ export class TelaDeAddProduto implements OnInit {
 
   onDrop(event: DragEvent) {
     event.preventDefault();
-    if (event.dataTransfer?.files.length) {
-      const file = event.dataTransfer.files[0];
-      this.processarImagem(file);
-    }
+    const file = event.dataTransfer?.files?.[0];
+    if (file) this.processarImagem(file);
   }
 
-  private processarImagem(file: File) {
+  private processarImagem(file: File, input?: HTMLInputElement) {
+    if (!file.type.startsWith('image/')) {
+      Swal.fire('Atenção', 'Selecione um arquivo de imagem valido.', 'warning');
+      if (input) input.value = '';
+      return;
+    }
+
+    if (file.size > TAMANHO_MAXIMO_IMAGEM) {
+      Swal.fire('Atenção', 'A imagem enviada é muito grande. Envie um arquivo de até 15MB.', 'warning');
+      if (input) input.value = '';
+      return;
+    }
+
     this.imagemFile = file;
     const reader = new FileReader();
     reader.onload = (e: any) => {
@@ -204,6 +219,16 @@ export class TelaDeAddProduto implements OnInit {
       return;
     }
 
+    this.salvando = true;
+
+    Swal.fire({
+      title: 'Salvando produto...',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
+    });
+
     this.productService.criarProdutoCompleto({
       nome: this.name.trim(),
       descricao: this.descricao.trim(),
@@ -217,12 +242,14 @@ export class TelaDeAddProduto implements OnInit {
       precoVenda: this.precoVenda
     }).subscribe({
       next: () => {
+        this.salvando = false;
         Swal.fire('Sucesso', 'Produto e estoque cadastrados!', 'success')
           .then(() => {
             this.router.navigate(['/products']);
           });
       },
       error: () => {
+        this.salvando = false;
         Swal.fire('Erro', 'Erro ao salvar produto.', 'error');
       }
     });

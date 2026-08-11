@@ -315,6 +315,19 @@ export class ProductService {
     );
   }
 
+  atualizarImagem(
+    id: number,
+    imagem: File
+  ) {
+    const formData = new FormData();
+    formData.append('imagem', imagem);
+
+    return this.http.patch<Product>(
+      `${this.API}/${id}/imagem`,
+      formData
+    );
+  }
+
   /* =========================
      DELETE
   ========================= */

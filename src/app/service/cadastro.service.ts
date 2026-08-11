@@ -5,7 +5,7 @@ import { environment } from '../../environments/environment';
 
 export interface CriarContaRequest {
   // Usuário
-  login: string;
+  nome: string;
   password: string;
   email: string;
 
@@ -24,10 +24,6 @@ export interface CriarContaRequest {
   formasPagamento: string[];
 }
 
-export interface CriarContaResponse {
-  token: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -37,8 +33,8 @@ export class CadastroService {
 
   constructor(private http: HttpClient) {}
 
-  criarConta(payload: CriarContaRequest): Observable<CriarContaResponse> {
-    return this.http.post<CriarContaResponse>(
+  criarConta(payload: CriarContaRequest): Observable<void> {
+    return this.http.post<void>(
       `${this.apiUrl}/user/CriarConta`,
       payload
     );

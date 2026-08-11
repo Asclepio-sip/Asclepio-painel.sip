@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { AuthService } from '../../service/auth.service';
+import { Loja } from '../../service/loja/loja.service';
 import { PedidosService, Pedido } from '../../service/pedidos.service';
 
 interface PedidoUI extends Pedido {
@@ -25,6 +27,24 @@ export class Pedidos implements OnInit {
   filtroAtivo = 'AGUARDANDO';
   somenteHoje = true;
   tipoEntregaFiltro: '' | 'BALCAO' | 'DELIVERY' = '';
+  /**
+   * Tipo de atendimento da loja em uso no filtro (ENTREGA/RETIRADA/AMBOS).
+   * null = "ver todas as lojas" ou ainda carregando — nesses casos mostra
+   * as duas abas (Balcao/Delivery) normalmente.
+   */
+  tipoAtendimentoLoja: 'ENTREGA' | 'RETIRADA' | 'AMBOS' | null = null;
+
+  lojas: Loja[] = [];
+  /** Loja da sessao (JWT). Se definida, trava o painel nela. */
+  lojaSessaoId: number | null = null;
+  /** Loja em uso no filtro. Quando travado, e sempre igual a lojaSessaoId. */
+  lojaSelecionadaId: number | null = null;
+  /**
+   * Trava na loja da sessao. So destrava quando o usuario escolheu "ver
+   * todas as lojas" no login (lojaId null no token) — af entao ele pode
+   * escolher manualmente uma loja especifica ou continuar vendo todas.
+   */
+  travadoNaLoja = false;
 
   paginaAtual = 1;
   itensPorPagina = 10;
@@ -51,12 +71,74 @@ export class Pedidos implements OnInit {
 
   constructor(
     private service: PedidosService,
+    private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.carregarPedidos();
+    this.lojaSessaoId = this.authService.getLojaId();
+    this.travadoNaLoja = this.lojaSessaoId !== null;
+    this.lojaSelecionadaId = this.lojaSessaoId;
+
+    if (this.travadoNaLoja) {
+      this.carregarTipoAtendimento(this.lojaSessaoId!);
+    } else {
+      this.carregarLojas();
+      this.carregarPedidos();
+    }
+  }
+
+  carregarLojas() {
+    this.service.listarLojas(0, 1000).subscribe({
+      next: response => {
+        this.lojas = response.content;
+        this.cdr.detectChanges();
+      },
+      error: err => console.error('Erro ao carregar lojas', err)
+    });
+  }
+
+  selecionarLoja(lojaId: number | null) {
+    this.lojaSelecionadaId = lojaId;
+    this.paginaAtual = 1;
+
+    if (lojaId === null) {
+      // "Ver todas as lojas": sem uma loja unica, mostra as duas abas.
+      this.tipoAtendimentoLoja = null;
+      this.tipoEntregaFiltro = '';
+      this.carregarPedidos();
+      return;
+    }
+
+    this.carregarTipoAtendimento(lojaId);
+  }
+
+  private carregarTipoAtendimento(lojaId: number) {
+    this.service.listarLojas(0, 1, { id: lojaId }).subscribe({
+      next: response => {
+        const loja = response.content[0];
+        this.tipoAtendimentoLoja = (loja?.tipoAtendimento as 'ENTREGA' | 'RETIRADA' | 'AMBOS') ?? null;
+
+        if (this.tipoAtendimentoLoja === 'RETIRADA') {
+          this.tipoEntregaFiltro = 'BALCAO';
+          // "Aguardando" (filtro padrao) nao existe pra balcao — cai pro "todos".
+          if (['AGUARDANDO', 'SEPARACAO', 'EM_TRANSITO'].includes(this.filtroAtivo)) {
+            this.filtroAtivo = 'todos';
+          }
+        } else if (this.tipoAtendimentoLoja === 'ENTREGA') {
+          this.tipoEntregaFiltro = 'DELIVERY';
+        } else {
+          this.tipoEntregaFiltro = '';
+        }
+
+        this.carregarPedidos();
+      },
+      error: err => {
+        console.error('Erro ao carregar tipo de atendimento da loja', err);
+        this.carregarPedidos();
+      }
+    });
   }
 
   carregarPedidos() {
@@ -67,7 +149,8 @@ export class Pedidos implements OnInit {
       status: this.filtroAtivo === 'todos' ? undefined : this.filtroAtivo,
       nomeCliente: this.busca.trim() || undefined,
       somenteHoje: this.somenteHoje,
-      tipoEntrega: this.tipoEntregaFiltro || undefined
+      tipoEntrega: this.tipoEntregaFiltro || undefined,
+      lojaId: this.lojaSelecionadaId ?? undefined
     }).subscribe({
       next: res => {
         this.pedidos = res.content.map((p: any) => this.mapearPedido(p));
@@ -84,13 +167,15 @@ export class Pedidos implements OnInit {
   }
 
   carregarContadores() {
+    const lojaId = this.lojaSelecionadaId ?? undefined;
+
     forkJoin({
-      todos: this.service.listar({ page: 0, size: 1, somenteHoje: this.somenteHoje }),
-      aguardando: this.service.listar({ status: 'AGUARDANDO', page: 0, size: 1, somenteHoje: this.somenteHoje }),
-      separacao: this.service.listar({ status: 'SEPARACAO', page: 0, size: 1, somenteHoje: this.somenteHoje }),
-      transito: this.service.listar({ status: 'EM_TRANSITO', page: 0, size: 1, somenteHoje: this.somenteHoje }),
-      concluido: this.service.listar({ status: 'CONCLUIDO', page: 0, size: 1, somenteHoje: this.somenteHoje }),
-      cancelado: this.service.listar({ status: 'CANCELADO', page: 0, size: 1, somenteHoje: this.somenteHoje }),
+      todos: this.service.listar({ page: 0, size: 1, somenteHoje: this.somenteHoje, lojaId }),
+      aguardando: this.service.listar({ status: 'AGUARDANDO', page: 0, size: 1, somenteHoje: this.somenteHoje, lojaId }),
+      separacao: this.service.listar({ status: 'SEPARACAO', page: 0, size: 1, somenteHoje: this.somenteHoje, lojaId }),
+      transito: this.service.listar({ status: 'EM_TRANSITO', page: 0, size: 1, somenteHoje: this.somenteHoje, lojaId }),
+      concluido: this.service.listar({ status: 'CONCLUIDO', page: 0, size: 1, somenteHoje: this.somenteHoje, lojaId }),
+      cancelado: this.service.listar({ status: 'CANCELADO', page: 0, size: 1, somenteHoje: this.somenteHoje, lojaId }),
     }).subscribe({
       next: res => {
         this.totalTodos = res.todos.totalElements ?? 0;
@@ -123,6 +208,14 @@ export class Pedidos implements OnInit {
 
   filtrarTipoEntrega(tipo: '' | 'BALCAO' | 'DELIVERY') {
     this.tipoEntregaFiltro = tipo;
+
+    // Balcao nao tem os status de entrega (aguardando/separacao/em transito) —
+    // se o filtro ativo for um desses, cai pro "todos" pra nao sumir a lista.
+    const statusSoDelivery = ['AGUARDANDO', 'SEPARACAO', 'EM_TRANSITO'];
+    if (tipo === 'BALCAO' && statusSoDelivery.includes(this.filtroAtivo)) {
+      this.filtroAtivo = 'todos';
+    }
+
     this.paginaAtual = 1;
     this.carregarPedidos();
   }

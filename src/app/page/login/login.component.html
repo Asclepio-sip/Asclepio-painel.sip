@@ -156,17 +156,21 @@
 
       @if (step === 'escolher-loja') {
       <div class="login-form-body">
-        <p class="card-subtitle" style="margin-bottom: 16px;">Sua conta tem acesso a mais de uma loja. Escolha com qual deseja entrar:</p>
+        <p class="card-subtitle" style="margin-bottom: 16px;">Escolha com qual loja deseja entrar:</p>
 
         @for (loja of lojasDisponiveis; track loja.id) {
         <div class="form-group" style="margin-bottom: 10px;">
           <button type="button" class="btn-login" (click)="selecionarLoja(loja)">
-            {{ loja.nomeLoja }}
+            {{ loja.nome }}
           </button>
         </div>
         }
 
-        <button type="button" class="btn-cancel" style="margin-top: 8px; width: 100%;" (click)="voltarParaCredenciais()">
+        <button type="button" class="btn-cancel" (click)="verTodasAsLojas()">
+          Ver todas as lojas
+        </button>
+
+        <button type="button" class="btn-cancel" (click)="voltarParaCredenciais()">
           Voltar
         </button>
       </div>

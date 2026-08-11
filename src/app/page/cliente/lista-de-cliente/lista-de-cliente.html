@@ -82,17 +82,18 @@
         </div>
         <div>
           <p class="card-title">Clientes Cadastrados</p>
-          <p class="card-subtitle">{{ clientesFiltrados.length }} de {{ clientes.length }} cliente{{ clientes.length !== 1 ? 's' : '' }}</p>
+          <p class="card-subtitle">{{ totalElementos }} cliente{{ totalElementos !== 1 ? 's' : '' }}</p>
         </div>
       </div>
 
       <!-- Busca -->
-      <div class="search-wrap" *ngIf="!carregando && clientes.length > 0">
+      <div class="search-wrap">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
         <input
           type="text"
           class="search-input"
           [(ngModel)]="termoBusca"
+          (ngModelChange)="onBuscaChange()"
           placeholder="Pesquisar por nome, número ou email..."
         />
       </div>
@@ -104,19 +105,19 @@
       </div>
 
       <!-- Empty (sem clientes) -->
-      <div *ngIf="!carregando && clientes.length === 0" class="empty-state">
+      <div *ngIf="!carregando && clientes.length === 0 && !termoBusca" class="empty-state">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m4-4a4 4 0 100-8 4 4 0 000 8z"/></svg>
         <p>Nenhum cliente cadastrado ainda</p>
       </div>
 
       <!-- Empty (busca sem resultado) -->
-      <div *ngIf="!carregando && clientes.length > 0 && clientesFiltrados.length === 0" class="empty-state">
+      <div *ngIf="!carregando && clientes.length === 0 && termoBusca" class="empty-state">
         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
         <p>Nenhum cliente encontrado para "{{ termoBusca }}"</p>
       </div>
 
       <!-- Table -->
-      <div *ngIf="!carregando && clientesFiltrados.length > 0" class="table-wrap">
+      <div *ngIf="!carregando && clientes.length > 0" class="table-wrap">
         <table class="cliente-table">
           <thead>
             <tr>
@@ -128,8 +129,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let c of clientesFiltrados; let i = index" [class.row-editando]="cliente.id === c.id && editando">
-              <td class="td-index">{{ i + 1 }}</td>
+            <tr *ngFor="let c of clientes; let i = index" [class.row-editando]="cliente.id === c.id && editando">
+              <td class="td-index">{{ (paginaAtual * tamanhoPagina) + i + 1 }}</td>
               <td>
                 <div class="cliente-name-cell">
                   <div class="cliente-dot"></div>
@@ -147,6 +148,29 @@
             </tr>
           </tbody>
         </table>
+
+        <div class="pagination" *ngIf="totalPaginas > 1">
+          <button class="btn-page" type="button" (click)="paginaAnterior()" [disabled]="paginaAtual === 0">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            class="btn-page btn-page-num"
+            *ngFor="let pagina of paginasVisiveis"
+            [class.active]="pagina === paginaAtual"
+            (click)="irParaPagina(pagina)">
+            {{ pagina + 1 }}
+          </button>
+
+          <button class="btn-page" type="button" (click)="proximaPagina()" [disabled]="paginaAtual >= totalPaginas - 1">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
 

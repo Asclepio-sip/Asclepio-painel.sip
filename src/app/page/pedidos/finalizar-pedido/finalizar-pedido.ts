@@ -105,10 +105,10 @@ export class FinalizarPedido implements OnInit, OnDestroy {
 
     this.carregandoClientes = true;
 
-    this.clienteService.listar().subscribe({
+    this.clienteService.listar({ size: 1000 }).subscribe({
 
-      next: (dados) => {
-        this.clientes = dados;
+      next: (resposta) => {
+        this.clientes = resposta.content;
         this.carregandoClientes = false;
       },
 

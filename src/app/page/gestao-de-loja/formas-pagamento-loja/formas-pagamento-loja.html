@@ -7,10 +7,21 @@
       <h1 class="page-title">Formas de Pagamento</h1>
       <p class="page-subtitle">Escolha quais formas de pagamento sua loja aceita hoje</p>
     </div>
-    <button class="btn-back" (click)="voltar()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-      Voltar
-    </button>
+    <div class="header-actions">
+      <button class="btn-back" [routerLink]="['/editar-loja', lojaId]">
+        Editar dados da loja
+      </button>
+      <button class="btn-back" [routerLink]="['/loja', lojaId, 'formas-pagamento']">
+        Editar forma de pagamento
+      </button>
+      <button class="btn-back" [routerLink]="['/loja', lojaId, 'bairros']">
+        Configurar frete por bairro
+      </button>
+      <button class="btn-back" (click)="voltar()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+    </div>
   </div>
 
   <!-- Card -->

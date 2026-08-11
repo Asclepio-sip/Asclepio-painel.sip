@@ -207,12 +207,12 @@
         </div>
       </div>
       <div class="action-bar-right">
-        <button type="button" class="btn-cancel" [routerLink]="['/products']">Cancelar</button>
-        <button type="submit" class="btn-save">
+        <button type="button" class="btn-cancel" [routerLink]="['/products']" [disabled]="salvando">Cancelar</button>
+        <button type="submit" class="btn-save" [disabled]="salvando">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
           </svg>
-          Salvar Produto
+          {{ salvando ? 'Salvando...' : 'Salvar Produto' }}
         </button>
       </div>
     </div>

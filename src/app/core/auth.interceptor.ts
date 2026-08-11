@@ -10,9 +10,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
 
   // 🔥 NÃO ADICIONA TOKEN EM ROTAS PÚBLICAS
+  // /user/escolher-loja usa o token TEMP passado explicitamente por AuthService.escolherLoja,
+  // não o token de sessão normal — por isso também entra aqui, pra não ser sobrescrito.
   const isPublicRoute = req.url.includes('/productsPublico') ||
                         req.url.includes('/user/login') ||
-                        req.url.includes('/auth/escolher-loja') ||
+                        req.url.includes('/user/CriarConta') ||
+                        req.url.includes('/user/escolher-loja') ||
                         req.url.includes('/auth/register');
 
   if (isPublicRoute) {

@@ -38,8 +38,8 @@
         </svg>
       </div>
       <div class="kpi-content">
-        <span class="kpi-label">MEMBROS DESTA LOJA</span>
-        <span class="kpi-value">{{ membros.length | number:'2.0-0' }}</span>
+        <span class="kpi-label">TOTAL USUÁRIOS</span>
+        <span class="kpi-value">{{ totalElements | number:'2.0-0' }}</span>
       </div>
     </div>
     <div class="kpi-card">
@@ -62,7 +62,7 @@
         <circle cx="11" cy="11" r="8"/>
         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
-      <input type="text" placeholder="Buscar por login ou email..." [(ngModel)]="searchTerm" (input)="filtrarUsuarios()" />
+      <input type="text" placeholder="Buscar por login..." [(ngModel)]="searchTerm" (input)="filtrarUsuarios()" />
     </div>
     <button class="btn-filter" type="button" (click)="toggleFiltros()">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -77,7 +77,6 @@
       <select [(ngModel)]="sortBy" (ngModelChange)="filtrarUsuarios()">
         <option value="recente">Recente</option>
         <option value="nome">Nome</option>
-        <option value="role">Cargo</option>
       </select>
     </div>
   </div>
@@ -102,44 +101,43 @@
     <table class="user-table">
       <thead>
         <tr>
-          <th>INFORMAÇÕES DO USUÁRIO</th>
-          <th>CARGO NESTA LOJA</th>
-          <th>PERMISSÕES DO CARGO</th>
+          <th>NOME</th>
+          <th>LOGIN</th>
+          <th>EMAIL</th>
+          <th>STATUS</th>
+          <th>LOJAS</th>
           <th>AÇÕES</th>
         </tr>
       </thead>
 
       <tbody>
-        @for (membro of paginatedUsers; track membro.id) {
+        @for (user of paginatedUsers; track user.id) {
         <tr>
           <td>
             <div class="user-info">
-              <div class="user-avatar" [style.background]="getAvatarColor(membro)">
-                {{ membro.user.login.charAt(0).toUpperCase() }}
+              <div class="user-avatar" [style.background]="getAvatarColor(user)">
+                {{ getNomeExibicao(user).charAt(0).toUpperCase() }}
               </div>
-              <div class="user-details">
-                <span class="user-name">{{ membro.user.login }}</span>
-                <span class="user-email">{{ membro.user.email || membro.user.login + '@promofarma.com.br' }}</span>
-              </div>
+              <span class="user-name">{{ getNomeExibicao(user) }}</span>
             </div>
           </td>
           <td>
-            <span class="role-badge" [ngClass]="getRoleBadgeClass(membro)">
-              {{ membro.role.nome | uppercase }}
+            <span class="user-email">{{ user.login }}</span>
+          </td>
+          <td>
+            <span class="user-email">{{ user.email || '—' }}</span>
+          </td>
+          <td>
+            <span class="status-badge" [class.status-ativo]="user.ativo" [class.status-inativo]="!user.ativo">
+              {{ user.ativo ? 'Ativo' : 'Inativo' }}
             </span>
           </td>
           <td>
-            <div class="permission-bar-container">
-              <div class="permission-bar">
-                <div class="permission-bar-fill" [style.width.%]="getRolePermissionPercent(membro.role)" [style.background]="getPermissionBarColor(membro.role)"></div>
-              </div>
-              <span class="permission-count">{{ getRolePermissionCount(membro.role) }}/{{ permissions.length }} módulos</span>
-            </div>
+            <span class="count-badge">{{ user.totalLojas ?? 0 }}</span>
           </td>
           <td>
             <div class="action-buttons">
-              <button class="btn-action btn-acessos" type="button" (click)="editar(membro)">Alterar Cargo</button>
-              <button class="btn-action btn-remover" type="button" (click)="remover(membro)">Remover</button>
+              <button class="btn-action btn-acessos" type="button" (click)="abrirGerenciarAcessos(user)">Gerenciar Acessos</button>
             </div>
           </td>
         </tr>
@@ -162,7 +160,7 @@
         <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
         <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
       </svg>
-      <p>Nenhum usuário encontrado nesta loja</p>
+      <p>Nenhum usuário encontrado</p>
     </div>
     }
 
@@ -190,14 +188,14 @@
   </div>
 
   <!-- ─────────────────────────────────────────── -->
-  <!-- MODAL: Alterar Cargo -->
+  <!-- MODAL: Gerenciar Acessos (lojas/cargos do usuário) -->
   <!-- ─────────────────────────────────────────── -->
-  @if (editUserLoja) {
-  <div class="modal-overlay" (click)="cancelar()">
-    <div class="edit-modal" (click)="$event.stopPropagation()">
+  @if (gerenciarUsuario) {
+  <div class="modal-overlay" (click)="fecharGerenciarAcessos()">
+    <div class="edit-modal modal-lg" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>Alterar Cargo</h3>
-        <button class="btn-close" type="button" (click)="cancelar()">
+        <h3>Acessos de {{ getNomeExibicao(gerenciarUsuario) }}</h3>
+        <button class="btn-close" type="button" (click)="fecharGerenciarAcessos()">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -206,43 +204,74 @@
       </div>
 
       <div class="modal-body">
-        <p class="card-subtitle">
-          {{ editUserLoja.user.login }} @if (editUserLoja.user.email) { <span>({{ editUserLoja.user.email }})</span> }
-        </p>
-
-        <div class="form-group">
-          <label for="edit-role">Cargo nesta loja</label>
-          <select id="edit-role" [(ngModel)]="editRoleId">
-            <option value="">Selecione um cargo</option>
-            @for (role of roles; track role.id) {
-            <option [value]="role.id">{{ role.nome }}</option>
-            }
-          </select>
+        @if (carregandoLojasUsuario) {
+        <div class="empty-state">
+          <div class="spinner"></div>
+          <p>Carregando lojas...</p>
         </div>
+        }
 
-        @if (getRoleById(editRoleId); as roleSelecionada) {
-        <div class="permissions-panel">
-          <h4>Esse cargo permite</h4>
-          <div class="role-permission-tags">
-            @for (permission of roleSelecionada.permissions; track permission.id) {
-            <span class="role-permission-tag">{{ permission.nome }}</span>
-            }
-            @if (!roleSelecionada.permissions.length) {
-            <span class="empty-permission">Nenhuma permissão configurada</span>
-            }
+        @if (!carregandoLojasUsuario && lojasDoUsuario.length === 0) {
+        <div class="empty-state">
+          <p>Esse usuário ainda não tem acesso a nenhuma loja.</p>
+        </div>
+        }
+
+        @if (!carregandoLojasUsuario && lojasDoUsuario.length > 0) {
+        <div class="vinculos-list">
+          @for (vinculo of lojasDoUsuario; track vinculo.id) {
+          <div class="vinculo-row">
+            <div class="vinculo-info">
+              <strong>{{ vinculo.loja.nomeLoja }}</strong>
+
+              @if (editandoVinculoId !== vinculo.id) {
+              <span class="role-badge" [ngClass]="getRoleBadgeClass(vinculo.role)">{{ vinculo.role.nome | uppercase }}</span>
+              }
+
+              @if (editandoVinculoId === vinculo.id) {
+              <select [(ngModel)]="editRoleId">
+                @for (role of roles; track role.id) {
+                <option [value]="role.id">{{ role.nome }}</option>
+                }
+              </select>
+              }
+            </div>
+
+            <div class="vinculo-actions">
+              @if (editandoVinculoId !== vinculo.id) {
+              <button class="btn-action btn-acessos" type="button" (click)="editarVinculo(vinculo)">Alterar Cargo</button>
+              <button class="btn-action btn-remover" type="button" (click)="removerVinculo(vinculo)">Remover</button>
+              }
+
+              @if (editandoVinculoId === vinculo.id) {
+              <button class="btn-action btn-acessos" type="button" (click)="salvarVinculo(vinculo)">Salvar</button>
+              <button class="btn-action" type="button" (click)="cancelarEdicaoVinculo()">Cancelar</button>
+              }
+            </div>
+          </div>
+          }
+        </div>
+        }
+
+        @if (lojaId && !jaTemAcessoNestaLoja()) {
+        <div class="adicionar-loja-atual">
+          <h4>Dar acesso à loja atual</h4>
+          <div class="adicionar-loja-row">
+            <select [(ngModel)]="novoVinculoRoleId">
+              @for (role of roles; track role.id) {
+              <option [value]="role.id">{{ role.nome }}</option>
+              }
+            </select>
+            <button class="btn-save" type="button" (click)="adicionarNestaLoja()" [disabled]="salvandoVinculo">
+              {{ salvandoVinculo ? 'Adicionando...' : 'Adicionar' }}
+            </button>
           </div>
         </div>
         }
       </div>
 
       <div class="modal-footer">
-        <button class="btn-cancel" type="button" (click)="cancelar()">Cancelar</button>
-        <button class="btn-save" type="button" (click)="salvar()">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-          Salvar Alterações
-        </button>
+        <button class="btn-cancel" type="button" (click)="fecharGerenciarAcessos()">Fechar</button>
       </div>
     </div>
   </div>
@@ -253,9 +282,9 @@
   <!-- ─────────────────────────────────────────── -->
   @if (showCriarModal) {
   <div class="modal-overlay" (click)="fecharModalCriar()">
-    <div class="edit-modal" (click)="$event.stopPropagation()">
+    <div class="edit-modal modal-lg" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>Adicionar Membro à Loja</h3>
+        <h3>Adicionar Membro</h3>
         <button class="btn-close" type="button" (click)="fecharModalCriar()">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -266,34 +295,79 @@
 
       <div class="modal-body">
         <div class="modo-toggle">
-          <button type="button" class="btn-filter" [class.active]="modoCriar === 'existente'" (click)="modoCriar = 'existente'">Usuário existente</button>
-          <button type="button" class="btn-filter" [class.active]="modoCriar === 'novo'" (click)="modoCriar = 'novo'">Novo usuário</button>
+          <button type="button" class="btn-filter" [class.active]="modoCriar === 'existente'" (click)="selecionarModoCriar('existente')">Usuário existente</button>
+          <button type="button" class="btn-filter" [class.active]="modoCriar === 'novo'" (click)="selecionarModoCriar('novo')">Novo usuário</button>
         </div>
 
         @if (modoCriar === 'existente') {
+
+        @if (usuarioSelecionado) {
         <div class="form-group">
-          <label for="busca-usuario">Buscar por login ou email</label>
-          <input id="busca-usuario" type="text" [(ngModel)]="buscaUsuarioTermo" (input)="buscarUsuarios()" placeholder="Digite para buscar..." />
+          <label>Usuário selecionado</label>
+          <div class="usuario-selecionado-row">
+            <div class="user-info">
+              <div class="user-avatar" [style.background]="getAvatarColor(usuarioSelecionado)">
+                {{ getNomeExibicao(usuarioSelecionado).charAt(0).toUpperCase() }}
+              </div>
+              <div class="user-details">
+                <span class="user-name">{{ getNomeExibicao(usuarioSelecionado) }}</span>
+                @if (usuarioSelecionado.email) {
+                <span class="user-email">{{ usuarioSelecionado.email }}</span>
+                }
+              </div>
+            </div>
+            <button type="button" class="btn-filter" (click)="trocarUsuarioExistente()">Trocar</button>
+          </div>
+        </div>
+        }
+
+        @if (!usuarioSelecionado) {
+        <div class="form-group">
+          <label for="busca-usuario">Buscar usuário por login ou email</label>
+          <input id="busca-usuario" type="text" [(ngModel)]="buscaUsuarioTermo" (input)="buscarUsuarios()" placeholder="Digite para filtrar, ou escolha na lista abaixo..." />
         </div>
 
-        @if (resultadosBusca.length) {
+        @if (buscandoUsuarios) {
+        <div class="empty-state">
+          <div class="spinner"></div>
+          <p>Carregando usuários...</p>
+        </div>
+        }
+
+        @if (!buscandoUsuarios && resultadosBusca.length > 0) {
         <ul class="lista-resultados-busca">
           @for (user of resultadosBusca; track user.id) {
-          <li (click)="selecionarUsuarioExistente(user)">{{ user.login }} @if (user.email) { <span>— {{ user.email }}</span> }</li>
+          <li (click)="selecionarUsuarioExistente(user)">
+            <div class="user-info">
+              <div class="user-avatar" [style.background]="getAvatarColor(user)">
+                {{ getNomeExibicao(user).charAt(0).toUpperCase() }}
+              </div>
+              <div class="user-details">
+                <span class="user-name">{{ getNomeExibicao(user) }}</span>
+                @if (user.email) {
+                <span class="user-email">{{ user.email }}</span>
+                }
+              </div>
+            </div>
+          </li>
           }
         </ul>
         }
 
-        @if (usuarioSelecionado) {
-        <p class="card-subtitle">Selecionado: <strong>{{ usuarioSelecionado.login }}</strong></p>
+        @if (!buscandoUsuarios && resultadosBusca.length === 0) {
+        <div class="empty-state">
+          <p>Nenhum usuário encontrado.</p>
+        </div>
+        }
         }
         }
 
         @if (modoCriar === 'novo') {
         <div class="modal-form-row">
           <div class="form-group">
-            <label for="novo-login">Login</label>
-            <input id="novo-login" type="text" [(ngModel)]="novoLogin" placeholder="Ex: suporte1" />
+            <label for="novo-nome">Nome</label>
+            <input id="novo-nome" type="text" [(ngModel)]="novoNome" placeholder="Ex: João" />
+            <span class="form-hint">O login é gerado automaticamente a partir do nome.</span>
           </div>
           <div class="form-group">
             <label for="novo-email">Email</label>
@@ -304,8 +378,17 @@
             <input id="novo-password" type="password" [(ngModel)]="novoPassword" placeholder="Digite a senha" />
           </div>
         </div>
+
+        <div class="form-group">
+          <label>Esse funcionário vai trabalhar em quantas lojas?</label>
+          <div class="modo-toggle">
+            <button type="button" class="btn-filter" [class.active]="modoLojas === 'unica'" (click)="modoLojas = 'unica'">Somente esta loja</button>
+            <button type="button" class="btn-filter" [class.active]="modoLojas === 'multiplas'" (click)="modoLojas = 'multiplas'">Várias lojas</button>
+          </div>
+        </div>
         }
 
+        @if (modoCriar === 'existente' || (modoCriar === 'novo' && modoLojas === 'unica')) {
         <div class="form-group">
           <label for="criar-role">Cargo nesta loja</label>
           <select id="criar-role" [(ngModel)]="criarRoleId">
@@ -315,18 +398,43 @@
             }
           </select>
         </div>
+        }
 
-        @if (getRoleById(criarRoleId); as roleSelecionada) {
-        <div class="permissions-panel">
-          <h4>Esse cargo permite</h4>
-          <div class="role-permission-tags">
-            @for (permission of roleSelecionada.permissions; track permission.id) {
-            <span class="role-permission-tag">{{ permission.nome }}</span>
-            }
-            @if (!roleSelecionada.permissions.length) {
-            <span class="empty-permission">Nenhuma permissão configurada</span>
+        @if (modoCriar === 'novo' && modoLojas === 'multiplas') {
+        <div class="form-group">
+          <label>Lojas e cargos</label>
+
+          <div class="vinculos-list">
+            @for (linha of novoUsuarioLojas; track $index) {
+            <div class="vinculo-row">
+              <div class="vinculo-info">
+                <select [(ngModel)]="linha.lojaId" [ngModelOptions]="{standalone: true}">
+                  <option [ngValue]="null">Selecione a loja</option>
+                  @for (loja of lojasDisponiveisParaLinha($index); track loja.id) {
+                  <option [ngValue]="loja.id">{{ loja.nomeLoja }}</option>
+                  }
+                </select>
+
+                <select [(ngModel)]="linha.roleId" [ngModelOptions]="{standalone: true}">
+                  <option value="">Selecione o cargo</option>
+                  @for (role of roles; track role.id) {
+                  <option [value]="role.id">{{ role.nome }}</option>
+                  }
+                </select>
+              </div>
+
+              <div class="vinculo-actions">
+                <button class="btn-action btn-remover" type="button" (click)="removerLinhaLoja($index)">Remover</button>
+              </div>
+            </div>
             }
           </div>
+
+          @if (!novoUsuarioLojas.length) {
+          <p class="form-hint">Nenhuma loja adicionada ainda.</p>
+          }
+
+          <button type="button" class="btn-filter" style="margin-top: 10px;" (click)="adicionarLinhaLoja()">+ Adicionar loja</button>
         </div>
         }
       </div>

@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { AuthService } from '../../service/auth.service';
 import { CartService } from '../../service/cart.service';
 import { Estoque } from '../../service/estoque.service';
 import { Loja } from '../../service/loja/loja.service';
@@ -20,17 +21,32 @@ export class ListaProdutoEstoque implements OnInit {
 
   buscaProduto = '';
   lojaSelecionadaId: number | null = null;
+  lojaSessaoId: number | null = null;
+  /**
+   * Trava na loja da sessao (token). So fica destravado quando o usuario
+   * escolheu "ver todas as lojas" no login (lojaId null no token) — trocar
+   * de loja dentro do sistema exige deslogar e escolher outra no login.
+   */
+  travadoNaLoja = false;
   carregando = false;
   erro = '';
 
   constructor(
     private pedidosService: PedidosService,
     private cartService: CartService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
-    this.carregarLojas();
+    this.lojaSessaoId = this.authService.getLojaId();
+    this.travadoNaLoja = this.lojaSessaoId !== null;
+    this.lojaSelecionadaId = this.lojaSessaoId;
+
+    if (!this.travadoNaLoja) {
+      this.carregarLojas();
+    }
+
     this.carregarProdutos();
   }
 
@@ -50,7 +66,8 @@ export class ListaProdutoEstoque implements OnInit {
     this.carregando = true;
     this.erro = '';
 
-    const lojaId = this.lojaSelecionadaId ?? undefined;
+    // Funcionario travado sempre usa a loja da sessao, mesmo que lojaSelecionadaId seja adulterado.
+    const lojaId = this.travadoNaLoja ? this.lojaSessaoId! : (this.lojaSelecionadaId ?? undefined);
 
     this.pedidosService.relatorioEstoque(lojaId).subscribe({
       next: produtos => {
@@ -70,7 +87,11 @@ export class ListaProdutoEstoque implements OnInit {
 
   limparFiltros() {
     this.buscaProduto = '';
-    this.lojaSelecionadaId = null;
+
+    if (!this.travadoNaLoja) {
+      this.lojaSelecionadaId = null;
+    }
+
     this.carregarProdutos();
   }
 

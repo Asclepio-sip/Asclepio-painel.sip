@@ -1,60 +1,92 @@
-<form (ngSubmit)="salvar()" class="card">
+<div class="page-wrapper">
 
-  <h2>Detalhes da Loja</h2>
-
-  <button type="button" (click)="ativarEdicao()" *ngIf="!modoEdicao">
-    Deseja editar essa loja?
-  </button>
-
-  <div class="field">
-    <label>Nome</label>
-    <input type="text"
-           [(ngModel)]="loja.nomeLoja"
-           name="nome"
-           [disabled]="!modoEdicao">
+  <div class="top-actions">
+    <button type="button" class="btn-acao-topo" (click)="ativarEdicao()">
+      Editar dados da loja
+    </button>
+    <button type="button" class="btn-acao-topo" [routerLink]="['/loja', id, 'formas-pagamento']">
+      Editar forma de pagamento
+    </button>
+    <button type="button" class="btn-acao-topo" [routerLink]="['/loja', id, 'bairros']">
+      Configurar frete por bairro
+    </button>
+    <button type="button" class="btn-voltar" (click)="cancelar()">
+      &larr; Voltar
+    </button>
   </div>
 
-  <div class="field">
-    <label>CEP</label>
-    <input type="text"
-           [(ngModel)]="loja.cep"
-           name="cep"
-           [disabled]="!modoEdicao">
+  <div class="content-grid">
+
+<form (ngSubmit)="salvar()" class="left-col">
+
+  <div class="card">
+
+    <h2>Detalhes da Loja</h2>
+
+    <div class="field">
+      <label>Nome</label>
+      <input type="text"
+             [(ngModel)]="loja.nomeLoja"
+             name="nome"
+             [disabled]="!modoEdicao">
+    </div>
+
+    <div class="field">
+      <label>CEP</label>
+      <input type="text"
+             [(ngModel)]="loja.cep"
+             name="cep"
+             [disabled]="!modoEdicao">
+    </div>
+
+    <div class="field">
+      <label>CNPJ</label>
+      <input type="text"
+             [(ngModel)]="loja.cnpj"
+             name="cnpj"
+             [disabled]="!modoEdicao">
+    </div>
+
+    <div class="field">
+      <label>Telefone</label>
+      <input type="text"
+             [(ngModel)]="loja.telefone"
+             name="telefone"
+             [disabled]="!modoEdicao">
+    </div>
+
+    <div class="field">
+      <label>Imagem URL</label>
+      <input type="text"
+             [(ngModel)]="loja.imagemUrl"
+             name="imagemUrl"
+             [disabled]="!modoEdicao">
+    </div>
+
   </div>
 
-  <div class="field">
-    <label>CNPJ</label>
-    <input type="text"
-           [(ngModel)]="loja.cnpj"
-           name="cnpj"
-           [disabled]="!modoEdicao">
-  </div>
+  <div class="card" *ngIf="entregaAtiva">
 
-  <div class="field">
-    <label>Telefone</label>
-    <input type="text"
-           [(ngModel)]="loja.telefone"
-           name="telefone"
-           [disabled]="!modoEdicao">
-  </div>
+    <h2>Entrega e Descrição</h2>
 
-  <div class="field">
-    <label>Tipo Atendimento</label>
-    <select [(ngModel)]="loja.tipoAtendimento"
-            name="tipoAtendimento"
-            [disabled]="!modoEdicao">
-      <option value="ENTREGA">Entrega</option>
-      <option value="RETIRADA">Retirada</option>
-      <option value="AMBOS">Ambos</option>
-    </select>
-  </div>
+    <div class="field">
+      <label>Valor mínimo para frete grátis (R$)</label>
+      <input type="number"
+             [(ngModel)]="loja.valorMinimoFreteGratis"
+             name="valorMinimoFreteGratis"
+             step="0.01"
+             min="0"
+             [disabled]="!modoEdicao">
+    </div>
 
-  <div class="field">
-    <label>Imagem URL</label>
-    <input type="text"
-           [(ngModel)]="loja.imagemUrl"
-           name="imagemUrl"
-           [disabled]="!modoEdicao">
+    <div class="field">
+      <label>Descrição da Loja</label>
+      <textarea rows="4"
+                [(ngModel)]="loja.textoDescricao"
+                name="textoDescricao"
+                [disabled]="!modoEdicao"></textarea>
+    </div>
+
   </div>
 
   <div class="actions" *ngIf="modoEdicao">
@@ -63,3 +95,37 @@
   </div>
 
 </form>
+
+<div class="card card-atendimento">
+
+  <h2>Tipo de Atendimento</h2>
+
+  <div class="toggle-row">
+    <div class="toggle-item">
+      <button type="button"
+              class="toggle-switch"
+              [class.on]="entregaAtiva"
+              (click)="toggleEntrega()"
+              [attr.aria-pressed]="entregaAtiva">
+        <span class="toggle-knob"></span>
+      </button>
+      <span>Entrega</span>
+    </div>
+
+    <div class="toggle-item">
+      <button type="button"
+              class="toggle-switch"
+              [class.on]="retiradaAtiva"
+              (click)="toggleRetirada()"
+              [attr.aria-pressed]="retiradaAtiva">
+        <span class="toggle-knob"></span>
+      </button>
+      <span>Retirada</span>
+    </div>
+  </div>
+
+</div>
+
+  </div>
+
+</div>

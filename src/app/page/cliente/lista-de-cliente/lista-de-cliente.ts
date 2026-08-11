@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -16,7 +16,7 @@ import { Cliente, ClienteService } from '../../../service/cliente.service';
   templateUrl: './lista-de-cliente.html',
   styleUrls: ['./lista-de-cliente.css']
 })
-export class ListaDeCliente implements OnInit {
+export class ListaDeCliente implements OnInit, OnDestroy {
 
   clientes: Cliente[] = [];
 
@@ -28,6 +28,13 @@ export class ListaDeCliente implements OnInit {
   carregando = false;
   salvando = false;
 
+  paginaAtual = 0;
+  totalPaginas = 0;
+  totalElementos = 0;
+  tamanhoPagina = 20;
+
+  private buscaTimeout: any;
+
   constructor(
     private clienteService: ClienteService,
     private cdr: ChangeDetectorRef
@@ -37,28 +44,36 @@ export class ListaDeCliente implements OnInit {
     this.carregarClientes();
   }
 
-  get clientesFiltrados(): Cliente[] {
-
-    const termo = this.termoBusca.trim().toLowerCase();
-
-    if (!termo) return this.clientes;
-
-    return this.clientes.filter(c =>
-      c.nome?.toLowerCase().includes(termo) ||
-      c.numero?.toLowerCase().includes(termo) ||
-      c.email?.toLowerCase().includes(termo)
-    );
+  ngOnDestroy(): void {
+    clearTimeout(this.buscaTimeout);
   }
 
-  carregarClientes() {
+  get paginasVisiveis(): number[] {
+    const janela = 5;
+    const metade = Math.floor(janela / 2);
+    let inicio = Math.max(0, this.paginaAtual - metade);
+    const fim = Math.min(this.totalPaginas - 1, inicio + janela - 1);
+    inicio = Math.max(0, fim - janela + 1);
+
+    return Array.from({ length: fim - inicio + 1 }, (_, i) => inicio + i);
+  }
+
+  carregarClientes(page: number = 0) {
 
     this.carregando = true;
 
-    this.clienteService.listar().subscribe({
+    this.clienteService.listar({
+      ...this.filtroAtual(),
+      page,
+      size: this.tamanhoPagina
+    }).subscribe({
 
-      next: (dados) => {
+      next: (resposta) => {
 
-        this.clientes = [...dados];
+        this.clientes = resposta.content;
+        this.paginaAtual = resposta.page?.number ?? page;
+        this.totalPaginas = resposta.page?.totalPages ?? 0;
+        this.totalElementos = resposta.page?.totalElements ?? resposta.content.length;
 
         this.carregando = false;
         this.cdr.detectChanges();
@@ -73,6 +88,31 @@ export class ListaDeCliente implements OnInit {
         Swal.fire('Erro', 'Erro ao carregar clientes', 'error');
       }
     });
+  }
+
+  onBuscaChange() {
+    clearTimeout(this.buscaTimeout);
+    this.buscaTimeout = setTimeout(() => {
+      this.carregarClientes(0);
+    }, 400);
+  }
+
+  proximaPagina() {
+    if (this.paginaAtual < this.totalPaginas - 1) {
+      this.carregarClientes(this.paginaAtual + 1);
+    }
+  }
+
+  paginaAnterior() {
+    if (this.paginaAtual > 0) {
+      this.carregarClientes(this.paginaAtual - 1);
+    }
+  }
+
+  irParaPagina(pagina: number) {
+    if (pagina >= 0 && pagina < this.totalPaginas && pagina !== this.paginaAtual) {
+      this.carregarClientes(pagina);
+    }
   }
 
   salvar() {
@@ -100,15 +140,7 @@ export class ListaDeCliente implements OnInit {
 
     operacao.subscribe({
 
-      next: (clienteSalvo) => {
-
-        if (this.editando) {
-          this.clientes = this.clientes.map(
-            c => c.id === clienteSalvo.id ? clienteSalvo : c
-          );
-        } else {
-          this.clientes = [...this.clientes, clienteSalvo];
-        }
+      next: () => {
 
         Swal.fire(
           'Sucesso',
@@ -117,6 +149,10 @@ export class ListaDeCliente implements OnInit {
         );
 
         this.salvando = false;
+
+        // Recarrega a pagina atual (edicao) ou volta pra primeira (cliente novo pode nao estar na pagina atual).
+        this.carregarClientes(this.editando ? this.paginaAtual : 0);
+
         this.cancelarEdicao();
       },
 
@@ -139,6 +175,28 @@ export class ListaDeCliente implements OnInit {
   cancelarEdicao() {
     this.editando = false;
     this.cliente = this.clienteVazio();
+  }
+
+  /**
+   * Um so campo de busca, mas o back-end espera filtros separados
+   * (nome / numero / email) — decide qual usar pelo formato do termo digitado.
+   */
+  private filtroAtual(): { nome?: string; numero?: string; email?: string } {
+    const termo = this.termoBusca.trim();
+
+    if (!termo) {
+      return {};
+    }
+
+    if (termo.includes('@')) {
+      return { email: termo };
+    }
+
+    if (/^[\d()\s+-]+$/.test(termo)) {
+      return { numero: termo };
+    }
+
+    return { nome: termo };
   }
 
   private clienteVazio(): Cliente {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -20,10 +20,12 @@ export class LoginComponent {
   step: 'credenciais' | 'escolher-loja' = 'credenciais';
   lojasDisponiveis: LojaEscolha[] = [];
   entrando = false;
+  private tempToken = '';
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {}
 
   entrar() {
@@ -35,7 +37,9 @@ export class LoginComponent {
 
         if (resultado.requiresLojaSelection) {
           this.lojasDisponiveis = resultado.lojas;
+          this.tempToken = resultado.tempToken;
           this.step = 'escolher-loja';
+          this.cd.detectChanges();
           return;
         }
 
@@ -43,20 +47,29 @@ export class LoginComponent {
       },
       error: () => {
         this.entrando = false;
+        this.cd.detectChanges();
         alert('Login ou senha inválidos');
       }
     });
   }
 
   selecionarLoja(loja: LojaEscolha) {
-    this.authService.escolherLoja(loja.id).subscribe({
+    this.authService.escolherLoja(loja.id, this.tempToken).subscribe({
       next: () => this.router.navigate([this.authService.getHomeRoute()]),
       error: () => alert('Não foi possível entrar nessa loja. Tente novamente.')
+    });
+  }
+
+  verTodasAsLojas() {
+    this.authService.escolherLoja(null, this.tempToken).subscribe({
+      next: () => this.router.navigate([this.authService.getHomeRoute()]),
+      error: () => alert('Sua conta não tem permissão para ver todas as lojas de uma vez.')
     });
   }
 
   voltarParaCredenciais() {
     this.step = 'credenciais';
     this.lojasDisponiveis = [];
+    this.tempToken = '';
   }
 }

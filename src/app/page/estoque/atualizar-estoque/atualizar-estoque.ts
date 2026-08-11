@@ -1,6 +1,7 @@
 ﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../service/auth.service';
 import { Estoque, EstoqueLoja, EstoqueService } from '../../../service/estoque.service';
 import { ProductService } from '../../../service/product.service';
 import { forkJoin, map, of, switchMap } from 'rxjs';
@@ -21,9 +22,12 @@ export class AtualizarEstoque implements OnInit {
   totalPaginasEstoque = 0;
 
   produtos: Estoque[] = [];
-  produtosFiltrados: Estoque[] = [];
   lojas: EstoqueLoja[] = [];
-  lojaSelecionada = '';
+  /** Loja usada no filtro atual. Gerente pode trocar; null = todas as lojas. */
+  lojaSelecionadaId: number | null = null;
+  /** Loja da sessao do funcionario (JWT). Se definida, trava o estoque nela. */
+  lojaSessaoId: number | null = null;
+  lojaSessaoTravada = false;
   alterados: Set<number> = new Set();
   precosEmEdicao: Set<number> = new Set();
   precosAlterados: Set<number> = new Set();
@@ -32,17 +36,27 @@ export class AtualizarEstoque implements OnInit {
   constructor(
     private estoqueService: EstoqueService,
     private productService: ProductService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
+    this.lojaSessaoId = this.authService.getLojaId();
+    this.lojaSessaoTravada = this.lojaSessaoId !== null;
+    this.lojaSelecionadaId = this.lojaSessaoId;
+
     this.carregarLojas();
     this.carregarDados();
   }
 
   carregarDados(page: number = 0) {
-    this.estoqueService
-      .listar(page, 10)
+    const lojaId = this.lojaSessaoTravada ? this.lojaSessaoId! : this.lojaSelecionadaId;
+
+    const busca = lojaId !== null
+      ? this.estoqueService.relatorio({ lojaId, page, size: 10 })
+      : this.estoqueService.listar(page, 10);
+
+    busca
       .pipe(
         switchMap((res) => {
           const itensSemVariacao = res.content.filter((item) => !item.variacaoId);
@@ -70,7 +84,6 @@ export class AtualizarEstoque implements OnInit {
       .subscribe({
         next: (res) => {
           this.produtos = res.content;
-          this.produtosFiltrados = this.filtrarPorLoja(res.content);
           this.paginaAtualEstoque = res.page.number;
           this.totalPaginasEstoque = res.page.totalPages;
           this.cdr.detectChanges();
@@ -83,7 +96,7 @@ export class AtualizarEstoque implements OnInit {
 
   carregarLojas() {
     this.estoqueService
-      .listarLojas()
+      .listarLojas(this.lojaSessaoTravada ? { id: this.lojaSessaoId! } : {})
       .subscribe({
         next: (response) => {
           this.lojas = response.content;
@@ -96,15 +109,13 @@ export class AtualizarEstoque implements OnInit {
   }
 
   mostrarTudo() {
-    this.lojaSelecionada = '';
-    this.produtosFiltrados = this.produtos;
-    this.cdr.detectChanges();
+    this.lojaSelecionadaId = null;
+    this.carregarDados(0);
   }
 
-  selecionarLoja(nomeLoja: string) {
-    this.lojaSelecionada = nomeLoja;
-    this.produtosFiltrados = this.filtrarPorLoja(this.produtos);
-    this.cdr.detectChanges();
+  selecionarLoja(lojaId: number | null) {
+    this.lojaSelecionadaId = lojaId;
+    this.carregarDados(0);
   }
 
   proximaPaginaEstoque() {
@@ -265,14 +276,6 @@ export class AtualizarEstoque implements OnInit {
           Swal.fire('Erro', 'Nao foi possivel atualizar o estoque.', 'error');
         }
       });
-  }
-
-  private filtrarPorLoja(produtos: Estoque[]) {
-    if (!this.lojaSelecionada) {
-      return [...produtos];
-    }
-
-    return produtos.filter(p => p.nomeLoja === this.lojaSelecionada);
   }
 
   private normalizarTexto(valor?: string) {

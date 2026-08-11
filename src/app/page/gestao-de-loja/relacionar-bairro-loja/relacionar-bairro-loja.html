@@ -7,10 +7,21 @@
       <h1 class="page-title">Bairros Atendidos{{ lojaNome ? ' — ' + lojaNome : '' }}</h1>
       <p class="page-subtitle">Relacione bairros à loja e defina o valor do frete de cada um</p>
     </div>
-    <button class="btn-back" (click)="voltar()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-      Voltar
-    </button>
+    <div class="header-actions">
+      <button class="btn-back" [routerLink]="['/editar-loja', lojaId]">
+        Editar dados da loja
+      </button>
+      <button class="btn-back" [routerLink]="['/loja', lojaId, 'formas-pagamento']">
+        Editar forma de pagamento
+      </button>
+      <button class="btn-back" [routerLink]="['/loja', lojaId, 'bairros']">
+        Configurar frete por bairro
+      </button>
+      <button class="btn-back" (click)="voltar()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        Voltar
+      </button>
+    </div>
   </div>
 
   <!-- Layout -->
@@ -33,8 +44,8 @@
         <div class="form-group">
           <label class="form-label">Bairro <span class="required">*</span></label>
           <select class="form-input" [(ngModel)]="form.bairroId">
-            <option [value]="0">Selecione um bairro</option>
-            <option *ngFor="let bairro of bairros" [value]="bairro.id">
+            <option [ngValue]="0">Selecione um bairro</option>
+            <option *ngFor="let bairro of bairros" [ngValue]="bairro.id">
               {{ bairro.nome }}
             </option>
           </select>
