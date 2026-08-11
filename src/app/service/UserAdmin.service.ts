@@ -2,34 +2,19 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { map } from 'rxjs';
+import { Role, Permission } from '../models/user-loja.model';
+
+export type { Role, Permission };
 
 export interface User {
   id: string;
   login: string;
+  nome?: string;
   username?: string;
   email?: string;
   ativo?: boolean;
-  role?: string | Role | Permission[];
-  roleId?: string;
-  roleName?: string;
+  totalLojas?: number;
   totalPermissoes?: number;
-  permissions?: Permission[];
-  permissionsExtras?: Permission[];
-  permissionExtras?: Permission[];
-  permissionIds?: string[];
-}
-
-export interface Role {
-  id: string;
-  nome: string;
-  descricao: string;
-  permissions: Permission[];
-}
-
-export interface Permission {
-  id: string;
-  nome: string;
-  descricao: string;
 }
 
 export interface ListarUsuariosFiltros {
@@ -125,15 +110,14 @@ export class UserAdminService {
 
   criarUsuario(
     data: {
-      login: string;
+      nome: string;
       password: string;
-      roleId: string;
-      Email: string;
-      permissionIds?: string[];
+      email: string;
+      lojas: { lojaId: number; roleId: string }[];
     }
   ) {
 
-    return this.http.post<{ token: string }>(
+    return this.http.post<{ username: string; email: string }>(
       `${this.API}/user`,
       data
     );
@@ -144,9 +128,7 @@ export class UserAdminService {
     data: {
       login: string;
       password?: string;
-      roleId: string;
       Email: string;
-      permissionIds: string[];
     }
   ) {
 
@@ -171,16 +153,9 @@ export class UserAdminService {
   }
 
   private normalizarUsuario(user: User): User {
-    const rolePermissions = Array.isArray(user.role) ? user.role : [];
-    const extraPermissions = user.permissionsExtras ?? user.permissionExtras ?? [];
-    const permissions = user.permissions ?? rolePermissions;
-
     return {
       ...user,
-      login: user.login ?? user.username ?? user.email ?? 'Sem login',
-      permissions,
-      permissionsExtras: extraPermissions,
-      permissionIds: user.permissionIds ?? extraPermissions.map(permission => permission.id)
+      login: user.login ?? user.username ?? user.email ?? 'Sem login'
     };
   }
 

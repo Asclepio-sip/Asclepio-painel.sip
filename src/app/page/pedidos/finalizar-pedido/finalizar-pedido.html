@@ -1,0 +1,146 @@
+<main class="finalizar-pedido-page">
+  <header class="page-header">
+    <div>
+      <h1>Finalizar Pedido</h1>
+      <p>Confirme o cliente e a forma de pagamento para concluir a venda</p>
+    </div>
+    <button class="btn-voltar" type="button" (click)="voltar()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Voltar
+    </button>
+  </header>
+
+  <section class="finalizar-grid">
+
+    <!-- Resumo do pedido -->
+    <div class="resumo-card">
+      <div class="cart-title">
+        <h2>Resumo do Pedido</h2>
+      </div>
+
+      <div class="cart-items">
+        <article class="cart-item" *ngFor="let item of itens">
+          <div class="item-main">
+            <strong>{{ item.nomeProduto }}</strong>
+            <small>{{ item.nomeLoja }}</small>
+            <small *ngIf="item.nomeVariacao">{{ item.nomeVariacao }}</small>
+          </div>
+
+          <span class="item-qtd">x{{ item.quantidade }}</span>
+
+          <strong class="item-total">
+            {{ item.valorFinal * item.quantidade | currency:'BRL' }}
+          </strong>
+        </article>
+      </div>
+
+      <div class="total-row">
+        <span>Total</span>
+        <strong>{{ totalValor() | currency:'BRL' }}</strong>
+      </div>
+    </div>
+
+    <!-- Cliente + Pagamento -->
+    <div class="dados-card">
+
+      <!-- Cliente -->
+      <div class="secao">
+        <h3>Cliente</h3>
+
+        <div class="tabs">
+          <button type="button" class="tab-btn" [class.active]="modoCliente === 'selecionar'" (click)="selecionarModoCliente('selecionar')">
+            Selecionar Cliente
+          </button>
+          <button type="button" class="tab-btn" [class.active]="modoCliente === 'novo'" (click)="selecionarModoCliente('novo')">
+            Novo Cliente
+          </button>
+          <button type="button" class="tab-btn" [class.active]="modoCliente === 'anonimo'" (click)="selecionarModoCliente('anonimo')">
+            Pedido Anônimo
+          </button>
+        </div>
+
+        <div class="tab-content" *ngIf="modoCliente === 'selecionar'">
+          <div class="search-wrap" *ngIf="!carregandoClientes && clientes.length > 0">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <input
+              type="text"
+              class="search-input"
+              [(ngModel)]="termoBuscaCliente"
+              placeholder="Pesquisar por nome, número ou email..."
+            />
+          </div>
+
+          <div class="field">
+            <span>Cliente cadastrado</span>
+            <select [(ngModel)]="clienteSelecionadoId" [disabled]="carregandoClientes">
+              <option value="">{{ carregandoClientes ? 'Carregando...' : 'Selecione um cliente' }}</option>
+              <option *ngFor="let cliente of clientesFiltrados" [value]="cliente.id">
+                {{ cliente.nome }} — {{ cliente.numero }}
+              </option>
+            </select>
+          </div>
+          <small class="hint" *ngIf="!carregandoClientes && clientes.length === 0">
+            Nenhum cliente cadastrado ainda. Use "Novo Cliente" ou "Pedido Anônimo".
+          </small>
+          <small class="hint" *ngIf="!carregandoClientes && clientes.length > 0 && clientesFiltrados.length === 0">
+            Nenhum cliente encontrado para "{{ termoBuscaCliente }}".
+          </small>
+        </div>
+
+        <div class="tab-content campos-novo-cliente" *ngIf="modoCliente === 'novo'">
+          <div class="field">
+            <span>Nome</span>
+            <input type="text" [(ngModel)]="novoCliente.nome" placeholder="Nome do cliente" autocomplete="off" />
+          </div>
+          <div class="field">
+            <span>Número</span>
+            <input type="text" [(ngModel)]="novoCliente.numero" placeholder="Ex: (11) 91234-5678" autocomplete="off" />
+          </div>
+          <div class="field">
+            <span>Email</span>
+            <input type="email" [(ngModel)]="novoCliente.email" placeholder="cliente@email.com" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="tab-content" *ngIf="modoCliente === 'anonimo'">
+          <small class="hint">
+            O pedido será registrado sem identificar o cliente.
+          </small>
+        </div>
+      </div>
+
+      <!-- Pagamento -->
+      <div class="secao">
+        <h3>Pagamento</h3>
+
+        <div class="payment-options" *ngIf="formasDePagamento.length > 0">
+          <button
+            type="button"
+            *ngFor="let forma of formasDePagamento"
+            class="payment-btn"
+            [class.active]="formaDePagamento === forma.value"
+            (click)="formaDePagamento = forma.value"
+          >
+            {{ forma.label }}
+          </button>
+        </div>
+        <small class="hint" *ngIf="carregandoFormasDePagamento">Carregando formas de pagamento...</small>
+        <small class="hint" *ngIf="!carregandoFormasDePagamento && formasDePagamento.length === 0">
+          Nenhuma forma de pagamento ativa para esta loja.
+        </small>
+      </div>
+
+      <footer class="dados-footer">
+        <button
+          class="finish-btn"
+          type="button"
+          (click)="finalizar()"
+          [disabled]="finalizando"
+        >
+          {{ finalizando ? 'Finalizando...' : 'Finalizar Pedido' }}
+        </button>
+      </footer>
+    </div>
+
+  </section>
+</main>

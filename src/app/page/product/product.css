@@ -285,7 +285,7 @@
 }
 
 /* Actions */
-.td-actions { text-align: center; }
+.td-actions { display: flex; align-items: center; justify-content: center; gap: 8px; }
 
 .btn-variacoes {
   display: inline-flex;

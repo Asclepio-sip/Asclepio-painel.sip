@@ -19,6 +19,7 @@ import { RelatorioEstoque } from './page/estoque/relatorio-estoque/relatorio-est
 import { AtualizarEstoque } from './page/estoque/atualizar-estoque/atualizar-estoque';
 import { AddBairro } from './page/gestao-de-loja/add-bairro/add-bairro';
 import { RelacionarBairroLoja } from './page/gestao-de-loja/relacionar-bairro-loja/relacionar-bairro-loja';
+import { ListaDeCliente } from './page/cliente/lista-de-cliente/lista-de-cliente';
 import { PermissionGroups } from './core/security/permission-groups';
 import { LandingComponent } from './page/landing/landing';
 import { CadastroComponent } from './page/cadastro/cadastro';
@@ -33,6 +34,7 @@ export const routes: Routes = [
 
   { path: 'pedido', component: Pedidos, canActivate: [authGuard] },
   { path: 'fazer-pedido', component: FazerPedido, canActivate: [adminGuard], data: { permissions: PermissionGroups.pedidos } },
+  { path: 'finalizar-pedido', loadComponent: () => import('./page/pedidos/finalizar-pedido/finalizar-pedido').then(m => m.FinalizarPedido), canActivate: [adminGuard], data: { permissions: PermissionGroups.pedidos } },
   { path: 'loja', component: GestaoDeLoja, canActivate: [authGuard] },
   { path: 'addloja', component: TelaDeAddLoja, canActivate: [authGuard] },
   { path: 'editar-loja/:id', component: EditarLoja, canActivate: [authGuard] },
@@ -47,6 +49,8 @@ export const routes: Routes = [
   { path: 'relatorio-estoque', component: RelatorioEstoque, canActivate: [adminGuard], data: { permissions: PermissionGroups.estoque }},
   { path: 'addCategoria', component: AddEditCartegoria, canActivate: [adminGuard], data: { permissions: PermissionGroups.produtos }},
   { path: 'add-bairro', component: AddBairro, canActivate: [adminGuard], data: { permissions: PermissionGroups.lojas }},
+  { path: 'clientes', component: ListaDeCliente, canActivate: [authGuard] },
   {path: 'loja/:id/bairros',loadComponent: () =>import('./page/gestao-de-loja/relacionar-bairro-loja/relacionar-bairro-loja').then(m => m.RelacionarBairroLoja),canActivate: [authGuard]},
+  {path: 'loja/:id/formas-pagamento',loadComponent: () =>import('./page/gestao-de-loja/formas-pagamento-loja/formas-pagamento-loja').then(m => m.FormasPagamentoLoja),canActivate: [authGuard]},
   { path: '**', redirectTo: 'login' }
 ];

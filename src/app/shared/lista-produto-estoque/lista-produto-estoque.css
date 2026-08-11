@@ -260,6 +260,10 @@
   background: #fff;
 }
 
+.state.empty-state {
+  grid-column: 1 / -1;
+}
+
 .state.error {
   color: #b42318;
   border-color: #fecdca;

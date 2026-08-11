@@ -111,6 +111,7 @@
         <p class="card-subtitle">Entre com suas credenciais para acessar o painel</p>
       </div>
 
+      @if (step === 'credenciais') {
       <form (ngSubmit)="entrar()" class="login-form-body">
 
         <div class="form-group">
@@ -145,12 +146,35 @@
           </div>
         </div>
 
-        <button type="submit" class="btn-login">
+        <button type="submit" class="btn-login" [disabled]="entrando">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-          Entrar
+          {{ entrando ? 'Entrando...' : 'Entrar' }}
         </button>
 
       </form>
+      }
+
+      @if (step === 'escolher-loja') {
+      <div class="login-form-body">
+        <p class="card-subtitle" style="margin-bottom: 16px;">Escolha com qual loja deseja entrar:</p>
+
+        @for (loja of lojasDisponiveis; track loja.id) {
+        <div class="form-group" style="margin-bottom: 10px;">
+          <button type="button" class="btn-login" (click)="selecionarLoja(loja)">
+            {{ loja.nome }}
+          </button>
+        </div>
+        }
+
+        <button type="button" class="btn-cancel" (click)="verTodasAsLojas()">
+          Ver todas as lojas
+        </button>
+
+        <button type="button" class="btn-cancel" (click)="voltarParaCredenciais()">
+          Voltar
+        </button>
+      </div>
+      }
 
       <p class="card-footer-text">PromoFarma &copy; {{ currentYear }} — Todos os direitos reservados</p>
 

@@ -1,10 +1,21 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 export interface Bairro {
   id?: number;
   nome: string;
+}
+
+interface PageResponse<T> {
+  content: T[];
+  page?: {
+    size: number;
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  };
 }
 
 @Injectable({
@@ -22,8 +33,13 @@ export class BairroService {
   listar():
     Observable<Bairro[]> {
 
-    return this.http.get<Bairro[]>(
-      this.apiUrl
+    const params = new HttpParams().set('size', '1000');
+
+    return this.http.get<PageResponse<Bairro>>(
+      this.apiUrl,
+      { params }
+    ).pipe(
+      map(resposta => resposta.content)
     );
   }
 

@@ -14,6 +14,11 @@
   z-index: 1100;
 }
 
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
 /* ===== LOGO ===== */
 .logo {
   display: flex;
@@ -48,6 +53,20 @@
   letter-spacing: 1.5px;
   text-transform: uppercase;
   line-height: 1;
+}
+
+/* ===== LOJA DA SESSAO ===== */
+.nav-loja-badge {
+  margin-left: 18px;
+  padding: 6px 14px;
+  background: #fdf1ea;
+  color: #C5794E;
+  border: 1px solid #f1d9c7;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
 }
 
 /* ===== AÇÕES ===== */
@@ -90,6 +109,10 @@
 /* ===== RESPONSIVO ===== */
 @media (max-width: 480px) {
   .user-btn {
+    display: none;
+  }
+
+  .nav-loja-badge {
     display: none;
   }
 }

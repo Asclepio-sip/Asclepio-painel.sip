@@ -6,10 +6,10 @@
       <p class="breadcrumb">ADMIN / ESTOQUE / <span>ATUALIZAR ESTOQUE</span></p>
       <h1 class="page-title">Atualizar Estoque</h1>
     </div>
-    <div class="header-actions">
-      <select class="select-loja" [(ngModel)]="lojaSelecionada" (ngModelChange)="selecionarLoja($event)" name="lojaFiltro">
-        <option value="">Todas as lojas</option>
-        <option *ngFor="let l of lojas" [value]="l.nomeLoja">{{ l.nomeLoja }}</option>
+    <div class="header-actions" *ngIf="!lojaSessaoTravada">
+      <select class="select-loja" [(ngModel)]="lojaSelecionadaId" (ngModelChange)="selecionarLoja($event)" name="lojaFiltro">
+        <option [ngValue]="null">Todas as lojas</option>
+        <option *ngFor="let l of lojas" [ngValue]="l.id">{{ l.nomeLoja }}</option>
       </select>
       <button class="btn-secondary" type="button" (click)="mostrarTudo()">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -25,7 +25,7 @@
     <div class="table-card-header">
       <div>
         <h3 class="table-card-title">Itens em Estoque</h3>
-        <p class="table-card-sub">{{ produtosFiltrados.length }} item(ns) encontrado(s)</p>
+        <p class="table-card-sub">{{ produtos.length }} item(ns) encontrado(s)</p>
       </div>
     </div>
 
@@ -44,7 +44,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr class="estoque-row" *ngFor="let p of produtosFiltrados">
+          <tr class="estoque-row" *ngFor="let p of produtos">
 
             <td class="td-produto">
               <div class="produto-img-wrap">
@@ -140,7 +140,7 @@
             </td>
 
           </tr>
-          <tr *ngIf="produtosFiltrados.length === 0">
+          <tr *ngIf="produtos.length === 0">
             <td colspan="8" class="empty-state">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>

@@ -1,18 +1,39 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { map, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { PermissionGroups } from '../core/security/permission-groups';
 import { AppPermissions } from '../core/security/app-permissions';
 
 interface JwtPayload {
   sub: string;
-  role?: unknown;
+  empresaId?: number;
+  lojaId?: number;
+  gerente?: boolean;
+  nome?: string;
   permissions?: unknown[];
   authorities?: unknown[];
   roles?: unknown[];
   exp?: number;
 }
+
+export interface LojaEscolha {
+  id: number;
+  nome: string;
+}
+
+interface LoginApiResponse {
+  // token FULL (login direto) ou token TEMP (tipo: TEMP, válido 5min, usado
+  // só pra chamar /user/escolher-loja quando há mais de uma loja vinculada).
+  token: string;
+  escolherLoja?: boolean;
+  lojas?: LojaEscolha[];
+  lojaNome?: string | null;
+}
+
+export type LoginResult =
+  | { requiresLojaSelection: false }
+  | { requiresLojaSelection: true; lojas: LojaEscolha[]; tempToken: string };
 
 @Injectable({
   providedIn: 'root'
@@ -29,19 +50,48 @@ export class AuthService {
     GESTAO: PermissionGroups.gestao,
   } as const;
 
-  
 
-  constructor(private http: HttpClient) {}
+
+  constructor(
+    private http: HttpClient
+  ) {}
 
   login(login: string, password: string) {
     return this.http
-      .post<{ token: string }>(
+      .post<LoginApiResponse>(
         `${this.API}/user/login`,
         { login, password }
       )
       .pipe(
+        map((res): LoginResult => {
+          // escolherLoja=true → res.token é só o TEMP token, não é sessão válida ainda.
+          if (res.escolherLoja) {
+            return { requiresLojaSelection: true, lojas: res.lojas ?? [], tempToken: res.token };
+          }
+
+          sessionStorage.setItem('token', res.token);
+          this.setNomeLoja(res.lojaNome ?? null);
+          return { requiresLojaSelection: false };
+        })
+      );
+  }
+
+  /**
+   * lojaId: null → "ver todas as lojas" (só permitido se o usuário tiver a
+   * role Gerente em pelo menos um vínculo; o backend valida isso).
+   * tempToken: o token TEMP recebido em login() quando requiresLojaSelection.
+   */
+  escolherLoja(lojaId: number | null, tempToken: string) {
+    return this.http
+      .post<{ token: string; lojaNome?: string | null }>(
+        `${this.API}/user/escolher-loja`,
+        { lojaId },
+        { headers: new HttpHeaders({ Authorization: `Bearer ${tempToken}` }) }
+      )
+      .pipe(
         tap(res => {
           sessionStorage.setItem('token', res.token);
+          this.setNomeLoja(res.lojaNome ?? null);
         })
       );
   }
@@ -55,7 +105,15 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getToken();
+    if (!token) return false;
+
+    const exp = this.getPayload()?.exp;
+    if (exp && Date.now() >= exp * 1000) {
+      return false;
+    }
+
+    return true;
   }
 
   private getPayload(): JwtPayload | null {
@@ -81,10 +139,50 @@ export class AuthService {
     return this.getPayload()?.sub ?? null;
   }
 
-  getRole(): string | null {
-    const role = this.getPayload()?.role;
+  /**
+   * Nome de verdade da pessoa (ex: "João"), não o login (ex: "empresa@joao").
+   * Vem direto na claim "nome" do JWT (setada no login/escolher-loja a partir
+   * do cadastro do usuario), sem precisar de uma chamada extra a GET /user
+   * (que exige a permissao VerUser, que funcionario comum nao tem).
+   * Cai pro login só se o usuario nao tiver nome cadastrado.
+   */
+  getNomeExibicao(): string {
+    return this.getPayload()?.nome || this.getUserName() || '';
+  }
 
-    return typeof role === 'string' ? role : null;
+  getEmpresaId(): number | null {
+    return this.getPayload()?.empresaId ?? null;
+  }
+
+  getLojaId(): number | null {
+    return this.getPayload()?.lojaId ?? null;
+  }
+
+  /**
+   * true se o funcionario tem o cargo Gerente na loja da sessao atual
+   * (ou se escolheu "ver todas as lojas"). Gerente pode trocar livremente
+   * de loja nas telas de pedido/estoque; funcionario comum fica travado
+   * na loja do token.
+   */
+  isGerente(): boolean {
+    return this.getPayload()?.gerente ?? false;
+  }
+
+  /**
+   * Nome da loja da sessao atual, guardado no login/escolher-loja (o JWT so
+   * carrega o lojaId, nao o nome). null quando o usuario escolheu "ver todas
+   * as lojas".
+   */
+  getNomeLoja(): string | null {
+    return sessionStorage.getItem('nomeLoja');
+  }
+
+  private setNomeLoja(nome: string | null) {
+    if (nome) {
+      sessionStorage.setItem('nomeLoja', nome);
+    } else {
+      sessionStorage.removeItem('nomeLoja');
+    }
   }
 
   getPermissions(): string[] {
@@ -98,13 +196,12 @@ export class AuthService {
       ...this.normalizarPermissoes(payload.permissions),
       ...this.normalizarPermissoes(payload.authorities),
       ...this.normalizarPermissoes(payload.roles),
-      ...this.normalizarPermissoes(payload.role),
     ];
   }
 
 
   isSuperAdmin(): boolean {
-    return this.getRole() === 'SUPER_ADMIN';
+    return this.hasPermission('SUPER_ADMIN');
   }
 
   hasPermission(permission: string): boolean {

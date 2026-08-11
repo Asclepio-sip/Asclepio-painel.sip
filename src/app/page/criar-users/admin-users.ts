@@ -1,16 +1,17 @@
-﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Permission, Role, User } from '../../service/UserAdmin.service';
-import { UserAdminService } from '../../service/UserAdmin.service';
-import { forkJoin, of, switchMap } from 'rxjs';
+import { Router } from '@angular/router';
+import { Role, User, UserAdminService } from '../../service/UserAdmin.service';
+import { UserLojaService } from '../../service/user-loja.service';
+import { UserLoja } from '../../models/user-loja.model';
+import { AuthService } from '../../service/auth.service';
+import { Loja, LojaService } from '../../service/loja/loja.service';
+import { forkJoin } from 'rxjs';
 
-type PermissionAction = 'VIEW' | 'CREATE' | 'UPDATE' | 'DELETE';
-
-interface PermissionGroup {
-  recurso: string;
-  permissions: Partial<Record<PermissionAction, Permission>>;
-  extras: Permission[];
+interface LinhaLojaCargo {
+  lojaId: number | null;
+  roleId: string;
 }
 
 @Component({
@@ -22,37 +23,17 @@ interface PermissionGroup {
 })
 export class AdminUsersComponent implements OnInit {
 
-  users: User[] = [];
+  lojaId: number | null = null;
+
+  usuarios: User[] = [];
   roles: Role[] = [];
-  permissions: Permission[] = [];
   adminCount = 0;
-
-  // Editar
-  editUserId: string | null = null;
-  editLogin = '';
-  editEmail = '';
-  editPassword = '';
-  editRoleId = '';
-  editPermissionIds: string[] = [];
-  editRolePermissionIds: string[] = [];
-  editPermissionGroups: PermissionGroup[] = [];
-
-  // Criar
-  showCriarModal = false;
-  criarLogin = '';
-  criarEmail = '';
-  criarPassword = '';
-  criarRoleId = '';
-  criarPermissionIds: string[] = [];
-  criarRolePermissionIds: string[] = [];
-  criarPermissionGroups: PermissionGroup[] = [];
-  salvandoCriar = false;
 
   loading = false;
 
-  // Filtros e paginaÃ§Ã£o
+  // Filtros, busca e paginação (server-side, via GET /user)
   searchTerm = '';
-  sortBy = 'recente';
+  sortBy: 'recente' | 'nome' = 'recente';
   filterRole = '';
   showFiltros = false;
   currentPage = 1;
@@ -61,35 +42,69 @@ export class AdminUsersComponent implements OnInit {
   totalPages = 1;
   private buscaTimeout: any;
 
-  // Tabela de permissÃµes
-  permissionActions: { key: PermissionAction; label: string }[] = [
-    { key: 'VIEW', label: 'Ver' },
-    { key: 'CREATE', label: 'Criar' },
-    { key: 'UPDATE', label: 'Editar' },
-    { key: 'DELETE', label: 'Excluir' }
-  ];
+  // Gerenciar acessos (lojas/cargos) de um usuário
+  gerenciarUsuario: User | null = null;
+  lojasDoUsuario: UserLoja[] = [];
+  carregandoLojasUsuario = false;
+  editandoVinculoId: string | null = null;
+  editRoleId = '';
+  novoVinculoRoleId = '';
+  salvandoVinculo = false;
 
-  private readonly actionAliases: Record<string, PermissionAction> = {
-    VER: 'VIEW', READ: 'VIEW',
-    CRIAR: 'CREATE', CREATE: 'CREATE',
-    EDITAR: 'UPDATE', ATUALIZAR: 'UPDATE', UPDATE: 'UPDATE',
-    EXCLUIR: 'DELETE', DELETAR: 'DELETE', DELETE: 'DELETE'
-  };
+  // Adicionar membro
+  showCriarModal = false;
+  modoCriar: 'existente' | 'novo' = 'existente';
+  criarRoleId = '';
+  salvandoCriar = false;
+
+  buscaUsuarioTermo = '';
+  resultadosBusca: User[] = [];
+  buscandoUsuarios = false;
+  usuarioSelecionado: User | null = null;
+  private buscaUsuarioTimeout: any;
+
+  novoNome = '';
+  novoEmail = '';
+  novoPassword = '';
+
+  // Novo usuário: uma loja só, ou várias (com cargo por loja)
+  todasLojas: Loja[] = [];
+  modoLojas: 'unica' | 'multiplas' = 'unica';
+  novoUsuarioLojas: LinhaLojaCargo[] = [];
 
   private readonly avatarColors = ['#dc2626', '#059669', '#7c3aed', '#d97706', '#2563eb', '#db2777', '#0891b2'];
 
   constructor(
     private userService: UserAdminService,
-    private cd: ChangeDetectorRef
+    private userLojaService: UserLojaService,
+    private lojaService: LojaService,
+    private authService: AuthService,
+    private cd: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit() {
+    this.lojaId = this.authService.getLojaId();
     this.carregarRoles();
-    this.carregarPermissoes();
     this.carregarUsuarios(0);
+    this.carregarTodasLojas();
   }
 
-  carregarUsuarios(page: number = 0) {
+  carregarTodasLojas() {
+    this.lojaService.listar(0, 100).subscribe({
+      next: response => {
+        this.todasLojas = response.content;
+        this.cd.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  voltar() {
+    this.router.navigate(['/loja']);
+  }
+
+  carregarUsuarios(page: number) {
     this.loading = true;
 
     this.userService.listarUsuarios(page, this.pageSize, {
@@ -98,7 +113,7 @@ export class AdminUsersComponent implements OnInit {
       sort: this.sortBy === 'nome' ? 'username,asc' : undefined
     }).subscribe({
       next: response => {
-        this.users = response.users;
+        this.usuarios = response.users;
         this.totalElements = response.totalElements;
         this.totalPages = Math.max(1, response.totalPages);
         this.currentPage = response.number + 1;
@@ -107,7 +122,8 @@ export class AdminUsersComponent implements OnInit {
       },
       error: () => {
         this.loading = false;
-        alert('Erro ao carregar usuarios');
+        this.cd.detectChanges();
+        alert('Erro ao carregar usuários');
       }
     });
   }
@@ -122,46 +138,6 @@ export class AdminUsersComponent implements OnInit {
       error: () => alert('Erro ao carregar roles')
     });
   }
-
-  carregarPermissoes() {
-    this.userService.listarPermissoes().subscribe({
-      next: permissions => {
-        this.permissions = permissions;
-        this.cd.detectChanges();
-      },
-      error: () => alert('Erro ao carregar permissoes')
-    });
-  }
-
-  // â”€â”€ Filtros, busca e paginaÃ§Ã£o â”€â”€
-
-  filtrarUsuarios() {
-    clearTimeout(this.buscaTimeout);
-    this.buscaTimeout = setTimeout(() => {
-      this.carregarUsuarios(0);
-    }, 400);
-  }
-
-  toggleFiltros() {
-    this.showFiltros = !this.showFiltros;
-  }
-
-  abrirModalCriar() {
-    this.showCriarModal = true;
-    this.criarLogin = '';
-    this.criarEmail = '';
-    this.criarPassword = '';
-    this.criarRoleId = this.roles[0]?.id || '';
-    this.criarPermissionIds = [];
-    this.aplicarPermissoesDaRoleCriar();
-    this.criarPermissionGroups = this.agruparPermissoes(this.permissions);
-  }
-
-  fecharModalCriar() {
-    this.showCriarModal = false;
-  }
-
-  // â”€â”€ KPIs â”€â”€
 
   private atualizarAdminCount() {
     const adminRoles = this.roles.filter(r => /ADMIN|SUPER/i.test(r.nome));
@@ -182,55 +158,30 @@ export class AdminUsersComponent implements OnInit {
     });
   }
 
-  // â”€â”€ Avatar & Visual helpers â”€â”€
+  // ── Filtros, busca e paginação ──
 
-  getAvatarColor(user: User): string {
-    const index = user.login.charCodeAt(0) % this.avatarColors.length;
-    return this.avatarColors[index];
+  filtrarUsuarios() {
+    clearTimeout(this.buscaTimeout);
+    this.buscaTimeout = setTimeout(() => {
+      this.carregarUsuarios(0);
+    }, 400);
   }
 
-  getRoleBadgeClass(user: User): string {
-    const roleName = this.getUserRoleName(user).toUpperCase();
-    if (roleName.includes('SUPER')) return 'role-superadmin';
-    if (roleName.includes('ADMIN')) return 'role-admin';
-    if (roleName.includes('OPERADOR')) return 'role-operador';
-    return 'role-default';
+  toggleFiltros() {
+    this.showFiltros = !this.showFiltros;
   }
-
-  getUserPermissionCount(user: User): number {
-    return user.totalPermissoes ?? user.permissions?.length ?? 0;
-  }
-
-  getPermissionPercent(user: User): number {
-    if (!this.permissions.length) return 0;
-    return (this.getUserPermissionCount(user) / this.permissions.length) * 100;
-  }
-
-  getPermissionBarColor(user: User): string {
-    const percent = this.getPermissionPercent(user);
-    if (percent >= 80) return '#059669';
-    if (percent >= 40) return '#d97706';
-    return '#dc2626';
-  }
-
-  // â”€â”€ Pagination â”€â”€
 
   get paginatedUsers(): User[] {
-    return this.users;
+    return this.usuarios;
   }
 
   getPageStart(): number {
     return Math.min(this.currentPage * this.pageSize, this.totalElements);
   }
 
-  getTotalPages(): number {
-    return this.totalPages;
-  }
-
   getPages(): number[] {
-    const total = this.getTotalPages();
     const pages: number[] = [];
-    for (let i = 1; i <= total; i++) pages.push(i);
+    for (let i = 1; i <= this.totalPages; i++) pages.push(i);
     return pages;
   }
 
@@ -240,323 +191,302 @@ export class AdminUsersComponent implements OnInit {
     }
   }
 
-  // â”€â”€ EdiÃ§Ã£o â”€â”€
+  // ── Avatar & badges ──
 
-  editar(user: User) {
-    this.editUserId = user.id;
-    this.editLogin = user.login;
-    this.editEmail = user.email ?? '';
-    this.editRoleId = this.getUserRoleId(user);
-    this.editPassword = '';
-    this.atualizarPermissoesDaRoleEdit();
-    this.editPermissionIds = this.getUserExtraPermissionIds(user);
-    this.editPermissionGroups = this.agruparPermissoes(this.permissions);
+  getAvatarColor(user: User): string {
+    const index = this.getNomeExibicao(user).charCodeAt(0) % this.avatarColors.length;
+    return this.avatarColors[index];
   }
 
-  salvar() {
-    if (!this.editUserId) return;
+  getNomeExibicao(user: User): string {
+    return user.nome || user.login;
+  }
 
+  getRoleBadgeClass(role: Role): string {
+    const roleName = role.nome.toUpperCase();
+    if (roleName.includes('SUPER')) return 'role-superadmin';
+    if (roleName.includes('ADMIN')) return 'role-admin';
+    if (roleName.includes('OPERADOR')) return 'role-operador';
+    return 'role-default';
+  }
+
+  // ── Gerenciar acessos (lojas/cargos) ──
+
+  abrirGerenciarAcessos(user: User) {
+    this.gerenciarUsuario = user;
+    this.lojasDoUsuario = [];
+    this.editandoVinculoId = null;
+    this.novoVinculoRoleId = this.roles[0]?.id || '';
+    this.carregarLojasDoUsuario();
+  }
+
+  fecharGerenciarAcessos() {
+    this.gerenciarUsuario = null;
+  }
+
+  carregarLojasDoUsuario() {
+    if (!this.gerenciarUsuario) return;
+
+    this.carregandoLojasUsuario = true;
+    this.userLojaService.listarLojasDoUsuario(this.gerenciarUsuario.id).subscribe({
+      next: lojas => {
+        this.lojasDoUsuario = lojas;
+        this.carregandoLojasUsuario = false;
+        this.cd.detectChanges();
+      },
+      error: () => {
+        this.carregandoLojasUsuario = false;
+        this.cd.detectChanges();
+        alert('Erro ao carregar lojas do usuário');
+      }
+    });
+  }
+
+  editarVinculo(userLoja: UserLoja) {
+    this.editandoVinculoId = userLoja.id;
+    this.editRoleId = userLoja.role.id;
+  }
+
+  cancelarEdicaoVinculo() {
+    this.editandoVinculoId = null;
+  }
+
+  salvarVinculo(userLoja: UserLoja) {
     if (!this.editRoleId) {
-      alert('Selecione uma role');
+      alert('Selecione um cargo');
       return;
     }
 
-    if (!this.editEmail) {
-      alert('Informe o email');
-      return;
-    }
-
-    this.userService.atualizarUsuario(this.editUserId, {
-      login: this.editLogin,
-      Email: this.editEmail,
-      password: this.editPassword || undefined,
-      roleId: this.editRoleId,
-      permissionIds: this.editPermissionIds
-    }).subscribe({
+    this.userLojaService.atualizarCargo(userLoja.id, this.editRoleId).subscribe({
       next: () => {
-        alert('Usuario atualizado!');
-        this.editUserId = null;
-        this.atualizarAdminCount();
+        this.editandoVinculoId = null;
+        this.carregarLojasDoUsuario();
+      },
+      error: () => alert('Erro ao atualizar cargo')
+    });
+  }
+
+  removerVinculo(userLoja: UserLoja) {
+    if (!confirm(`Remover o acesso de ${userLoja.user.login} à loja ${userLoja.loja.nomeLoja}?`)) return;
+
+    this.userLojaService.removerVinculo(userLoja.id).subscribe({
+      next: () => {
+        this.carregarLojasDoUsuario();
         this.carregarUsuarios(this.currentPage - 1);
       },
-      error: () => alert('Erro ao atualizar usuario')
+      error: () => alert('Erro ao remover acesso')
     });
   }
 
-  cancelar() {
-    this.editUserId = null;
-  }
+  adicionarNestaLoja() {
+    if (!this.lojaId || !this.gerenciarUsuario) return;
 
-  // â”€â”€ Permission Table (shared) â”€â”€
-
-  getPermission(group: PermissionGroup, action: PermissionAction) {
-    return group.permissions[action];
-  }
-
-  // â”€â”€ Edit Permission Table â”€â”€
-
-  getEditTotalSelecionadas(): number {
-    return new Set([...this.editRolePermissionIds, ...this.editPermissionIds]).size;
-  }
-
-  isEditTudoSelecionado(): boolean {
-    return this.permissions.length > 0 &&
-      this.permissions.every(p => this.isEditPermissionSelected(p.id));
-  }
-
-  toggleEditTodasPermissoes(event: Event) {
-    const checked = (event.target as HTMLInputElement).checked;
-    const extraIds = this.permissions.map(p => p.id).filter(id => !this.isEditRolePermission(id));
-    this.editPermissionIds = checked ? extraIds : [];
-  }
-
-  isEditGrupoSelecionado(group: PermissionGroup): boolean {
-    const ids = this.getGroupPermissionIds(group);
-    return ids.length > 0 && ids.every(id => this.isEditPermissionSelected(id));
-  }
-
-  isEditGrupoParcial(group: PermissionGroup): boolean {
-    const ids = this.getGroupPermissionIds(group);
-    return ids.some(id => this.isEditPermissionSelected(id)) && !this.isEditGrupoSelecionado(group);
-  }
-
-  toggleEditGrupo(group: PermissionGroup, event: Event) {
-    const checked = (event.target as HTMLInputElement).checked;
-    const ids = this.getGroupPermissionIds(group).filter(id => !this.isEditRolePermission(id));
-    if (checked) {
-      this.editPermissionIds = [...new Set([...this.editPermissionIds, ...ids])];
-    } else {
-      this.editPermissionIds = this.editPermissionIds.filter(id => !ids.includes(id));
-    }
-  }
-
-  // â”€â”€ Criar UsuÃ¡rio â”€â”€
-
-  criarUsuario() {
-    if (!this.criarLogin || !this.criarEmail || !this.criarPassword || !this.criarRoleId) {
-      alert('Preencha login, email, senha e role');
+    if (!this.novoVinculoRoleId) {
+      alert('Selecione um cargo');
       return;
     }
 
-    this.salvandoCriar = true;
-
-    this.userService.criarUsuario({
-      login: this.criarLogin,
-      Email: this.criarEmail,
-      password: this.criarPassword,
-      roleId: this.criarRoleId,
-      permissionIds: this.criarPermissionIds
-    }).pipe(
-      switchMap(() => this.userService.listarUsuarios(0, 20, { login: this.criarLogin })),
-      switchMap(response => {
-        const usuarioCriado = response.users.find(u => u.login === this.criarLogin);
-        if (!usuarioCriado || this.criarPermissionIds.length === 0) return of(null);
-        return this.userService.atualizarUsuario(usuarioCriado.id, {
-          login: this.criarLogin,
-          Email: this.criarEmail,
-          roleId: this.criarRoleId,
-          permissionIds: this.criarPermissionIds
-        });
-      })
-    ).subscribe({
+    this.salvandoVinculo = true;
+    this.userLojaService.criarVinculo({
+      userId: this.gerenciarUsuario.id,
+      lojaId: this.lojaId,
+      roleId: this.novoVinculoRoleId
+    }).subscribe({
       next: () => {
-        alert('UsuÃ¡rio criado com sucesso!');
-        this.showCriarModal = false;
-        this.salvandoCriar = false;
-        this.atualizarAdminCount();
-        this.carregarUsuarios(0);
+        this.salvandoVinculo = false;
+        this.carregarLojasDoUsuario();
+        this.carregarUsuarios(this.currentPage - 1);
       },
-      error: (err) => {
-        this.salvandoCriar = false;
-        alert(err.error || 'Erro ao criar usuÃ¡rio');
+      error: () => {
+        this.salvandoVinculo = false;
+        this.cd.detectChanges();
+        alert('Erro ao vincular usuário a esta loja');
       }
     });
   }
 
-  onCriarRoleChange() {
-    this.aplicarPermissoesDaRoleCriar();
-    this.criarPermissionIds = this.criarPermissionIds.filter(id => !this.criarRolePermissionIds.includes(id));
+  jaTemAcessoNestaLoja(): boolean {
+    return this.lojasDoUsuario.some(vinculo => vinculo.loja.id === this.lojaId);
   }
 
-  isCriarPermissionSelected(permissionId: string): boolean {
-    return this.isCriarRolePermission(permissionId) || this.criarPermissionIds.includes(permissionId);
+  // ── Adicionar membro (novo usuário ou usuário existente) ──
+
+  abrirModalCriar() {
+    this.showCriarModal = true;
+    this.modoCriar = 'existente';
+    this.criarRoleId = this.roles[0]?.id || '';
+    this.buscaUsuarioTermo = '';
+    this.resultadosBusca = [];
+    this.usuarioSelecionado = null;
+    this.novoNome = '';
+    this.novoEmail = '';
+    this.novoPassword = '';
+    this.modoLojas = 'unica';
+    this.novoUsuarioLojas = [];
+    this.carregarUsuariosParaSelecao('');
   }
 
-  isCriarRolePermission(permissionId: string): boolean {
-    return this.criarRolePermissionIds.includes(permissionId);
-  }
+  selecionarModoCriar(modo: 'existente' | 'novo') {
+    this.modoCriar = modo;
 
-  toggleCriarPermission(permissionId: string, event: Event) {
-    if (this.isCriarRolePermission(permissionId)) return;
-    const checked = (event.target as HTMLInputElement).checked;
-    if (checked) {
-      this.criarPermissionIds = [...new Set([...this.criarPermissionIds, permissionId])];
-    } else {
-      this.criarPermissionIds = this.criarPermissionIds.filter(id => id !== permissionId);
+    if (modo === 'existente' && !this.usuarioSelecionado && this.resultadosBusca.length === 0) {
+      this.carregarUsuariosParaSelecao('');
     }
   }
 
-  getCriarTotalSelecionadas(): number {
-    return new Set([...this.criarRolePermissionIds, ...this.criarPermissionIds]).size;
+  // ── Novo usuário vinculado a várias lojas ──
+
+  adicionarLinhaLoja() {
+    this.novoUsuarioLojas = [
+      ...this.novoUsuarioLojas,
+      { lojaId: null, roleId: this.roles[0]?.id || '' }
+    ];
   }
 
-  isCriarTudoSelecionado(): boolean {
-    return this.permissions.length > 0 &&
-      this.permissions.every(p => this.isCriarPermissionSelected(p.id));
+  removerLinhaLoja(index: number) {
+    this.novoUsuarioLojas = this.novoUsuarioLojas.filter((_, i) => i !== index);
   }
 
-  toggleCriarTodasPermissoes(event: Event) {
-    const checked = (event.target as HTMLInputElement).checked;
-    const extraIds = this.permissions.map(p => p.id).filter(id => !this.isCriarRolePermission(id));
-    this.criarPermissionIds = checked ? extraIds : [];
+  lojasDisponiveisParaLinha(index: number): Loja[] {
+    const escolhidasEmOutrasLinhas = this.novoUsuarioLojas
+      .filter((_, i) => i !== index)
+      .map(linha => linha.lojaId);
+
+    return this.todasLojas.filter(loja => !escolhidasEmOutrasLinhas.includes(loja.id ?? null));
   }
 
-  isCriarGrupoSelecionado(group: PermissionGroup): boolean {
-    const ids = this.getGroupPermissionIds(group);
-    return ids.length > 0 && ids.every(id => this.isCriarPermissionSelected(id));
+  fecharModalCriar() {
+    this.showCriarModal = false;
   }
 
-  isCriarGrupoParcial(group: PermissionGroup): boolean {
-    const ids = this.getGroupPermissionIds(group);
-    return ids.some(id => this.isCriarPermissionSelected(id)) && !this.isCriarGrupoSelecionado(group);
+  buscarUsuarios() {
+    clearTimeout(this.buscaUsuarioTimeout);
+    this.buscaUsuarioTimeout = setTimeout(() => {
+      this.carregarUsuariosParaSelecao(this.buscaUsuarioTermo.trim());
+    }, 400);
   }
 
-  toggleCriarGrupo(group: PermissionGroup, event: Event) {
-    const checked = (event.target as HTMLInputElement).checked;
-    const ids = this.getGroupPermissionIds(group).filter(id => !this.isCriarRolePermission(id));
-    if (checked) {
-      this.criarPermissionIds = [...new Set([...this.criarPermissionIds, ...ids])];
-    } else {
-      this.criarPermissionIds = this.criarPermissionIds.filter(id => !ids.includes(id));
-    }
-  }
-
-  // â”€â”€ User helpers â”€â”€
-
-  getUserRoleName(user: User): string {
-    // 1. role é um objeto com nome (vem direto da API)
-    if (user.role && typeof user.role === 'object' && !Array.isArray(user.role)) {
-      return (user.role as Role).nome ?? 'Sem role';
-    }
-    // 2. roleId → busca na lista carregada
-    if (user.roleId) {
-      const found = this.roles.find(r => r.id === user.roleId);
-      if (found) return found.nome;
-    }
-    // 3. role é string com o nome
-    if (typeof user.role === 'string' && user.role) return user.role;
-    // 4. roleName direto
-    if (user.roleName) return user.roleName;
-    return 'Sem role';
-  }
-
-  getUserRoleId(user: User): string {
-    if (user.role && typeof user.role === 'object' && !Array.isArray(user.role)) {
-      return (user.role as Role).id ?? '';
-    }
-    if (user.roleId) return user.roleId;
-    return this.roles.find(r => r.nome === user.role || r.nome === user.roleName)?.id ?? '';
-  }
-
-  getUserPermissionNames(user: User) {
-    const permissions = user.permissions ?? [];
-    return permissions.length > 0 ? permissions.map(p => p.nome).join(', ') : 'Sem permissoes';
-  }
-
-  toggleEditPermission(permissionId: string, event: Event) {
-    if (this.isEditRolePermission(permissionId)) return;
-    const checked = (event.target as HTMLInputElement).checked;
-    if (checked) {
-      this.editPermissionIds = [...new Set([...this.editPermissionIds, permissionId])];
-    } else {
-      this.editPermissionIds = this.editPermissionIds.filter(id => id !== permissionId);
-    }
-  }
-
-  onEditRoleChange() {
-    this.atualizarPermissoesDaRoleEdit();
-    this.editPermissionIds = this.editPermissionIds.filter(id => !this.editRolePermissionIds.includes(id));
-  }
-
-  isEditPermissionSelected(permissionId: string) {
-    return this.isEditRolePermission(permissionId) || this.editPermissionIds.includes(permissionId);
-  }
-
-  isEditRolePermission(permissionId: string) {
-    return this.editRolePermissionIds.includes(permissionId);
-  }
-
-  // â”€â”€ Private helpers â”€â”€
-
-  private atualizarPermissoesDaRoleEdit() {
-    const role = this.roles.find(item => item.id === this.editRoleId);
-    this.editRolePermissionIds = role?.permissions?.map(p => p.id) ?? [];
-  }
-
-  private aplicarPermissoesDaRoleCriar() {
-    const role = this.roles.find(item => item.id === this.criarRoleId);
-    this.criarRolePermissionIds = role?.permissions?.map(p => p.id) ?? [];
-  }
-
-  private getUserExtraPermissionIds(user: User) {
-    const explicitExtras = user.permissionIds ?? [];
-    if (explicitExtras.length > 0) {
-      return explicitExtras.filter(id => !this.editRolePermissionIds.includes(id));
-    }
-    return (user.permissions?.map(p => p.id) ?? []).filter(id => !this.editRolePermissionIds.includes(id));
-  }
-
-  private getRoleDoUsuario(user: User) {
-    const userPermissionIds = user.permissions?.map(p => p.id) ?? [];
-    return this.roles
-      .filter(role => role.permissions.length > 0)
-      .map(role => ({
-        role,
-        matched: role.permissions.filter(p => userPermissionIds.includes(p.id)).length
-      }))
-      .filter(item => item.matched > 0)
-      .sort((a, b) => b.matched - a.matched)[0]?.role;
-  }
-
-  private agruparPermissoes(permissions: Permission[]): PermissionGroup[] {
-    const groups = new Map<string, PermissionGroup>();
-    permissions.forEach(permission => {
-      const { recurso, action } = this.lerPermissao(permission.nome);
-      const group = groups.get(recurso) ?? { recurso, permissions: {}, extras: [] };
-      if (action) {
-        group.permissions[action] = permission;
-      } else {
-        group.extras.push(permission);
+  private carregarUsuariosParaSelecao(termo: string) {
+    this.buscandoUsuarios = true;
+    this.userService.listarUsuarios(0, 30, { login: termo || undefined }).subscribe({
+      next: response => {
+        this.resultadosBusca = response.users;
+        this.buscandoUsuarios = false;
+        this.cd.detectChanges();
+      },
+      error: () => {
+        this.buscandoUsuarios = false;
+        this.cd.detectChanges();
       }
-      groups.set(recurso, group);
     });
-    return Array.from(groups.values()).sort((a, b) => a.recurso.localeCompare(b.recurso));
   }
 
-  private lerPermissao(nome: string) {
-    const normalizedName = nome.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase();
-    const parts = normalizedName.split('_').filter(Boolean);
-    const first = parts[0];
-    const last = parts[parts.length - 1];
-    const prefixAction = this.actionAliases[first];
-    const suffixAction = this.actionAliases[last];
-    const action = prefixAction ?? suffixAction ?? null;
-    const resourceParts = prefixAction ? parts.slice(1) : suffixAction ? parts.slice(0, -1) : parts;
-    return {
-      recurso: this.formatarRecurso(resourceParts.join('_') || nome),
-      action
-    };
+  selecionarUsuarioExistente(user: User) {
+    this.usuarioSelecionado = user;
+    this.resultadosBusca = [];
+    this.buscaUsuarioTermo = '';
   }
 
-  private formatarRecurso(recurso: string) {
-    return recurso.toLowerCase().split('_').filter(Boolean)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  trocarUsuarioExistente() {
+    this.usuarioSelecionado = null;
+    this.buscaUsuarioTermo = '';
+    this.buscarUsuarios();
   }
 
-  private getGroupPermissionIds(group: PermissionGroup): string[] {
-    return [
-      ...Object.values(group.permissions),
-      ...group.extras
-    ].filter((p): p is Permission => !!p).map(p => p.id);
+  criarUsuario() {
+    if (this.modoCriar === 'existente') {
+      if (!this.lojaId) {
+        alert('Nenhuma loja ativa nesta sessão');
+        return;
+      }
+
+      if (!this.criarRoleId) {
+        alert('Selecione um cargo');
+        return;
+      }
+
+      if (!this.usuarioSelecionado) {
+        alert('Busque e selecione um usuário existente');
+        return;
+      }
+
+      this.salvandoCriar = true;
+      this.userLojaService.criarVinculo({
+        userId: this.usuarioSelecionado.id,
+        lojaId: this.lojaId,
+        roleId: this.criarRoleId
+      }).subscribe({
+        next: () => this.finalizarCriacao(),
+        error: err => this.falharCriacao(err)
+      });
+      return;
+    }
+
+    if (!this.novoNome || !this.novoEmail || !this.novoPassword) {
+      alert('Preencha nome, email e senha');
+      return;
+    }
+
+    const lojas = this.montarLojasParaNovoUsuario();
+    if (!lojas) return;
+
+    this.salvandoCriar = true;
+    this.userService.criarUsuario({
+      nome: this.novoNome,
+      email: this.novoEmail,
+      password: this.novoPassword,
+      lojas
+    }).subscribe({
+      next: res => this.finalizarCriacao(res.username),
+      error: err => this.falharCriacao(err)
+    });
+  }
+
+  private montarLojasParaNovoUsuario(): { lojaId: number; roleId: string }[] | null {
+    if (this.modoLojas === 'unica') {
+      if (!this.lojaId) {
+        alert('Nenhuma loja ativa nesta sessão');
+        return null;
+      }
+
+      if (!this.criarRoleId) {
+        alert('Selecione um cargo');
+        return null;
+      }
+
+      return [{ lojaId: this.lojaId, roleId: this.criarRoleId }];
+    }
+
+    if (this.novoUsuarioLojas.length === 0) {
+      alert('Adicione pelo menos uma loja');
+      return null;
+    }
+
+    const incompleta = this.novoUsuarioLojas.some(linha => !linha.lojaId || !linha.roleId);
+    if (incompleta) {
+      alert('Escolha a loja e o cargo em todas as linhas');
+      return null;
+    }
+
+    return this.novoUsuarioLojas.map(linha => ({
+      lojaId: linha.lojaId!,
+      roleId: linha.roleId
+    }));
+  }
+
+  private finalizarCriacao(loginGerado?: string) {
+    alert(loginGerado
+      ? `Usuário criado com sucesso! Login gerado: ${loginGerado}`
+      : 'Usuário adicionado à loja com sucesso!');
+    this.showCriarModal = false;
+    this.salvandoCriar = false;
+    this.atualizarAdminCount();
+    this.carregarUsuarios(0);
+  }
+
+  private falharCriacao(err: any) {
+    this.salvandoCriar = false;
+    this.cd.detectChanges();
+    alert(err.error?.message || err.error || 'Erro ao adicionar usuário à loja');
   }
 }

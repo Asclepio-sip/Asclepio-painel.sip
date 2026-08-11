@@ -88,8 +88,8 @@
           </div>
         </div>
 
-        <!-- Card: Entrega e descricao -->
-        <div class="form-card">
+        <!-- Card: Entrega e descricao (so faz sentido se a loja entrega) -->
+        <div class="form-card" *ngIf="tipoAtendimento === 'ENTREGA' || tipoAtendimento === 'AMBOS'">
           <div class="card-header">
             <div class="card-icon">
               <svg width="19" height="19" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#C5794E">

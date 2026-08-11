@@ -13,7 +13,6 @@ import { PermissionGroups } from '../../core/security/permission-groups';
 })
 export class SidebarComponent {
 
-  gestaoOpen = false;
   estoqueOpen = false;
   estoquePermissions = PermissionGroups.estoque;
   pedidoOpen = false;
@@ -27,13 +26,8 @@ export class SidebarComponent {
     public authService: AuthService,
     private router: Router
   ) {
-    this.gestaoOpen = this.isGestaoRoute();
     this.estoqueOpen = this.isEstoqueRoute();
     this.pedidoOpen = this.isPedidoRoute();
-  }
-
-  toggleGestao() {
-    this.gestaoOpen = !this.gestaoOpen;
   }
 
   toggleEstoque() {
@@ -49,16 +43,6 @@ export class SidebarComponent {
       '/addestoque',
       '/atualizar-estoque',
       '/relatorio-estoque'
-    ].some(route => this.router.url.startsWith(route));
-  }
-
-  private isGestaoRoute() {
-    return [
-      '/loja',
-      '/addloja',
-      '/editar-loja',
-      '/add-bairro',
-      '/AddUsuario'
     ].some(route => this.router.url.startsWith(route));
   }
 

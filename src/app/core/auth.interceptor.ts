@@ -3,13 +3,19 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
+import { AuthService } from '../service/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
-  
+  const authService = inject(AuthService);
+
   // 🔥 NÃO ADICIONA TOKEN EM ROTAS PÚBLICAS
-  const isPublicRoute = req.url.includes('/productsPublico') || 
-                        req.url.includes('/auth/login') || 
+  // /user/escolher-loja usa o token TEMP passado explicitamente por AuthService.escolherLoja,
+  // não o token de sessão normal — por isso também entra aqui, pra não ser sobrescrito.
+  const isPublicRoute = req.url.includes('/productsPublico') ||
+                        req.url.includes('/user/login') ||
+                        req.url.includes('/user/CriarConta') ||
+                        req.url.includes('/user/escolher-loja') ||
                         req.url.includes('/auth/register');
 
   if (isPublicRoute) {
@@ -17,7 +23,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   // 🔒 ADICIONA TOKEN APENAS EM ROTAS PRIVADAS
-  const token = sessionStorage.getItem('token'); // 👈 USA sessionStorage
+  const token = authService.getToken();
 
   if (token) {
     req = req.clone({
@@ -30,7 +36,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError(err => {
       if (err.status === 401 || err.status === 403) {
-        sessionStorage.removeItem('token'); // 👈 USA sessionStorage
+        authService.logout();
         router.navigate(['/login']);
       }
       return throwError(() => err);

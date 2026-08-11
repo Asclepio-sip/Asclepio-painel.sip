@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface Loja {
@@ -10,6 +11,22 @@ export interface Loja {
   cnpj?: string | null;
   telefone: string;
   textoDescricao?: string | null;
+  tipoAtendimento: string;
+  valorMinimoFreteGratis?: number | null;
+  imagemUrl?: string | null;
+}
+
+/**
+ * O back-end responde com "cpnj" (typo) e "TextoDescricao" (com T maiusculo)
+ * em vez de "cnpj"/"textoDescricao". Isso normaliza pra manter o resto do
+ * front-end trabalhando com os nomes de campo corretos.
+ */
+interface LojaResponseBruta {
+  id?: number;
+  nomeLoja: string;
+  cep: string;
+  cpnj?: string | null;
+  telefone: string;
   TextoDescricao?: string | null;
   tipoAtendimento: string;
   valorMinimoFreteGratis?: number | null;
@@ -64,7 +81,12 @@ export class LojaService {
     params = this.adicionarParametro(params, 'telefone', filtros.telefone);
     params = this.adicionarParametro(params, 'tipoAtendimento', filtros.tipoAtendimento);
 
-    return this.http.get<PageResponse<Loja>>(this.apiUrl, { params });
+    return this.http.get<PageResponse<LojaResponseBruta>>(this.apiUrl, { params }).pipe(
+      map(response => ({
+        ...response,
+        content: response.content.map(loja => this.normalizarLojaResponse(loja))
+      }))
+    );
   }
 
   criar(loja: Loja) {
@@ -79,19 +101,56 @@ export class LojaService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  buscarPorId(id: number) {
-    return this.http.get<Loja>(`${this.apiUrl}/${id}`);
+  /**
+   * Nao existe GET /lojas/{id} no back-end — so o GET /lojas (com filtro por
+   * id) que existe. Reaproveita o listar() pra buscar uma loja so.
+   */
+  buscarPorId(id: number): Observable<Loja> {
+    return this.listar(0, 1, { id }).pipe(
+      map(response => {
+        const loja = response.content[0];
+
+        if (!loja) {
+          throw new Error(`Loja ${id} nao encontrada.`);
+        }
+
+        return loja;
+      })
+    );
   }
 
-  private normalizarLojaRequest(loja: Loja): Loja {
+  private normalizarLojaRequest(loja: Loja) {
+    const tipoAtendimento =
+      loja.tipoAtendimento === 'DELIVERY'
+        ? 'ENTREGA'
+        : loja.tipoAtendimento === 'PRESENCIAL'
+          ? 'RETIRADA'
+          : loja.tipoAtendimento;
+
     return {
-      ...loja,
-      tipoAtendimento:
-        loja.tipoAtendimento === 'DELIVERY'
-          ? 'ENTREGA'
-          : loja.tipoAtendimento === 'PRESENCIAL'
-            ? 'RETIRADA'
-            : loja.tipoAtendimento
+      nomeLoja: loja.nomeLoja,
+      cep: loja.cep,
+      cnpj: loja.cnpj || null,
+      telefone: loja.telefone,
+      // Campo do back-end e literalmente "TextoDescricao", com T maiusculo.
+      TextoDescricao: loja.textoDescricao || null,
+      imagemUrl: loja.imagemUrl || null,
+      tipoAtendimento,
+      valorMinimoFreteGratis: loja.valorMinimoFreteGratis ?? null
+    };
+  }
+
+  private normalizarLojaResponse(loja: LojaResponseBruta): Loja {
+    return {
+      id: loja.id,
+      nomeLoja: loja.nomeLoja,
+      cep: loja.cep,
+      cnpj: loja.cpnj ?? null,
+      telefone: loja.telefone,
+      textoDescricao: loja.TextoDescricao ?? null,
+      tipoAtendimento: loja.tipoAtendimento,
+      valorMinimoFreteGratis: loja.valorMinimoFreteGratis ?? null,
+      imagemUrl: loja.imagemUrl ?? null
     };
   }
 
