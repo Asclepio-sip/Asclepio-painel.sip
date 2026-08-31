@@ -1,7 +1,7 @@
 export const environment = {
 
   production: false,  
-  apiUrl: 'https://panel-ascl-pio-sip-1.onrender.com'
+  apiUrl: 'https://panel-ascl-pio-sip-1-7vaw.onrender.com/'
 };
 
 
