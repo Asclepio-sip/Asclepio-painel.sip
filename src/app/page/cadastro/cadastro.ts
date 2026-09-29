@@ -75,6 +75,11 @@ export class CadastroComponent {
       : [...this.formasPagamento, forma];
   }
 
+  onTelefoneChange(valor: string) {
+    const somenteNumeros = this.extrairSomenteNumeros(valor).slice(0, 11);
+    this.telefone = this.formatarTelefone(somenteNumeros);
+  }
+
   avancar() {
     this.erro = '';
 
@@ -92,11 +97,17 @@ export class CadastroComponent {
     }
 
     if (this.step === 2) {
-      if (!this.nomeEmpresa.trim() || !this.nomeLoja.trim() || !this.cep.trim() ||
+      if (!this.nomeEmpresa.trim() || !this.nomeLoja.trim() ||
           !this.telefone.trim() || !this.tipoAtendimento) {
         this.erro = 'Preencha os campos obrigatórios da empresa e da loja.';
         return;
       }
+
+      if (!this.telefoneTem11Digitos()) {
+        this.erro = 'Telefone inválido. Informe 11 números no formato (81) 99999-9999.';
+        return;
+      }
+
       this.step = 3;
     }
   }
@@ -110,6 +121,12 @@ export class CadastroComponent {
 
   cadastrar() {
     this.erro = '';
+
+    if (!this.telefoneTem11Digitos()) {
+      this.erro = 'Telefone inválido. Informe 11 números no formato (81) 99999-9999.';
+      this.step = 2;
+      return;
+    }
 
     if (this.formasPagamento.length === 0) {
       this.erro = 'Selecione ao menos uma forma de pagamento.';
@@ -132,9 +149,9 @@ export class CadastroComponent {
       email: this.email.trim(),
       nomeEmpresa: this.nomeEmpresa.trim(),
       nomeLoja: this.nomeLoja.trim(),
-      cep: this.cep.trim(),
+      cep: this.cep.trim() || undefined,
       cnpj: this.cnpj.trim() || undefined,
-      telefone: this.telefone.trim(),
+      telefone: this.extrairSomenteNumeros(this.telefone),
       textoDescricao: this.textoDescricao.trim() || undefined,
       tipoAtendimento: this.tipoAtendimento,
       formasPagamento: this.formasPagamento
@@ -184,5 +201,25 @@ export class CadastroComponent {
     }
 
     return 'Não foi possível criar a conta. Tente novamente.';
+  }
+
+  private telefoneTem11Digitos(): boolean {
+    return this.extrairSomenteNumeros(this.telefone).length === 11;
+  }
+
+  private extrairSomenteNumeros(valor: string): string {
+    return valor.replace(/\D/g, '');
+  }
+
+  private formatarTelefone(digitos: string): string {
+    if (digitos.length <= 2) {
+      return digitos ? `(${digitos}` : '';
+    }
+
+    if (digitos.length <= 7) {
+      return `(${digitos.slice(0, 2)}) ${digitos.slice(2)}`;
+    }
+
+    return `(${digitos.slice(0, 2)}) ${digitos.slice(2, 7)}-${digitos.slice(7, 11)}`;
   }
 }
