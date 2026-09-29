@@ -180,7 +180,7 @@
 .th-img { width: 72px; }
 .th-name { width: 200px; }
 .th-variacoes { width: 110px; text-align: center; }
-.th-actions { width: 140px; text-align: center; }
+.th-action { width: 118px; text-align: center; }
 
 /* ── Rows ── */
 .product-row {
@@ -285,7 +285,13 @@
 }
 
 /* Actions */
-.td-actions { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.td-action {
+  text-align: center;
+}
+
+.td-action-center {
+  display: table-cell;
+}
 
 .btn-variacoes {
   display: inline-flex;
