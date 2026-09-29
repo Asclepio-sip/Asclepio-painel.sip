@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -54,7 +54,8 @@ export class RelatorioEstoque implements OnInit {
   ];
 
   constructor(
-    private relatorioEstoqueService: RelatorioEstoqueService
+    private relatorioEstoqueService: RelatorioEstoqueService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -68,6 +69,7 @@ export class RelatorioEstoque implements OnInit {
       .subscribe({
         next: (response) => {
           this.lojas = response.content;
+          this.cd.detectChanges();
         },
         error: (err) => {
           console.error('Erro ao carregar lojas', err);
@@ -114,12 +116,14 @@ export class RelatorioEstoque implements OnInit {
           this.totalPaginas = res.totalPages;
           this.paginaAtual = res.number;
           this.carregando = false;
+          this.cd.detectChanges();
         },
         error: (err) => {
           console.error('Erro ao carregar movimentacoes de estoque', err);
           this.erro = 'Nao foi possivel carregar o historico de movimentacoes.';
           this.movimentacoes = [];
           this.carregando = false;
+          this.cd.detectChanges();
         }
       });
   }

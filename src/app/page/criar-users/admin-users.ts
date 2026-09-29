@@ -1,10 +1,9 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Role, User, UserAdminService } from '../../service/UserAdmin.service';
 import { UserLojaService } from '../../service/user-loja.service';
-import { UserLoja } from '../../models/user-loja.model';
 import { AuthService } from '../../service/auth.service';
 import { Loja, LojaService } from '../../service/loja/loja.service';
 import { forkJoin } from 'rxjs';
@@ -12,6 +11,15 @@ import { forkJoin } from 'rxjs';
 interface LinhaLojaCargo {
   lojaId: number | null;
   roleId: string;
+}
+
+interface DropdownAcesso {
+  index: number;
+  campo: 'loja' | 'cargo';
+  top: number | null;
+  bottom: number | null;
+  left: number;
+  width: number;
 }
 
 @Component({
@@ -42,26 +50,21 @@ export class AdminUsersComponent implements OnInit {
   totalPages = 1;
   private buscaTimeout: any;
 
-  // Gerenciar acessos (lojas/cargos) de um usuário
+  // Gerenciar acessos (lojas/cargos) de um usuário — salvo tudo de uma vez via PUT /user/{id}/lojas
   gerenciarUsuario: User | null = null;
-  lojasDoUsuario: UserLoja[] = [];
+  acessosLinhas: LinhaLojaCargo[] = [];
   carregandoLojasUsuario = false;
-  editandoVinculoId: string | null = null;
-  editRoleId = '';
-  novoVinculoRoleId = '';
-  salvandoVinculo = false;
+  falhaCarregarLojasUsuario = false;
+  salvandoAcessos = false;
 
-  // Adicionar membro
+  // Dropdown customizado de loja/cargo (o <select> nativo não aceita estilo na lista)
+  dropdown: DropdownAcesso | null = null;
+  buscaDropdown = '';
+
+  // Adicionar membro (sempre um novo usuário)
   showCriarModal = false;
-  modoCriar: 'existente' | 'novo' = 'existente';
   criarRoleId = '';
   salvandoCriar = false;
-
-  buscaUsuarioTermo = '';
-  resultadosBusca: User[] = [];
-  buscandoUsuarios = false;
-  usuarioSelecionado: User | null = null;
-  private buscaUsuarioTimeout: any;
 
   novoNome = '';
   novoEmail = '';
@@ -214,13 +217,13 @@ export class AdminUsersComponent implements OnInit {
 
   abrirGerenciarAcessos(user: User) {
     this.gerenciarUsuario = user;
-    this.lojasDoUsuario = [];
-    this.editandoVinculoId = null;
-    this.novoVinculoRoleId = this.roles[0]?.id || '';
+    this.acessosLinhas = [];
+    this.falhaCarregarLojasUsuario = false;
     this.carregarLojasDoUsuario();
   }
 
   fecharGerenciarAcessos() {
+    this.fecharDropdown();
     this.gerenciarUsuario = null;
   }
 
@@ -228,110 +231,143 @@ export class AdminUsersComponent implements OnInit {
     if (!this.gerenciarUsuario) return;
 
     this.carregandoLojasUsuario = true;
+    this.falhaCarregarLojasUsuario = false;
     this.userLojaService.listarLojasDoUsuario(this.gerenciarUsuario.id).subscribe({
       next: lojas => {
-        this.lojasDoUsuario = lojas;
+        this.acessosLinhas = lojas.map(vinculo => ({
+          lojaId: vinculo.lojaId,
+          roleId: vinculo.roleId
+        }));
         this.carregandoLojasUsuario = false;
         this.cd.detectChanges();
       },
       error: () => {
+        // Sem os vínculos atuais não dá pra salvar: o PUT substitui tudo e apagaria os acessos.
+        this.falhaCarregarLojasUsuario = true;
         this.carregandoLojasUsuario = false;
         this.cd.detectChanges();
-        alert('Erro ao carregar lojas do usuário');
       }
     });
   }
 
-  editarVinculo(userLoja: UserLoja) {
-    this.editandoVinculoId = userLoja.id;
-    this.editRoleId = userLoja.role.id;
+  adicionarLinhaAcesso() {
+    this.acessosLinhas = [
+      ...this.acessosLinhas,
+      { lojaId: null, roleId: this.roles[0]?.id || '' }
+    ];
   }
 
-  cancelarEdicaoVinculo() {
-    this.editandoVinculoId = null;
+  removerLinhaAcesso(index: number) {
+    this.fecharDropdown();
+    this.acessosLinhas = this.acessosLinhas.filter((_, i) => i !== index);
   }
 
-  salvarVinculo(userLoja: UserLoja) {
-    if (!this.editRoleId) {
-      alert('Selecione um cargo');
+  abrirDropdown(event: MouseEvent, index: number, campo: 'loja' | 'cargo') {
+    event.stopPropagation();
+
+    if (this.isDropdownAberto(index, campo)) {
+      this.fecharDropdown();
       return;
     }
 
-    this.userLojaService.atualizarCargo(userLoja.id, this.editRoleId).subscribe({
-      next: () => {
-        this.editandoVinculoId = null;
-        this.carregarLojasDoUsuario();
-      },
-      error: () => alert('Erro ao atualizar cargo')
-    });
+    // Painel com position: fixed pra não ser cortado pelo scroll do modal;
+    // abre pra cima quando não cabe embaixo.
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const alturaPainel = 300;
+    const abrirPraCima = window.innerHeight - rect.bottom < alturaPainel && rect.top > alturaPainel;
+
+    this.buscaDropdown = '';
+    this.dropdown = {
+      index,
+      campo,
+      top: abrirPraCima ? null : rect.bottom + 6,
+      bottom: abrirPraCima ? window.innerHeight - rect.top + 6 : null,
+      left: rect.left,
+      width: Math.max(rect.width, 240)
+    };
   }
 
-  removerVinculo(userLoja: UserLoja) {
-    if (!confirm(`Remover o acesso de ${userLoja.user.login} à loja ${userLoja.loja.nomeLoja}?`)) return;
-
-    this.userLojaService.removerVinculo(userLoja.id).subscribe({
-      next: () => {
-        this.carregarLojasDoUsuario();
-        this.carregarUsuarios(this.currentPage - 1);
-      },
-      error: () => alert('Erro ao remover acesso')
-    });
+  isDropdownAberto(index: number, campo: 'loja' | 'cargo'): boolean {
+    return this.dropdown?.index === index && this.dropdown?.campo === campo;
   }
 
-  adicionarNestaLoja() {
-    if (!this.lojaId || !this.gerenciarUsuario) return;
+  @HostListener('window:resize')
+  @HostListener('document:keydown.escape')
+  fecharDropdown() {
+    this.dropdown = null;
+  }
 
-    if (!this.novoVinculoRoleId) {
-      alert('Selecione um cargo');
-      return;
+  opcoesLojaDropdown(): Loja[] {
+    if (!this.dropdown) return [];
+
+    const termo = this.buscaDropdown.trim().toLowerCase();
+    return this.lojasDisponiveisParaAcesso(this.dropdown.index)
+      .filter(loja => !termo || loja.nomeLoja.toLowerCase().includes(termo));
+  }
+
+  opcoesCargoDropdown(): Role[] {
+    const termo = this.buscaDropdown.trim().toLowerCase();
+    return this.roles.filter(role => !termo || role.nome.toLowerCase().includes(termo));
+  }
+
+  selecionarNoDropdown(valor: number | string) {
+    if (!this.dropdown) return;
+
+    const linha = this.acessosLinhas[this.dropdown.index];
+    if (this.dropdown.campo === 'loja') {
+      linha.lojaId = valor as number;
+    } else {
+      linha.roleId = valor as string;
     }
 
-    this.salvandoVinculo = true;
-    this.userLojaService.criarVinculo({
-      userId: this.gerenciarUsuario.id,
-      lojaId: this.lojaId,
-      roleId: this.novoVinculoRoleId
-    }).subscribe({
+    this.fecharDropdown();
+  }
+
+  nomeLoja(lojaId: number | null): string {
+    return this.todasLojas.find(loja => loja.id === lojaId)?.nomeLoja ?? '';
+  }
+
+  cargoPorId(roleId: string): Role | undefined {
+    return this.roles.find(role => role.id === roleId);
+  }
+
+  lojasDisponiveisParaAcesso(index: number): Loja[] {
+    return this.lojasDisponiveis(this.acessosLinhas, index);
+  }
+
+  salvarAcessos() {
+    if (!this.gerenciarUsuario || this.falhaCarregarLojasUsuario) return;
+
+    const lojas = this.validarLinhas(this.acessosLinhas);
+    if (!lojas) return;
+
+    this.salvandoAcessos = true;
+    this.userLojaService.atualizarLojasDoUsuario(this.gerenciarUsuario.id, lojas).subscribe({
       next: () => {
-        this.salvandoVinculo = false;
-        this.carregarLojasDoUsuario();
+        this.salvandoAcessos = false;
+        this.gerenciarUsuario = null;
+        alert('Acessos atualizados com sucesso!');
+        this.atualizarAdminCount();
         this.carregarUsuarios(this.currentPage - 1);
       },
-      error: () => {
-        this.salvandoVinculo = false;
+      error: err => {
+        this.salvandoAcessos = false;
         this.cd.detectChanges();
-        alert('Erro ao vincular usuário a esta loja');
+        alert(err.error?.message || 'Erro ao atualizar acessos do usuário');
       }
     });
   }
 
-  jaTemAcessoNestaLoja(): boolean {
-    return this.lojasDoUsuario.some(vinculo => vinculo.loja.id === this.lojaId);
-  }
-
-  // ── Adicionar membro (novo usuário ou usuário existente) ──
+  // ── Adicionar membro (novo usuário) ──
 
   abrirModalCriar() {
     this.showCriarModal = true;
-    this.modoCriar = 'existente';
     this.criarRoleId = this.roles[0]?.id || '';
-    this.buscaUsuarioTermo = '';
-    this.resultadosBusca = [];
-    this.usuarioSelecionado = null;
     this.novoNome = '';
     this.novoEmail = '';
     this.novoPassword = '';
     this.modoLojas = 'unica';
     this.novoUsuarioLojas = [];
-    this.carregarUsuariosParaSelecao('');
-  }
-
-  selecionarModoCriar(modo: 'existente' | 'novo') {
-    this.modoCriar = modo;
-
-    if (modo === 'existente' && !this.usuarioSelecionado && this.resultadosBusca.length === 0) {
-      this.carregarUsuariosParaSelecao('');
-    }
   }
 
   // ── Novo usuário vinculado a várias lojas ──
@@ -348,7 +384,11 @@ export class AdminUsersComponent implements OnInit {
   }
 
   lojasDisponiveisParaLinha(index: number): Loja[] {
-    const escolhidasEmOutrasLinhas = this.novoUsuarioLojas
+    return this.lojasDisponiveis(this.novoUsuarioLojas, index);
+  }
+
+  private lojasDisponiveis(linhas: LinhaLojaCargo[], index: number): Loja[] {
+    const escolhidasEmOutrasLinhas = linhas
       .filter((_, i) => i !== index)
       .map(linha => linha.lojaId);
 
@@ -359,69 +399,7 @@ export class AdminUsersComponent implements OnInit {
     this.showCriarModal = false;
   }
 
-  buscarUsuarios() {
-    clearTimeout(this.buscaUsuarioTimeout);
-    this.buscaUsuarioTimeout = setTimeout(() => {
-      this.carregarUsuariosParaSelecao(this.buscaUsuarioTermo.trim());
-    }, 400);
-  }
-
-  private carregarUsuariosParaSelecao(termo: string) {
-    this.buscandoUsuarios = true;
-    this.userService.listarUsuarios(0, 30, { login: termo || undefined }).subscribe({
-      next: response => {
-        this.resultadosBusca = response.users;
-        this.buscandoUsuarios = false;
-        this.cd.detectChanges();
-      },
-      error: () => {
-        this.buscandoUsuarios = false;
-        this.cd.detectChanges();
-      }
-    });
-  }
-
-  selecionarUsuarioExistente(user: User) {
-    this.usuarioSelecionado = user;
-    this.resultadosBusca = [];
-    this.buscaUsuarioTermo = '';
-  }
-
-  trocarUsuarioExistente() {
-    this.usuarioSelecionado = null;
-    this.buscaUsuarioTermo = '';
-    this.buscarUsuarios();
-  }
-
   criarUsuario() {
-    if (this.modoCriar === 'existente') {
-      if (!this.lojaId) {
-        alert('Nenhuma loja ativa nesta sessão');
-        return;
-      }
-
-      if (!this.criarRoleId) {
-        alert('Selecione um cargo');
-        return;
-      }
-
-      if (!this.usuarioSelecionado) {
-        alert('Busque e selecione um usuário existente');
-        return;
-      }
-
-      this.salvandoCriar = true;
-      this.userLojaService.criarVinculo({
-        userId: this.usuarioSelecionado.id,
-        lojaId: this.lojaId,
-        roleId: this.criarRoleId
-      }).subscribe({
-        next: () => this.finalizarCriacao(),
-        error: err => this.falharCriacao(err)
-      });
-      return;
-    }
-
     if (!this.novoNome || !this.novoEmail || !this.novoPassword) {
       alert('Preencha nome, email e senha');
       return;
@@ -457,27 +435,29 @@ export class AdminUsersComponent implements OnInit {
       return [{ lojaId: this.lojaId, roleId: this.criarRoleId }];
     }
 
-    if (this.novoUsuarioLojas.length === 0) {
+    return this.validarLinhas(this.novoUsuarioLojas);
+  }
+
+  private validarLinhas(linhas: LinhaLojaCargo[]): { lojaId: number; roleId: string }[] | null {
+    if (linhas.length === 0) {
       alert('Adicione pelo menos uma loja');
       return null;
     }
 
-    const incompleta = this.novoUsuarioLojas.some(linha => !linha.lojaId || !linha.roleId);
+    const incompleta = linhas.some(linha => !linha.lojaId || !linha.roleId);
     if (incompleta) {
       alert('Escolha a loja e o cargo em todas as linhas');
       return null;
     }
 
-    return this.novoUsuarioLojas.map(linha => ({
+    return linhas.map(linha => ({
       lojaId: linha.lojaId!,
       roleId: linha.roleId
     }));
   }
 
-  private finalizarCriacao(loginGerado?: string) {
-    alert(loginGerado
-      ? `Usuário criado com sucesso! Login gerado: ${loginGerado}`
-      : 'Usuário adicionado à loja com sucesso!');
+  private finalizarCriacao(loginGerado: string) {
+    alert(`Usuário criado com sucesso! Login gerado: ${loginGerado}`);
     this.showCriarModal = false;
     this.salvandoCriar = false;
     this.atualizarAdminCount();
@@ -487,6 +467,6 @@ export class AdminUsersComponent implements OnInit {
   private falharCriacao(err: any) {
     this.salvandoCriar = false;
     this.cd.detectChanges();
-    alert(err.error?.message || err.error || 'Erro ao adicionar usuário à loja');
+    alert(err.error?.message || err.error || 'Erro ao criar usuário');
   }
 }
