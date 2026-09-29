@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { UserLoja } from '../models/user-loja.model';
+import { LojaDoUsuario, UserLoja } from '../models/user-loja.model';
 
 /**
- * Endpoints de UserLoja ainda não publicados pelo backend (arquitetura em migração).
- * `listarPorLoja` usa `/loja/{id}/usuarios`, que é uma suposição isolada aqui — os
- * demais (`/user-loja`, `/user/{id}/lojas`) foram confirmados pelo time de backend.
- * Ajustar aqui quando o contrato final estiver no ar.
+ * `listarLojasDoUsuario` e `atualizarLojasDoUsuario` (GET/PUT `/user/{id}/lojas`) já estão
+ * publicados no backend. `listarPorLoja` (`/loja/{id}/usuarios`) ainda não existe — ajustar
+ * aqui quando o contrato final estiver no ar.
  */
 @Injectable({
   providedIn: 'root'
@@ -23,18 +22,11 @@ export class UserLojaService {
   }
 
   listarLojasDoUsuario(userId: string) {
-    return this.http.get<UserLoja[]>(`${this.API}/user/${userId}/lojas`);
+    return this.http.get<LojaDoUsuario[]>(`${this.API}/user/${userId}/lojas`);
   }
 
-  criarVinculo(data: { userId: string; lojaId: number; roleId: string }) {
-    return this.http.post<UserLoja>(`${this.API}/user-loja`, data);
-  }
-
-  atualizarCargo(userLojaId: string, roleId: string) {
-    return this.http.put<UserLoja>(`${this.API}/user-loja/${userLojaId}`, { roleId });
-  }
-
-  removerVinculo(userLojaId: string) {
-    return this.http.delete<void>(`${this.API}/user-loja/${userLojaId}`);
+  /** Substitui todas as lojas/cargos do usuário: lojas fora da lista perdem o acesso. */
+  atualizarLojasDoUsuario(userId: string, lojas: { lojaId: number; roleId: string }[]) {
+    return this.http.put<void>(`${this.API}/user/${userId}/lojas`, { lojas });
   }
 }

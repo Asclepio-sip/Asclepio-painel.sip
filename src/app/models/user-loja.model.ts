@@ -24,3 +24,11 @@ export interface UserLoja {
   };
   role: Role;
 }
+
+/** Item de GET /user/{id}/lojas — só lojas da empresa atual. */
+export interface LojaDoUsuario {
+  lojaId: number;
+  lojaNome: string;
+  roleId: string;
+  roleNome: string;
+}
