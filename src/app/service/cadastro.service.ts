@@ -14,7 +14,7 @@ export interface CriarContaRequest {
 
   // Loja
   nomeLoja: string;
-  cep: string;
+  cep?: string;
   cnpj?: string;
   telefone: string;
   textoDescricao?: string;

@@ -8,13 +8,13 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, NavbarAdministradorComponent, SidebarComponent],
+  imports: [CommonModule, RouterOutlet, NavbarAdministradorComponent, SidebarComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
   private readonly publicRoutes = ['/login', '/landing', '/cadastro'];
-  private readonly rotaSemBotaoPedido = '/fazer-pedido';
+  private readonly rotasSemBotaoPedido = ['/fazer-pedido', '/addProduto'];
   isPublicRoute = false;
   mostrarBotaoNovoPedido = false;
   year = new Date().getFullYear();
@@ -33,6 +33,6 @@ export class App {
     const path = url.split('?')[0].split(';')[0];
 
     this.isPublicRoute = this.publicRoutes.includes(path);
-    this.mostrarBotaoNovoPedido = !this.isPublicRoute && !path.startsWith(this.rotaSemBotaoPedido);
+    this.mostrarBotaoNovoPedido = !this.isPublicRoute && !this.rotasSemBotaoPedido.some(route => path.startsWith(route));
   }
 }

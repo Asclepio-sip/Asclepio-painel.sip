@@ -81,17 +81,53 @@ carregarLoja() {
     return this.loja.tipoAtendimento === 'RETIRADA' || this.loja.tipoAtendimento === 'AMBOS';
   }
 
-  toggleEntrega() {
-    this.aplicarTipoAtendimento(!this.entregaAtiva, this.retiradaAtiva);
+  async toggleEntrega() {
+    const novoEstadoEntrega = !this.entregaAtiva;
+
+    if (!(await this.confirmarAlteracaoTipoAtendimento(novoEstadoEntrega, this.retiradaAtiva))) {
+      return;
+    }
+
+    this.aplicarTipoAtendimento(novoEstadoEntrega, this.retiradaAtiva);
   }
 
-  toggleRetirada() {
-    this.aplicarTipoAtendimento(this.entregaAtiva, !this.retiradaAtiva);
+  async toggleRetirada() {
+    const novoEstadoRetirada = !this.retiradaAtiva;
+
+    if (!(await this.confirmarAlteracaoTipoAtendimento(this.entregaAtiva, novoEstadoRetirada))) {
+      return;
+    }
+
+    this.aplicarTipoAtendimento(this.entregaAtiva, novoEstadoRetirada);
+  }
+
+  private async confirmarAlteracaoTipoAtendimento(entrega: boolean, retirada: boolean): Promise<boolean> {
+    const tipoAtendimento = entrega && retirada ? 'AMBOS' : entrega ? 'ENTREGA' : 'RETIRADA';
+
+    const resposta = await Swal.fire({
+      title: 'Confirmar alteração',
+      text: `Você tem certeza que deseja alterar o tipo de atendimento para ${tipoAtendimento}?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, alterar',
+      cancelButtonText: 'Não'
+    });
+
+    return resposta.isConfirmed;
   }
 
   private aplicarTipoAtendimento(entrega: boolean, retirada: boolean) {
     if (!entrega && !retirada) {
       Swal.fire('Atenção', 'A loja precisa ter pelo menos um tipo de atendimento ativo.', 'warning');
+      return;
+    }
+
+    if (entrega && !this.loja.cep?.trim()) {
+      Swal.fire(
+        'Atenção',
+        'É preciso informar o CEP para transformar a loja em entrega.',
+        'warning'
+      );
       return;
     }
 
