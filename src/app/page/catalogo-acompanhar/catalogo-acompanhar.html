@@ -1,0 +1,88 @@
+<div class="pagina" [ngStyle]="tema">
+
+  <header class="topo">
+    <div class="topo-conteudo">
+      <a class="voltar" [routerLink]="['/catalogo', nomeLink]" aria-label="Voltar ao catálogo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      @if (design.logoUrl) {
+      <img class="marca-logo" [src]="design.logoUrl" alt="" />
+      }
+      <span class="topo-titulo">Acompanhar pedido</span>
+    </div>
+  </header>
+
+  <main class="conteudo">
+    <section class="bloco">
+      <h1>Onde está meu pedido?</h1>
+      <p class="sub">Digite o código que apareceu quando você finalizou o pedido.</p>
+
+      <form class="busca" (ngSubmit)="buscar()" novalidate>
+        <label class="sr-only" for="codigo">Código do pedido</label>
+        <input id="codigo" name="codigo" autocomplete="off" autocapitalize="characters" spellcheck="false"
+          placeholder="Ex.: A1B2C3D4E5F6G7H8I9J0" maxlength="20"
+          [(ngModel)]="codigo" (ngModelChange)="onCodigoDigitado()" [class.invalido]="erroCodigo" />
+        <button type="submit" class="btn-principal" [disabled]="buscando">{{ buscando ? 'Buscando...' : 'Consultar' }}</button>
+      </form>
+      @if (erroCodigo) { <small class="msg-erro">{{ erroCodigo }}</small> }
+
+      @if (recentes.length) {
+      <div class="recentes">
+        <span class="recentes-titulo">Pedidos feitos neste aparelho</span>
+        <div class="recentes-lista">
+          @for (p of recentes; track p.codigo) {
+          <button type="button" class="recente" [class.ativo]="p.codigo === resultado?.codigoRastreio" (click)="escolherRecente(p.codigo)">
+            <span class="recente-codigo">{{ p.codigo }}</span>
+            @if (dataRecente(p.criadoEm)) { <span class="recente-data">{{ dataRecente(p.criadoEm) }}</span> }
+          </button>
+          }
+        </div>
+      </div>
+      }
+    </section>
+
+    @if (erro) {
+    <p class="alerta alerta-erro" role="alert">{{ erro }}</p>
+    }
+
+    @if (resultado) {
+    <section class="bloco resultado" aria-live="polite">
+      <div class="resultado-topo">
+        <div>
+          <span class="rotulo">Pedido</span>
+          <strong class="codigo">{{ resultado.codigoRastreio }}</strong>
+        </div>
+        <button type="button" class="btn-secundario" [disabled]="buscando" (click)="buscar()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+          Atualizar
+        </button>
+      </div>
+
+      @if (cancelado) {
+      <div class="cancelado">
+        <strong>Pedido cancelado</strong>
+        <p>Este pedido foi cancelado pela loja. Se tiver dúvidas, fale com a loja.</p>
+      </div>
+      } @else {
+      <ol class="linha-tempo">
+        @for (etapa of etapas; track etapa.status; let i = $index) {
+        <li [class.feita]="i < indiceAtual" [class.atual]="i === indiceAtual">
+          <span class="marcador" aria-hidden="true">
+            @if (i < indiceAtual || (i === indiceAtual && etapa.status === 'CONCLUIDO')) {
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            } @else {
+            {{ i + 1 }}
+            }
+          </span>
+          <div class="etapa-texto">
+            <strong>{{ etapa.titulo }}</strong>
+            @if (i === indiceAtual) { <span>{{ etapa.descricao }}</span> }
+          </div>
+        </li>
+        }
+      </ol>
+      }
+    </section>
+    }
+  </main>
+</div>

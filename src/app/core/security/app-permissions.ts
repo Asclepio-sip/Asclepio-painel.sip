@@ -64,6 +64,11 @@ export const AppPermissions = {
     delete: 'ExcluirUser',
   },
 
+  ConfigConta: {
+    read: 'VerConfigConta',
+    update: 'EditarConfigConta',
+  },
+
   Sistema: {
     permissionsRead: 'VerPermissoes',
     roleRead: 'VerRole',

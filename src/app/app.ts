@@ -32,7 +32,7 @@ export class App {
   private atualizarEstadoRota(url: string) {
     const path = url.split('?')[0].split(';')[0];
 
-    this.isPublicRoute = this.publicRoutes.includes(path);
+    this.isPublicRoute = this.publicRoutes.includes(path) || path.startsWith('/catalogo/');
     this.mostrarBotaoNovoPedido = !this.isPublicRoute && !this.rotasSemBotaoPedido.some(route => path.startsWith(route));
   }
 }
