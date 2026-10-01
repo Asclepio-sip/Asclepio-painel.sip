@@ -35,6 +35,10 @@ export const PermissionGroups = {
     AppPermissions.LojaBairro.read,
   ],
 
+  configConta: [
+    AppPermissions.ConfigConta.read,
+  ],
+
   roles: [
     AppPermissions.Sistema.roleRead,
   ],

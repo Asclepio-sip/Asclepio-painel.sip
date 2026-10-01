@@ -18,6 +18,7 @@ export class SidebarComponent {
   pedidoOpen = false;
   pedidoPermissions = PermissionGroups.pedidos;
   gestaoPermissions = PermissionGroups.lojas;
+  configContaPermissions = PermissionGroups.configConta;
 
   showLogoutModal = false;
   closing = false;

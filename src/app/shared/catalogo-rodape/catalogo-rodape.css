@@ -1,0 +1,33 @@
+:host { display: block; container-type: inline-size; }
+
+.rodape { background: var(--cor-secundaria, #1f2937); color: var(--cor-secundaria-texto, #fff); font-family: 'Poppins', sans-serif; }
+.rodape-conteudo { max-width: 1200px; margin: 0 auto; padding: 36px 20px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 40px; }
+.rodape-conteudo > :only-child { grid-column: 1 / -1; }
+
+.rodape-titulo { font-size: 17px; font-weight: 600; color: inherit; margin: 0 0 8px; }
+.rodape-descricao { font-size: 14px; line-height: 1.65; color: inherit; opacity: .85; margin: 0; white-space: pre-line; overflow-wrap: anywhere; }
+
+.rodape-subtitulo { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: inherit; opacity: .65; margin: 0 0 12px; }
+/* Duas colunas: até 3 contatos de cada lado */
+.rodape-contatos ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; }
+.rodape-contatos li { min-width: 0; }
+.rodape-contatos a { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; font-size: 14px; max-width: 100%; }
+.rodape-contatos a:hover .rotulo { text-decoration: underline; }
+.rotulo { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.icone { flex-shrink: 0; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.08); color: #fff; }
+.icone-whatsapp { background: #25d366; }
+.icone-instagram { background: linear-gradient(45deg, #f09433, #dc2743 50%, #bc1888); }
+.icone-facebook { background: #1877f2; }
+.icone-tiktok { background: #000; }
+.icone-email { background: var(--cor-primaria, #C5794E); color: var(--cor-primaria-texto, #fff); }
+.icone-telefone { background: #059669; }
+
+/* Pela largura do próprio rodapé (não da janela), pra funcionar igual na prévia estreita do painel */
+@container (max-width: 700px) {
+  .rodape-conteudo { grid-template-columns: 1fr; gap: 24px; padding: 28px 16px; }
+}
+
+@container (max-width: 380px) {
+  .rodape-contatos ul { grid-template-columns: 1fr; }
+}

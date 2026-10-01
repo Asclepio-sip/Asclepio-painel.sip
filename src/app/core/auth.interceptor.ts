@@ -16,7 +16,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                         req.url.includes('/user/login') ||
                         req.url.includes('/user/CriarConta') ||
                         req.url.includes('/user/escolher-loja') ||
-                        req.url.includes('/auth/register');
+                        req.url.includes('/auth/register') ||
+                        // catálogo público: sem token, pra um token vencido de quem está
+                        // navegando não virar 403 e jogar o cliente pra tela de login
+                        req.url.includes('/catalogo-online/') ||
+                        // acompanhar pedido (usado pelo catálogo público) — mesmo motivo
+                        req.url.includes('/pedidos/status/');
 
   if (isPublicRoute) {
     return next(req); // 👈 SAI SEM ADICIONAR TOKEN
