@@ -29,6 +29,10 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [publicGuard] },
   { path: 'landing', component: LandingComponent, canActivate: [publicGuard] },
   { path: 'cadastro', component: CadastroComponent, canActivate: [publicGuard] },
+  // Catálogo público da loja: sem guard — qualquer pessoa, logada ou não, pode abrir.
+  { path: 'catalogo/:nomeLink/acompanhar', loadComponent: () => import('./page/catalogo-acompanhar/catalogo-acompanhar').then(m => m.CatalogoAcompanhar) },
+  { path: 'catalogo/:nomeLink/lojas/:lojaId/finalizar', loadComponent: () => import('./page/catalogo-finalizar/catalogo-finalizar').then(m => m.CatalogoFinalizar) },
+  { path: 'catalogo/:nomeLink', loadComponent: () => import('./page/catalogo-publico/catalogo-publico').then(m => m.CatalogoPublico) },
 
 
 
@@ -41,6 +45,9 @@ export const routes: Routes = [
   { path: 'addloja/:id/funcionarios', component: AddFuncionarioLoja, canActivate: [authGuard] },
   { path: 'pedidos/:id',loadComponent: () =>import('./page/detalhe-pedido/detalhe-pedido').then(m => m.DetalhePedido), canActivate: [authGuard] },
   { path: 'products', component: ProductListComponent, canActivate: [authGuard] },
+  { path: 'catalogo-design', loadComponent: () => import('./page/catalogo-design/catalogo-design').then(m => m.CatalogoDesign), canActivate: [adminGuard], data: { permissions: PermissionGroups.configConta } },
+  // Tela antiga do catálogo online foi unificada em Personalizar Catálogo
+  { path: 'catalogo-online', redirectTo: 'catalogo-design', pathMatch: 'full' },
   { path: 'products/:id/variacoes', loadComponent: () => import('./page/product/produto-variacoes/produto-variacoes').then(m => m.ProdutoVariacoes), canActivate: [adminGuard], data: { permissions: PermissionGroups.produtos }},
   { path: 'AddUsuario', component: AdminUsersComponent, canActivate: [adminGuard], data: { permissions: PermissionGroups.usuarios } },
   { path: 'addProduto', component: TelaDeAddProduto, canActivate: [adminGuard], data: { permissions: PermissionGroups.produtos }},

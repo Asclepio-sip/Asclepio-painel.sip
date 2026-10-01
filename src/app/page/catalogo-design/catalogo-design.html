@@ -1,0 +1,364 @@
+<div class="design-container">
+
+  <div class="page-header">
+    <div>
+      <p class="breadcrumb">ADMIN / CATÁLOGO / <span>PERSONALIZAR</span></p>
+      <h1 class="page-title">Personalizar Catálogo</h1>
+      <p class="page-subtitle">Ative o catálogo online, defina o link e escolha como ele aparece para os clientes.</p>
+    </div>
+  </div>
+
+  @if (carregando) {
+  <div class="card estado"><div class="spinner"></div><p>Carregando design...</p></div>
+  }
+
+  @if (!carregando && erroCarregar) {
+  <div class="card estado">
+    <p>Não foi possível carregar o design do catálogo.</p>
+    <button type="button" class="btn-secundario" (click)="carregar()">Tentar novamente</button>
+  </div>
+  }
+
+  @if (!carregando && !erroCarregar) {
+  <div class="layout">
+
+    <div class="col-form">
+      @if (!podeEditar) {
+      <p class="aviso-leitura">Você pode ver, mas não alterar o design. Fale com o gerente da conta.</p>
+      }
+
+      <!-- Catálogo online: liga/desliga + link público -->
+      <section class="card">
+        <div class="card-header card-header-acao">
+          <div class="status-catalogo">
+            <span class="status-dot" [class.ligado]="catalogoAtivo"></span>
+            <div>
+              <h2 class="card-title">Catálogo online {{ catalogoAtivo ? 'ativo' : 'desativado' }}</h2>
+              <p class="card-subtitle">
+                {{ catalogoAtivo ? 'Os clientes já conseguem ver seus produtos pelo link abaixo.' : 'Ative para os clientes verem seus produtos pela internet. Vale para todas as lojas.' }}
+              </p>
+            </div>
+          </div>
+          <label class="switch" [class.desabilitado]="!podeEditar || alterandoCatalogo">
+            <input type="checkbox" role="switch" aria-label="Catálogo online" [checked]="catalogoAtivo"
+              [disabled]="!podeEditar || alterandoCatalogo" (click)="$event.preventDefault(); alternarCatalogo()" />
+            <span class="switch-trilho"><span class="switch-bola"></span></span>
+            <span class="switch-texto">{{ catalogoAtivo ? 'Ligado' : 'Desligado' }}</span>
+          </label>
+        </div>
+
+        <div class="card-body">
+          <div class="link-cabecalho">
+            <div>
+              <h3 class="subtitulo">Link do catálogo</h3>
+              <p class="card-subtitle">É esse endereço que você divulga para os clientes (WhatsApp, Instagram, etc.).</p>
+            </div>
+            @if (podeEditar && nomeLink && !editandoNomeLink) {
+            <button type="button" class="btn-secundario btn-sm" (click)="editarNomeLink()">Alterar nome</button>
+            }
+          </div>
+
+          @if (editandoNomeLink || (!nomeLink && podeEditar)) {
+          <div class="nome-link-form">
+            <label class="nome-link-label" for="nome-link">Nome do link</label>
+            <div class="nome-link-campo" [class.invalido]="erroNomeLink">
+              <span class="nome-link-prefixo">{{ prefixoLink }}</span>
+              <input id="nome-link" type="text" autocomplete="off" spellcheck="false" placeholder="farmacia-central"
+                [attr.maxlength]="nomeLinkMax" [value]="nomeLinkDigitado" (input)="onNomeLinkInput($event)"
+                (keydown.enter)="salvarNomeLink()" />
+            </div>
+            @if (erroNomeLink) {
+            <p class="nome-link-erro">{{ erroNomeLink }}</p>
+            } @else {
+            <p class="nome-link-dica">Letras minúsculas, números e hífen, de 3 a 60 caracteres. Precisa ser único.</p>
+            }
+            <div class="nome-link-acoes">
+              @if (nomeLink) {
+              <button type="button" class="btn-secundario btn-sm" (click)="cancelarNomeLink()" [disabled]="salvandoNomeLink">Cancelar</button>
+              }
+              <button type="button" class="btn-primario btn-sm" (click)="salvarNomeLink()" [disabled]="salvandoNomeLink || !nomeLinkDigitado">
+                {{ salvandoNomeLink ? 'Salvando...' : 'Salvar nome' }}
+              </button>
+            </div>
+            @if (nomeLink) {
+            <p class="nome-link-dica aviso-troca">Ao trocar o nome, o link antigo para de funcionar.</p>
+            }
+          </div>
+          } @else if (nomeLink) {
+          <div class="link-item">
+            <div class="link-info">
+              <span class="link-url">{{ linkPublico }}</span>
+              @if (!catalogoAtivo) {
+              <span class="link-status">O link só mostra produtos com o catálogo ligado.</span>
+              }
+            </div>
+            <div class="link-acoes">
+              <a class="btn-secundario btn-sm" [href]="linkPublico" target="_blank" rel="noopener">Abrir</a>
+              <button type="button" class="btn-primario btn-sm" (click)="copiarLink()">
+                {{ linkCopiado ? 'Copiado!' : 'Copiar link' }}
+              </button>
+            </div>
+          </div>
+          } @else {
+          <p class="card-subtitle">O nome do link ainda não foi definido. Peça para o gerente da conta configurar.</p>
+          }
+        </div>
+      </section>
+
+      <!-- Logo -->
+      <app-catalogo-imagem-upload tipo="logo" titulo="Logo"
+        subtitulo="Aparece no topo do catálogo, ao lado do nome da loja."
+        formato="quadrado" [podeEditar]="podeEditar" (previaChange)="logoPrevia = $event">
+        <ul class="dicas-logo">
+          <li>Use uma imagem quadrada, de preferência 512 × 512 px.</li>
+          <li>Fundo transparente vira <strong>branco</strong> — prefira uma logo com fundo branco ou colorido.</li>
+        </ul>
+      </app-catalogo-imagem-upload>
+
+      <!-- Banner -->
+      <app-catalogo-imagem-upload tipo="banner" titulo="Banner"
+        subtitulo="Imagem larga no topo do catálogo. Recomendado: 1920 × 600 px."
+        [podeEditar]="podeEditar" (previaChange)="bannerPrevia = $event">
+      </app-catalogo-imagem-upload>
+
+      <!-- Cores -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Cores</h2>
+          <p class="card-subtitle">As cores da página do catálogo. Nas cores principal, secundária e de fundo o texto se ajusta sozinho; no topo você escolhe as duas.</p>
+        </div>
+        <div class="card-body">
+          <div class="cores">
+            @for (cor of cores; track cor.campo) {
+            <div class="cor">
+              <label class="cor-amostra" [style.background]="corAtual(cor.campo, cor.padrao)">
+                <input type="color" [attr.aria-label]="cor.nome" [value]="corAtual(cor.campo, cor.padrao).toLowerCase()"
+                  [disabled]="!podeEditar" (input)="onCorEscolhida(cor.campo, $any($event.target).value)" />
+              </label>
+              <div class="cor-info">
+                <span class="cor-nome">{{ cor.nome }}</span>
+                <span class="cor-desc">{{ cor.descricao }}</span>
+                <div class="cor-linha">
+                  <input class="cor-hex" type="text" maxlength="7" spellcheck="false" [attr.aria-label]="cor.nome + ' em hexadecimal'"
+                    [value]="design[cor.campo] ?? ''" [placeholder]="cor.padrao" [disabled]="!podeEditar"
+                    (input)="onCorDigitada(cor.campo, $event)" />
+                  @if (design[cor.campo] && podeEditar) {
+                  <button type="button" class="link-restaurar" (click)="restaurarCor(cor.campo)">Usar padrão</button>
+                  }
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+          @if (contrasteNavbarBaixo) {
+          <p class="aviso-contraste" role="status">O texto do topo está com pouco contraste com o fundo do topo e pode ficar difícil de ler.</p>
+          }
+        </div>
+      </section>
+
+      <!-- Modelo da navbar -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Topo do catálogo</h2>
+          <p class="card-subtitle">Como ficam a logo, a busca e as categorias no alto da página.</p>
+        </div>
+        <div class="card-body">
+          <div class="modelos modelos-navbar" role="radiogroup" aria-label="Modelo do topo">
+            @for (modelo of modelosNavbar; track modelo.valor) {
+            <button type="button" role="radio" class="modelo" [class.selecionado]="design.modeloNavbar === modelo.valor"
+              [attr.aria-checked]="design.modeloNavbar === modelo.valor" [disabled]="!podeEditar"
+              (click)="escolherNavbar(modelo.valor)">
+              <span class="nav-mini nav-mini-{{ modelo.mini }}" aria-hidden="true">
+                <span class="nm-topo">
+                  <i class="nm-logo"></i>
+                  @if (modelo.mini === 'padrao') { <i class="nm-nome"></i> } @else { <i class="nm-busca"></i> }
+                  @if (modelo.mini === 'botao') { <i class="nm-botao"></i> }
+                </span>
+                @if (modelo.mini === 'horizontal') {
+                <span class="nm-cats"><i></i><i></i><i></i><i></i></span>
+                }
+                @if (modelo.mini === 'padrao') {
+                <span class="nm-filtros"><i class="nm-busca"></i><i class="nm-select"></i></span>
+                }
+              </span>
+              <span class="modelo-nome">{{ modelo.nome }}</span>
+              <span class="modelo-desc">{{ modelo.descricao }}</span>
+            </button>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Modelo do card -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Modelo do card</h2>
+          <p class="card-subtitle">Como cada produto aparece na página do catálogo.</p>
+        </div>
+        <div class="card-body">
+          <div class="modelos" role="radiogroup" aria-label="Modelo do card">
+            @for (modelo of modelos; track modelo.valor) {
+            <button type="button" role="radio" class="modelo" [class.selecionado]="design.modeloCard === modelo.valor"
+              [attr.aria-checked]="design.modeloCard === modelo.valor" [disabled]="!podeEditar"
+              (click)="escolherModelo(modelo.valor)">
+              <span class="mini mini-{{ modelo.valor | lowercase }}">
+                <i></i><i></i><i></i><i></i>
+              </span>
+              <span class="modelo-nome">{{ modelo.nome }}</span>
+              <span class="modelo-desc">{{ modelo.descricao }}</span>
+            </button>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Rodapé -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">Rodapé</h2>
+          <p class="card-subtitle">Texto sobre a loja, redes sociais e contatos. Tudo aqui aparece no fim da página do catálogo.</p>
+        </div>
+        <div class="card-body">
+
+          <div class="campo">
+            <label for="descricao">Descrição</label>
+            <textarea id="descricao" rows="4" [maxlength]="limiteDescricao" [(ngModel)]="design.descricaoRodape"
+              (ngModelChange)="limparAvisos()" [disabled]="!podeEditar"
+              placeholder="Ex.: Farmácia de bairro desde 1998. Entregamos em toda a região central."></textarea>
+            <span class="contador">{{ (design.descricaoRodape?.length ?? 0) }}/{{ limiteDescricao }}</span>
+          </div>
+
+          <div class="grupo-cabecalho">
+            <h3 class="grupo-titulo">Redes sociais</h3>
+            <label class="opcao">
+              <input type="checkbox" [(ngModel)]="design.mostrarIconesRedesSociais" (ngModelChange)="limparAvisos()" [disabled]="!podeEditar" />
+              <span>Mostrar Instagram, Facebook e TikTok no rodapé</span>
+            </label>
+          </div>
+          <div class="grade-campos">
+            <div class="campo">
+              <label for="whatsapp">WhatsApp</label>
+              <input id="whatsapp" type="tel" inputmode="numeric" maxlength="22" placeholder="(11) 9 9999-8888"
+                [value]="telefoneFormatado('whatsapp')" (input)="onTelefoneInput($event, 'whatsapp')" [disabled]="!podeEditar" />
+              <label class="opcao">
+                <input type="checkbox" [checked]="design.mostrarBotaoWhatsapp" [disabled]="!podeEditar"
+                  (change)="onWhatsappBotaoChange($any($event.target).checked)" />
+                <span>Mostrar botão flutuante do WhatsApp</span>
+              </label>
+            </div>
+            <div class="campo">
+              <label for="instagram">Instagram</label>
+              <input id="instagram" type="text" [maxlength]="limiteRede" placeholder="@farmaciacentral"
+                [(ngModel)]="design.instagram" (ngModelChange)="limparAvisos()" [disabled]="!podeEditar" />
+            </div>
+            <div class="campo">
+              <label for="facebook">Facebook</label>
+              <input id="facebook" type="text" [maxlength]="limiteRede" placeholder="farmaciacentral ou link da página"
+                [(ngModel)]="design.facebook" (ngModelChange)="limparAvisos()" [disabled]="!podeEditar" />
+            </div>
+            <div class="campo">
+              <label for="tiktok">TikTok</label>
+              <input id="tiktok" type="text" [maxlength]="limiteRede" placeholder="@farmaciacentral"
+                [(ngModel)]="design.tiktok" (ngModelChange)="limparAvisos()" [disabled]="!podeEditar" />
+            </div>
+          </div>
+
+          <h3 class="grupo-titulo">Suporte</h3>
+          <div class="grade-campos">
+            <div class="campo">
+              <label for="email">E-mail</label>
+              <input id="email" type="email" [maxlength]="limiteRede" placeholder="contato@farmacia.com"
+                [(ngModel)]="design.emailSuporte" (ngModelChange)="limparAvisos()" [disabled]="!podeEditar" />
+            </div>
+            <div class="campo">
+              <label for="telefone">Telefone</label>
+              <input id="telefone" type="tel" inputmode="numeric" maxlength="22" placeholder="(11) 3333-4444"
+                [value]="telefoneFormatado('telefoneSuporte')" (input)="onTelefoneInput($event, 'telefoneSuporte')" [disabled]="!podeEditar" />
+            </div>
+          </div>
+          <p class="dica">Deixe em branco o que não quiser mostrar.</p>
+        </div>
+      </section>
+
+      @if (podeEditar) {
+      <div class="barra-acoes">
+        <div class="mensagens" aria-live="polite">
+          @if (erroSalvar) { <span class="msg-erro">{{ erroSalvar }}</span> }
+          @if (sucesso) { <span class="msg-ok">Design salvo! Já está valendo no catálogo.</span> }
+          @if (!erroSalvar && !sucesso && alterado) { <span class="msg-pendente">Você tem alterações não salvas.</span> }
+        </div>
+        <button type="button" class="btn-secundario" (click)="descartar()" [disabled]="!alterado || salvando">Descartar</button>
+        <button type="button" class="btn-primario" (click)="salvar()" [disabled]="!alterado || salvando">
+          {{ salvando ? 'Salvando...' : 'Salvar design' }}
+        </button>
+      </div>
+      }
+    </div>
+
+    <!-- Prévia -->
+    <aside class="col-previa">
+      <div class="previa" [ngStyle]="temaPrevia">
+        <p class="previa-label">PRÉVIA</p>
+        <div class="previa-topo">
+          @if (logoPrevia) {
+          <img class="previa-logo" [src]="logoPrevia" alt="" />
+          } @else {
+          <span class="previa-logo previa-logo-vazia"></span>
+          }
+          @if (design.modeloNavbar === 'PADRAO') {
+          <span>Sua loja</span>
+          } @else {
+          <span class="previa-busca">Buscar produto...</span>
+          }
+          @if (design.modeloNavbar === 'LOGO_BUSCA_BOTAO_CATEGORIAS') {
+          <span class="previa-btn-cat">☰</span>
+          }
+        </div>
+        @if (design.modeloNavbar === 'LOGO_BUSCA_CATEGORIAS_HORIZONTAL') {
+        <div class="previa-cats"><span class="ativa">Todas</span><span>Remédios</span><span>Beleza</span><span>Infantil</span></div>
+        }
+        @if (bannerPrevia) {
+        <img class="previa-banner" [src]="bannerPrevia" alt="" />
+        }
+        <div class="previa-produtos modelo-{{ design.modeloCard | lowercase }}">
+          @for (i of [1, 2]; track i) {
+          <div class="p-card">
+            <div class="p-img"></div>
+            <div class="p-info">
+              <strong>{{ i === 1 ? 'Dipirona' : 'Vitamina C' }}</strong>
+              <small>{{ i === 1 ? '500mg 20 comprimidos' : '1g 10 efervescentes' }}</small>
+              <span class="p-preco">{{ i === 1 ? 'R$ 11,61' : 'R$ 24,90' }}</span>
+            </div>
+          </div>
+          }
+        </div>
+        @if (design.mostrarBotaoWhatsapp && design.whatsapp) {
+        <div class="previa-whats-wrap"><span class="previa-whats" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12.05 21.5h-.01a9.4 9.4 0 01-4.8-1.31l-.34-.2-3.57.94.95-3.48-.22-.36a9.43 9.43 0 01-1.45-5.03c0-5.2 4.24-9.44 9.45-9.44 2.52 0 4.9.98 6.68 2.77a9.38 9.38 0 012.76 6.68c0 5.21-4.24 9.45-9.45 9.45zm8.04-17.49A11.3 11.3 0 0012.05.69C5.78.69.68 5.79.68 12.06c0 2 .52 3.96 1.52 5.68L.58 23.7l6.1-1.6a11.33 11.33 0 005.37 1.37h.01c6.27 0 11.37-5.1 11.37-11.37 0-3.04-1.18-5.9-3.34-8.05z"/></svg>
+        </span></div>
+        }
+        <div class="previa-rodape">
+          <app-catalogo-rodape [design]="design" [previa]="true"></app-catalogo-rodape>
+          @if (!design.descricaoRodape && !design.whatsapp && !design.instagram && !design.facebook && !design.tiktok && !design.emailSuporte && !design.telefoneSuporte) {
+          <p class="previa-vazia">O rodapé aparece aqui quando você preencher algum campo.</p>
+          }
+        </div>
+      </div>
+    </aside>
+
+  </div>
+  }
+
+  @if (confirmandoDesativar) {
+  <div class="modal-overlay" (click)="cancelarDesativar()">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-desativar" (click)="$event.stopPropagation()">
+      <h3 id="titulo-desativar">Desativar o catálogo online?</h3>
+      <p>Os clientes deixam de ver seus produtos na internet até você ativar de novo.</p>
+      <div class="modal-acoes">
+        <button type="button" class="btn-secundario" (click)="cancelarDesativar()">Cancelar</button>
+        <button type="button" class="btn-perigo" (click)="confirmarDesativar()">Sim, desativar</button>
+      </div>
+    </div>
+  </div>
+  }
+</div>

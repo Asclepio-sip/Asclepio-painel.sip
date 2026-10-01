@@ -36,6 +36,15 @@
             </svg>
             Produtos
           </a>
+
+          @if (authService.hasAnyPermission(configContaPermissions)) {
+          <a routerLink="/catalogo-design" routerLinkActive="active">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.34M11 7.34l1.66-1.66a2 2 0 012.83 0l2.83 2.83a2 2 0 010 2.83L9.6 19.07M7 17h.01"/>
+            </svg>
+            Personalizar Catálogo
+          </a>
+          }
         </div>
       }
 
