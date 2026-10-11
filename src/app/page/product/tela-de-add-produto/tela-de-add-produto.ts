@@ -102,7 +102,7 @@ export class TelaDeAddProduto implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Criar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#C5794E',
+      confirmButtonColor: '#008E51',
       inputValidator: (value) => {
         if (!value || !value.trim()) {
           return 'Digite o nome da categoria';

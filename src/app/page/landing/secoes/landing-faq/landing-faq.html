@@ -1,0 +1,14 @@
+<section id="faq" class="faq">
+  <h2 class="titulo lp-sora">Perguntas frequentes</h2>
+  <div class="lista">
+    @for (item of perguntas; track item.pergunta) {
+      <details class="item">
+        <summary class="pergunta">
+          {{ item.pergunta }}
+          <span class="sinal" aria-hidden="true">+</span>
+        </summary>
+        <p class="resposta">{{ item.resposta }}</p>
+      </details>
+    }
+  </div>
+</section>

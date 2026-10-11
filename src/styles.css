@@ -1,3 +1,65 @@
+/* ============================================================
+   Design system do Asclepio (mesmo visual da landing page).
+   Use sempre as variáveis --ds-* em vez de cor/fonte fixa.
+   As telas públicas do catálogo têm tema próprio (--cor-*).
+   ============================================================ */
+:root {
+  /* Marca */
+  --ds-primaria: #008E51;
+  --ds-primaria-escura: #006B3E;
+  --ds-primaria-clara: #E3F6ED;
+  --ds-primaria-media: #86D8B1;
+  --ds-primaria-borda: #B9E6CF;
+  --ds-primaria-sombra: rgba(0, 142, 81, .28);
+  --ds-foco: 0 0 0 4px rgba(0, 142, 81, .14);
+
+  /* Superfícies */
+  --ds-fundo: #FCFAF6;
+  --ds-superficie: #FFFFFF;
+  --ds-superficie-2: #F5F1E8;
+  --ds-superficie-3: #FAF8F3;
+  --ds-tinta: #05160D;
+
+  /* Texto */
+  --ds-texto: #05160D;
+  --ds-texto-2: #3F4B45;
+  --ds-texto-suave: #5C6862;
+  --ds-texto-fraco: #8A948F;
+
+  /* Bordas */
+  --ds-borda: #ECE8DF;
+  --ds-borda-forte: #DCD5C7;
+
+  /* Estados */
+  --ds-sucesso: #16a34a;
+  --ds-perigo: #dc2626;
+  --ds-alerta: #d97706;
+  --ds-info: #2563eb;
+
+  /* Tipografia */
+  --ds-fonte-texto: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ds-fonte-titulo: 'Sora', 'DM Sans', system-ui, sans-serif;
+
+  /* Formas */
+  --ds-raio-sm: 8px;
+  --ds-raio: 12px;
+  --ds-raio-lg: 18px;
+  --ds-sombra: 0 1px 2px rgba(5, 22, 13, .04), 0 8px 24px -12px rgba(5, 22, 13, .12);
+  --ds-sombra-lg: 0 30px 60px -30px rgba(5, 22, 13, .28);
+
+  /* Bootstrap segue o mesmo tema */
+  --bs-body-font-family: var(--ds-fonte-texto);
+  --bs-body-color: var(--ds-texto);
+  --bs-body-bg: var(--ds-fundo);
+  --bs-primary: #008E51;
+  --bs-primary-rgb: 0, 142, 81;
+  --bs-link-color: var(--ds-primaria-escura);
+  --bs-link-color-rgb: 0, 107, 62;
+  --bs-link-hover-color: #013A21;
+  --bs-border-color: var(--ds-borda);
+  --bs-border-radius: var(--ds-raio-sm);
+}
+
 /* Reset básico */
 * {
   margin: 0;
@@ -9,10 +71,84 @@ html, body {
   width: 100%;
   height: 100%;
 }
-* {
-  font-family: 'Poppins', sans-serif;
-}
+
 body {
-  background-color: #f4f6f8;
   margin: 0;
+  background-color: var(--ds-fundo);
+  color: var(--ds-texto);
+  font-family: var(--ds-fonte-texto);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Campos e botões herdam a fonte da tela (o navegador usa a do sistema por padrão). */
+button, input, select, textarea, optgroup {
+  font-family: inherit;
+}
+
+/* Títulos do painel em Sora. :where() não pesa na especificidade: a tela pode sobrescrever. */
+:where(.ds-painel) :where(h1, h2, h3, h4) {
+  font-family: var(--ds-fonte-titulo);
+  letter-spacing: -.02em;
+  color: var(--ds-texto);
+}
+
+::selection { background: var(--ds-primaria-clara); color: var(--ds-tinta); }
+
+/* ---------- Bootstrap no tema ---------- */
+.btn-primary {
+  --bs-btn-bg: var(--ds-primaria);
+  --bs-btn-border-color: var(--ds-primaria);
+  --bs-btn-hover-bg: var(--ds-primaria-escura);
+  --bs-btn-hover-border-color: var(--ds-primaria-escura);
+  --bs-btn-active-bg: var(--ds-primaria-escura);
+  --bs-btn-active-border-color: var(--ds-primaria-escura);
+  --bs-btn-disabled-bg: var(--ds-primaria);
+  --bs-btn-disabled-border-color: var(--ds-primaria);
+}
+.btn-outline-primary {
+  --bs-btn-color: var(--ds-primaria-escura);
+  --bs-btn-border-color: var(--ds-primaria);
+  --bs-btn-hover-bg: var(--ds-primaria);
+  --bs-btn-hover-border-color: var(--ds-primaria);
+  --bs-btn-active-bg: var(--ds-primaria-escura);
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--ds-primaria);
+  box-shadow: var(--ds-foco);
+}
+.form-check-input:checked {
+  background-color: var(--ds-primaria);
+  border-color: var(--ds-primaria);
+}
+
+/* ---------- SweetAlert2 no tema ---------- */
+.swal2-popup {
+  font-family: var(--ds-fonte-texto);
+  border-radius: var(--ds-raio-lg) !important;
+}
+.swal2-title {
+  font-family: var(--ds-fonte-titulo);
+  color: var(--ds-texto) !important;
+  letter-spacing: -.02em;
+}
+.swal2-html-container { color: var(--ds-texto-2) !important; }
+.swal2-actions button { border-radius: var(--ds-raio) !important; font-weight: 600 !important; }
+
+/* Barra de rolagem discreta */
+.ds-painel ::-webkit-scrollbar { width: 10px; height: 10px; }
+.ds-painel ::-webkit-scrollbar-thumb {
+  background: var(--ds-borda-forte);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.ds-painel ::-webkit-scrollbar-thumb:hover { background-color: var(--ds-texto-fraco); }
+
+/* Botão "OK" padrão (quando a tela não passa confirmButtonColor) */
+div.swal2-popup .swal2-styled.swal2-confirm {
+  background-color: var(--ds-primaria);
+}
+div.swal2-popup .swal2-styled:focus-visible {
+  box-shadow: var(--ds-foco);
 }

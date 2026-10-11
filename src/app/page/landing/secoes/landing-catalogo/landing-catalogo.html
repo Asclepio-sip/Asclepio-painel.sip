@@ -1,0 +1,58 @@
+<section id="catalogo" class="lp-container catalogo">
+  <div class="moldura" role="img" aria-label="Exemplo de catálogo online no celular">
+    <div class="celular">
+      <div class="tela">
+        <div class="topo">
+          <div class="loja">
+            <span class="loja-logo lp-sora">Z</span>
+            <div>
+              <div class="loja-nome lp-sora">Padaria do Zé</div>
+              <div class="loja-info">Aberto agora · Entrega e retirada</div>
+            </div>
+          </div>
+          <div class="busca">Buscar produtos…</div>
+        </div>
+
+        <div class="chips">
+          @for (c of categorias; track c; let primeiro = $first) {
+            <span class="chip" [class.ativo]="primeiro">{{ c }}</span>
+          }
+        </div>
+
+        <div class="lista">
+          @for (p of produtos; track p.nome) {
+            <div class="produto" [class.esgotado]="p.esgotado">
+              <div class="foto" [style.background]="p.cor"></div>
+              <div class="produto-info">
+                <div class="produto-nome">{{ p.nome }}</div>
+                @if (p.esgotado) {
+                  <div class="produto-esgotado">Esgotado</div>
+                } @else {
+                  <div class="produto-preco">{{ p.preco }}</div>
+                }
+              </div>
+              @if (!p.esgotado) {
+                <span class="adicionar">+</span>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="texto">
+    <p class="lp-eyebrow">Catálogo online</p>
+    <h2 class="lp-titulo">Seu mini catálogo, pronto para compartilhar</h2>
+    <p class="lp-lead">
+      Assim que você cadastra um produto, ele já aparece na sua vitrine online. Acabou no estoque?
+      O catálogo mostra “esgotado” sozinho.
+    </p>
+    <ul class="lp-checklist itens">
+      <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008E51" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Link próprio, como <b>asclepio.app/sua-loja</b></span></li>
+      <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008E51" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Logo, cores e categorias da sua marca</span></li>
+      <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008E51" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Pedidos chegam no painel e no WhatsApp</span></li>
+      <li><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#008E51" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Preço e estoque sincronizados com o PDV</span></li>
+    </ul>
+  </div>
+</section>

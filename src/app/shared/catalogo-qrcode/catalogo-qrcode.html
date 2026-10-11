@@ -1,0 +1,20 @@
+<div class="qr">
+  <div class="qr-imagem">
+    @if (imagem) {
+    <img [src]="imagem" alt="QR code do link do catálogo" width="140" height="140" />
+    } @else if (erro) {
+    <span class="qr-erro">Não foi possível gerar o QR code.</span>
+    } @else {
+    <div class="spinner"></div>
+    }
+  </div>
+  <div class="qr-info">
+    <h3 class="qr-titulo">QR code do catálogo</h3>
+    <p class="qr-texto">Imprima no balcão, cardápio, sacolas ou cartão de visita. Quem escanear abre o catálogo direto.</p>
+    <div class="qr-acoes">
+      <button type="button" class="btn-primario btn-sm" (click)="baixarPng()" [disabled]="!imagem">Baixar PNG</button>
+      <button type="button" class="btn-secundario btn-sm" (click)="baixarSvg()" [disabled]="!imagem">Baixar SVG</button>
+    </div>
+    <p class="qr-dica">Se você trocar o nome do link, o QR code muda — baixe e imprima de novo.</p>
+  </div>
+</div>

@@ -91,6 +91,10 @@ fieldset { border: none; margin: 0; padding: 0; min-width: 0; display: grid; gri
 .codigo-valor { font-size: 24px; letter-spacing: .06em; word-break: break-all; }
 .sucesso-acoes { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 8px; }
 .sucesso-acoes .btn-secundario { text-decoration: none; }
+.whatsapp-pedido { margin: 4px 0 18px; padding: 16px; border-radius: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; }
+.whatsapp-pedido p { font-size: 13.5px; color: #166534; margin: 0 0 12px; }
+.btn-whatsapp { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px 18px; border-radius: 10px; background: #25d366; color: #fff; font-size: 15px; font-weight: 600; text-decoration: none; transition: background .2s; }
+.btn-whatsapp:hover { background: #1ebe5b; color: #fff; }
 .total-final { font-size: 14px; color: #4b5563; }
 
 @media (max-width: 900px) {

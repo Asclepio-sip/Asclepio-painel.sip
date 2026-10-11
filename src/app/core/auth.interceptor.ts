@@ -42,7 +42,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError(err => {
       if (err.status === 401 || err.status === 403) {
         authService.logout();
-        router.navigate(['/login']);
+        // Empresa bloqueada pelo painel SaaS (mensalidade não paga): tela própria explicando o motivo.
+        const bloqueada = err.error?.error === 'Conta Bloqueada';
+        router.navigate([bloqueada ? '/acesso-bloqueado' : '/login']);
       }
       return throwError(() => err);
     })

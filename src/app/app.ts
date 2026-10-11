@@ -13,7 +13,7 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
   styleUrl: './app.css'
 })
 export class App {
-  private readonly publicRoutes = ['/login', '/landing', '/cadastro'];
+  private readonly publicRoutes = ['/login', '/landing', '/acesso-bloqueado'];
   private readonly rotasSemBotaoPedido = ['/fazer-pedido', '/addProduto'];
   isPublicRoute = false;
   mostrarBotaoNovoPedido = false;

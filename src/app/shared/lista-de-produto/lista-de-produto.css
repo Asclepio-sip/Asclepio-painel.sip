@@ -2,7 +2,7 @@
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 18px;
-  color: #1f1f1f;
+  color: var(--ds-texto);
 }
 
 .carousel-wrapper {
@@ -33,7 +33,7 @@
   min-width: 185px;
   width: 185px;
   background: #fff;
-  border: 1px solid #ededed;
+  border: 1px solid var(--ds-borda);
   border-radius: 16px;
   padding: 12px;
   display: flex;
@@ -58,7 +58,7 @@
 .product-name {
   font-size: 13px;
   font-weight: 600;
-  color: #222;
+  color: var(--ds-texto);
   line-height: 1.35;
   margin-top: 8px;
 
@@ -75,7 +75,7 @@
 .variation {
   margin-top: 4px;
   font-size: 11px;
-  color: #777;
+  color: var(--ds-texto-suave);
 }
 
 /* BADGE PROMOÇÃO */
@@ -99,13 +99,13 @@
 }
 
 .old-price {
-  color: #9a9a9a;
+  color: var(--ds-texto-fraco);
   text-decoration: line-through;
   font-size: 12px;
 }
 
 .current-price {
-  color: #111;
+  color: var(--ds-texto);
   font-size: 20px;
   font-weight: 700;
 }
@@ -113,7 +113,7 @@
 /* ESTOQUE */
 .stock {
   font-size: 11px;
-  color: #777;
+  color: var(--ds-texto-suave);
   margin-top: 3px;
 }
 
@@ -153,18 +153,18 @@
   border-radius: 50%;
   cursor: pointer;
   font-size: 18px;
-  color: #444;
-  border: 1px solid #ececec;
+  color: var(--ds-texto-2);
+  border: 1px solid var(--ds-borda);
   flex-shrink: 0;
 }
 
 .carousel-btn:hover {
-  background: #f7f7f7;
+  background: var(--ds-superficie-3);
 }
 .store-name {
   display: block;
   font-size: 12px;
-  color: #666;
+  color: var(--ds-texto-suave);
   margin-top: -4px;
   margin-bottom: 8px;
   font-weight: 500;

@@ -1,0 +1,27 @@
+<section class="secao">
+  <div class="lp-container conteudo">
+    <div class="texto">
+      <h2 class="titulo lp-sora">Uma plataforma, várias lojas</h2>
+      <p class="descricao">
+        Gerencie filiais ou marcas diferentes num único painel. Cada loja com seu caixa, seu estoque
+        e seu catálogo; você com a visão consolidada de tudo.
+      </p>
+    </div>
+
+    <div class="painel" role="img" aria-label="Exemplo do painel com duas lojas">
+      <div class="painel-titulo lp-sora">Suas lojas</div>
+      <div class="lojas">
+        @for (l of lojas; track l.nome) {
+          <div class="loja" [class.ativa]="l.ativa">
+            <div class="loja-nome">{{ l.nome }}</div>
+            <div class="loja-status">{{ l.status }}</div>
+          </div>
+        }
+      </div>
+      <div class="consolidado">
+        <span class="consolidado-rotulo">Faturamento consolidado</span>
+        <span class="lp-sora consolidado-valor">Todas as lojas</span>
+      </div>
+    </div>
+  </div>
+</section>

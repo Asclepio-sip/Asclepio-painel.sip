@@ -1,184 +1,151 @@
 <div class="login-page">
 
-  <!-- Lado esquerdo - branding -->
-  <div class="login-brand">
+  <!-- Lado esquerdo - marca (mesmo visual da landing page) -->
+  <aside class="lado-marca">
+    <a routerLink="/landing" class="marca">
+      <span class="marca-icone">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+      </span>
+      <span class="marca-nome">Asclepio</span>
+    </a>
 
-    <!-- Decorações de fundo -->
-    <div class="deco-circle deco-circle-1"></div>
-    <div class="deco-circle deco-circle-2"></div>
-    <div class="deco-circle deco-circle-3"></div>
-    <div class="deco-ring deco-ring-1"></div>
-    <div class="deco-ring deco-ring-2"></div>
-    <div class="deco-dots"></div>
+    <div class="marca-conteudo">
+      <span class="selo">
+        <span class="selo-ponto"></span>
+        PDV + Estoque + Catálogo online
+      </span>
+      <h1 class="marca-titulo">Venda no balcão e online com um só sistema.</h1>
+      <p class="marca-texto">
+        Caixa, estoque e catálogo conversando entre si. Cadastrou o produto, ele aparece no caixa
+        e na sua vitrine digital.
+      </p>
 
-    <div class="brand-content">
-
-      <!-- Logo -->
-      <img src="logo-light.svg" alt="Asclepio" class="brand-logo-img" />
-
-      <!-- Divisor -->
-      <div class="brand-divider"></div>
-
-      <!-- Módulos / features -->
-      <p class="brand-section-label">O que você pode gerenciar</p>
-      <div class="brand-features">
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-          </div>
-          <div class="feature-text">
-            <span class="feature-title">Produtos &amp; Estoque</span>
-            <span class="feature-desc">Cadastro, variações e controle de inventário</span>
-          </div>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-          </div>
-          <div class="feature-text">
-            <span class="feature-title">Pedidos</span>
-            <span class="feature-desc">Acompanhe status, entregas e histórico</span>
-          </div>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          </div>
-          <div class="feature-text">
-            <span class="feature-title">Gestão de Lojas</span>
-            <span class="feature-desc">Lojas, bairros, funcionários e entregas</span>
-          </div>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          </div>
-          <div class="feature-text">
-            <span class="feature-title">Relatórios</span>
-            <span class="feature-desc">Movimentação de estoque e análises</span>
-          </div>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-          </div>
-          <div class="feature-text">
-            <span class="feature-title">Usuários &amp; Permissões</span>
-            <span class="feature-desc">Controle de acesso por perfil e função</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Rodapé da coluna -->
-      <div class="brand-footer">
-
-        <!-- Stats -->
-        <div class="brand-stats">
-          <div class="stat-item">
-            <span class="stat-value">500+</span>
-            <span class="stat-label">Produtos</span>
-          </div>
-          <div class="stat-sep"></div>
-          <div class="stat-item">
-            <span class="stat-value">24/7</span>
-            <span class="stat-label">Monitoramento</span>
-          </div>
-          <div class="stat-sep"></div>
-          <div class="stat-item">
-            <span class="stat-value">100%</span>
-            <span class="stat-label">Seguro</span>
-          </div>
-        </div>
-
-        <div class="brand-badge">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Acesso restrito a administradores
-        </div>
-      </div>
-
+      <ul class="marca-lista">
+        @for (item of destaques; track item) {
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+            {{ item }}
+          </li>
+        }
+      </ul>
     </div>
-  </div>
+
+    <div class="marca-cartao" aria-hidden="true">
+      <div class="cartao-topo">
+        <span class="cartao-titulo">PDV · Caixa 01</span>
+        <span class="cartao-status">Caixa aberto</span>
+      </div>
+      <div class="cartao-metricas">
+        <div><span>Vendas hoje</span><strong>R$ 1.284</strong></div>
+        <div><span>Pedidos online</span><strong>12</strong></div>
+        <div><span>Estoque baixo</span><strong class="alerta">3 itens</strong></div>
+      </div>
+    </div>
+  </aside>
 
   <!-- Lado direito - formulário -->
-  <div class="login-form-side">
-    <div class="login-card">
+  <main class="lado-form">
+    <a routerLink="/landing" class="voltar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
+      Voltar para o site
+    </a>
 
-      <div class="card-top">
-        <div class="card-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C5794E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        </div>
-        <h2 class="card-title">Bem-vindo de volta</h2>
-        <p class="card-subtitle">Entre com suas credenciais para acessar o painel</p>
-      </div>
+    <div class="cartao-login">
+      <a routerLink="/landing" class="marca marca-mobile">
+        <span class="marca-icone">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+        </span>
+        <span class="marca-nome">Asclepio</span>
+      </a>
 
       @if (step === 'credenciais') {
-      <form (ngSubmit)="entrar()" class="login-form-body">
+        <h2 class="titulo">Bem-vindo de volta</h2>
+        <p class="subtitulo">Entre com seu e-mail e senha para acessar o painel.</p>
 
-        <div class="form-group">
-          <label class="form-label">E-mail</label>
-          <div class="input-icon-wrap">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            <input
-              type="text"
-              class="form-input"
-              placeholder="seu@email.com"
-              [(ngModel)]="login"
-              name="login"
-              required
-              autocomplete="username"
-            />
+        <form (ngSubmit)="entrar()" class="formulario">
+          <div class="campo">
+            <label class="rotulo" for="login-email">E-mail</label>
+            <div class="entrada">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <input
+                id="login-email"
+                type="text"
+                placeholder="seu@email.com"
+                [(ngModel)]="login"
+                name="login"
+                required
+                autocomplete="username"
+              />
+            </div>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label class="form-label">Senha</label>
-          <div class="input-icon-wrap">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <input
-              type="password"
-              class="form-input"
-              placeholder="••••••••"
-              [(ngModel)]="password"
-              name="password"
-              required
-              autocomplete="current-password"
-            />
+          <div class="campo">
+            <label class="rotulo" for="login-senha">Senha</label>
+            <div class="entrada">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <input
+                id="login-senha"
+                [type]="mostrarSenha ? 'text' : 'password'"
+                placeholder="••••••••"
+                [(ngModel)]="password"
+                name="password"
+                required
+                autocomplete="current-password"
+              />
+              <button
+                type="button"
+                class="ver-senha"
+                (click)="mostrarSenha = !mostrarSenha"
+                [attr.aria-label]="mostrarSenha ? 'Esconder senha' : 'Mostrar senha'"
+                [attr.aria-pressed]="mostrarSenha"
+              >
+                @if (mostrarSenha) {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M1 1l22 22"/></svg>
+                } @else {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                }
+              </button>
+            </div>
           </div>
-        </div>
 
-        <button type="submit" class="btn-login" [disabled]="entrando">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-          {{ entrando ? 'Entrando...' : 'Entrar' }}
-        </button>
+          <button type="submit" class="botao-principal" [disabled]="entrando">
+            {{ entrando ? 'Entrando...' : 'Entrar' }}
+            @if (!entrando) {
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+            }
+          </button>
+        </form>
 
-      </form>
+        <p class="sem-conta">
+          Ainda não tem conta?
+          <a [href]="linkWhatsapp" target="_blank" rel="noopener">Fale com a gente no WhatsApp</a>
+        </p>
       }
 
       @if (step === 'escolher-loja') {
-      <div class="login-form-body">
-        <p class="card-subtitle" style="margin-bottom: 16px;">Escolha com qual loja deseja entrar:</p>
+        <h2 class="titulo">Escolha a loja</h2>
+        <p class="subtitulo">Sua conta tem acesso a mais de uma loja. Com qual deseja entrar?</p>
 
-        @for (loja of lojasDisponiveis; track loja.id) {
-        <div class="form-group" style="margin-bottom: 10px;">
-          <button type="button" class="btn-login" (click)="selecionarLoja(loja)">
-            {{ loja.nome }}
-          </button>
+        <div class="lojas">
+          @for (loja of lojasDisponiveis; track loja.id) {
+            <button type="button" class="loja" (click)="selecionarLoja(loja)">
+              <span class="loja-icone">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </span>
+              <span class="loja-nome">{{ loja.nome }}</span>
+              <svg class="loja-seta" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          }
         </div>
-        }
 
-        <button type="button" class="btn-cancel" (click)="verTodasAsLojas()">
-          Ver todas as lojas
-        </button>
-
-        <button type="button" class="btn-cancel" (click)="voltarParaCredenciais()">
-          Voltar
-        </button>
-      </div>
+        <div class="acoes-loja">
+          <button type="button" class="botao-contorno" (click)="verTodasAsLojas()">Ver todas as lojas</button>
+          <button type="button" class="botao-texto" (click)="voltarParaCredenciais()">Voltar</button>
+        </div>
       }
-
-      <p class="card-footer-text">PromoFarma &copy; {{ currentYear }} — Todos os direitos reservados</p>
-
     </div>
-  </div>
+
+    <p class="copyright">Asclepio &copy; {{ currentYear }} — Todos os direitos reservados</p>
+  </main>
 
 </div>

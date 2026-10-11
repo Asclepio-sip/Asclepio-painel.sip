@@ -11,6 +11,7 @@ import {
 } from '../../models/catalogo-online.model';
 import { CatalogoRodape } from '../../shared/catalogo-rodape/catalogo-rodape';
 import { CatalogoImagemUpload } from '../../shared/catalogo-imagem-upload/catalogo-imagem-upload';
+import { CatalogoQrcode } from '../../shared/catalogo-qrcode/catalogo-qrcode';
 
 type CampoTelefone = 'whatsapp' | 'telefoneSuporte';
 type CampoCor = 'corPrimaria' | 'corSecundaria' | 'corFundo' | 'corNavbar' | 'corTextoNavbar';
@@ -22,7 +23,7 @@ type CampoCor = 'corPrimaria' | 'corSecundaria' | 'corFundo' | 'corNavbar' | 'co
 @Component({
   selector: 'app-catalogo-design',
   standalone: true,
-  imports: [CommonModule, FormsModule, CatalogoRodape, CatalogoImagemUpload],
+  imports: [CommonModule, FormsModule, CatalogoRodape, CatalogoImagemUpload, CatalogoQrcode],
   templateUrl: './catalogo-design.html',
   styleUrl: './catalogo-design.css',
 })
@@ -209,6 +210,10 @@ export class CatalogoDesign implements OnInit {
       return 'Informe o número do WhatsApp para mostrar o botão flutuante.';
     }
 
+    if (this.design.enviarPedidoWhatsapp && !this.design.whatsapp) {
+      return 'Informe o número do WhatsApp para receber os pedidos por lá.';
+    }
+
     for (const cor of this.cores) {
       const valor = this.design[cor.campo];
       if (valor && !COR_HEX_REGEX.test(valor)) return `${cor.nome} inválida: use o formato #RRGGBB.`;
@@ -236,6 +241,7 @@ export class CatalogoDesign implements OnInit {
       emailSuporte: texto(d.emailSuporte),
       telefoneSuporte: texto(d.telefoneSuporte),
       mostrarBotaoWhatsapp: !!d.mostrarBotaoWhatsapp,
+      enviarPedidoWhatsapp: !!d.enviarPedidoWhatsapp,
       mostrarIconesRedesSociais: d.mostrarIconesRedesSociais !== false,
       corPrimaria: texto(d.corPrimaria),
       corSecundaria: texto(d.corSecundaria),

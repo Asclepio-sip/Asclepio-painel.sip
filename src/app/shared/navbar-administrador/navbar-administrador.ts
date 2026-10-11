@@ -29,6 +29,11 @@ export class NavbarAdministradorComponent implements OnInit {
     public authService: AuthService
   ) {}
 
+  /** Letra do avatar: primeira letra do nome exibido. */
+  get inicial(): string {
+    return (this.nomeExibicao || 'S').trim().charAt(0).toUpperCase();
+  }
+
   ngOnInit() {
     this.nomeExibicao = this.authService.getNomeExibicao();
     this.nomeLoja = this.authService.getNomeLoja() ?? (this.authService.isGerente() ? 'Todas as lojas' : '');
@@ -67,7 +72,7 @@ export class NavbarAdministradorComponent implements OnInit {
       confirmButtonText: 'Sair',
       cancelButtonText: 'Cancelar',
       confirmButtonColor: '#dc2626',
-      cancelButtonColor: '#6b7280'
+      cancelButtonColor: '#5C6862'
     }).then((result) => {
       if (result.isConfirmed) {
         this.authService.logout();
