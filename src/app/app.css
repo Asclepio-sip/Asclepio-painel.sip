@@ -1,17 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/* Altura do topo: a mesma de navbar-administrador.css */
+.ds-painel {
+	--altura-topo: 64px;
+	background: var(--ds-fundo);
+	color: var(--ds-texto);
+}
 
 .private-shell {
 	display: flex;
 	align-items: stretch;
-	height: calc(100vh - 72px);
+	height: calc(100vh - var(--altura-topo));
 	overflow: hidden;
 }
 
 .private-content {
 	flex: 1;
 	min-width: 0;
-	height: calc(100vh - 72px);
+	height: calc(100vh - var(--altura-topo));
 	overflow-y: auto;
+	background: var(--ds-fundo);
 }
 
 .fab-novo-pedido {
@@ -23,16 +29,15 @@
 	align-items: center;
 	gap: 8px;
 	padding: 14px 22px;
-	background: #C5794E;
+	background: var(--ds-primaria);
 	color: #fff;
 	border: none;
 	border-radius: 999px;
-	font-family: 'Poppins', sans-serif;
-	font-size: 14px;
-	font-weight: 600;
-	box-shadow: 0 4px 14px rgba(197, 121, 78, 0.4);
+	font-size: 15px;
+	font-weight: 700;
+	box-shadow: 0 12px 28px -10px var(--ds-primaria-sombra);
 	cursor: pointer;
-	transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+	transition: background-color .15s, box-shadow .15s, transform .15s;
 }
 
 .fab-novo-pedido svg {
@@ -42,8 +47,12 @@
 }
 
 .fab-novo-pedido:hover {
-	background: #a8622d;
-	box-shadow: 0 6px 18px rgba(197, 121, 78, 0.5);
+	background: var(--ds-primaria-escura);
+	box-shadow: 0 16px 32px -10px var(--ds-primaria-sombra);
 	transform: translateY(-1px);
 }
 
+.fab-novo-pedido:focus-visible {
+	outline: 3px solid var(--ds-primaria-media);
+	outline-offset: 3px;
+}

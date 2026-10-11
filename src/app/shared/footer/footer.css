@@ -1,8 +1,5 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
-
-:host {
+﻿:host {
   display: block;
-  font-family: 'Poppins', sans-serif;
 }
 
 .app-footer {
@@ -11,8 +8,8 @@
   left: 0;
   right: 0;
   height: 36px;
-  background: #f0f2f5;
-  border-top: 1px solid #e2e5ea;
+  background: var(--ds-superficie-2);
+  border-top: 1px solid var(--ds-borda);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -23,15 +20,15 @@
 
 .footer-copy {
   font-size: 11px;
-  color: #9ca3af;
+  color: var(--ds-texto-fraco);
 }
 
 .footer-sep {
   font-size: 11px;
-  color: #d1d5db;
+  color: var(--ds-borda-forte);
 }
 
 .footer-version {
   font-size: 11px;
-  color: #c4c9d4;
+  color: var(--ds-borda-forte);
 }

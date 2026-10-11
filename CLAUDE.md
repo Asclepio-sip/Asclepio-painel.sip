@@ -11,7 +11,7 @@ Stack: Angular 21 (componentes **standalone**, sem NgModules), TypeScript 5.9, R
 ## Comandos
 
 ```bash
-npm start          # ng serve (dev, http://localhost:4200)
+npm start          # ng serve (dev, http://localhost:4201)
 npx ng build       # build de produção em dist/frontend — use para validar que compila
 npm test           # testes (Vitest)
 ```
@@ -30,7 +30,7 @@ src/app/
     auth.interceptor.ts        injeta o Bearer token; 401/403 → logout + /login
     guards/auth-guard.ts       só exige estar logado
     guards/admin.guard.ts      exige logado + alguma permissão de route.data.permissions
-    public.guard.ts            telas públicas (login/landing/cadastro); logado → getHomeRoute()
+    public.guard.ts            telas públicas (login/landing); logado → getHomeRoute()
     security/app-permissions.ts   nomes das permissões (espelham o backend)
     security/permission-groups.ts grupos usados nas rotas/menus
   service/            um service por domínio (HttpClient), @Injectable({ providedIn: 'root' })
@@ -38,6 +38,14 @@ src/app/
   page/               telas (uma pasta por tela: .ts + .html + .css)
   shared/             navbar, navbar-administrador, sidebar, footer, cart, listas reutilizáveis
 ```
+
+### Design system (visual)
+
+- Cores, fontes, raios e sombras ficam como variáveis `--ds-*` em `src/styles.css` (mesmo visual da landing: verde `--ds-primaria` #008E51, fundo creme `--ds-fundo`, texto `--ds-texto` #05160D; **DM Sans** no texto e **Sora** nos títulos). Em tela do painel use **sempre** `var(--ds-...)` — nada de hex fixo nem `font-family` — e não reintroduza Poppins/laranja `#C5794E`.
+- O painel logado fica dentro de `.ds-painel` (em `app.html`); é esse escopo que deixa `h1–h4` em Sora. Bootstrap (`.btn-primary`, foco de inputs) e SweetAlert2 já seguem o tema pelo `styles.css`.
+- Em atributo SVG (`stroke="..."`, `fill="..."`) `var()` não funciona: use `currentColor` ou o hex literal do token.
+- Cor de estado (erro/aviso/sucesso) usa `--ds-perigo`/`--ds-alerta`/`--ds-sucesso` ou os tons vermelho/âmbar — **nunca** a cor da marca (o verde da marca parece sucesso).
+- Fora do design system: landing (`page/landing`, variáveis `--lp-*`), login (mesmas cores, no próprio CSS) e as telas públicas do catálogo (`catalogo-publico/finalizar/acompanhar`, `shared/catalogo-rodape`, `shared/catalogo-carrinho`), que usam o tema da loja (`--cor-*`) e Poppins.
 
 Padrões seguidos no código:
 - **Componentes standalone** com `imports: [CommonModule, FormsModule, ...]`, `templateUrl`/`styleUrl` separados. Os templates misturam `*ngIf`/`*ngFor` (maioria das telas antigas) e o control flow novo (`@if`, `@for (...; track ...)`) — em tela existente siga o que o arquivo já usa; em tela nova prefira `@if`/`@for`.
@@ -61,6 +69,7 @@ Padrões seguidos no código:
 
 - **Painel — tudo numa tela só: `page/catalogo-design`** (rota `/catalogo-design`, botão "Personalizar Catálogo" na sidebar, permissão `VerConfigConta`; `/catalogo-online` redireciona pra ela). A tela antiga `page/catalogo-online` foi removida. Liga/desliga + link: `GET /config-conta` traz `catalogoOnlineAtivo` e `nomeLink`. `PATCH /config-conta/catalogo-online` (`{ ativo }`) liga/desliga para a **empresa inteira**, com troca otimista e rollback se falhar. O nome do link é criado com `POST /config-conta/nome-link` (1ª vez) e trocado com `PUT` (`{ nomeLink }`); regra: 3–60 caracteres, `^[a-z0-9]+(-[a-z0-9]+)*$`, único entre empresas (400 "já está em uso"). O front valida antes de enviar; erros de `@Valid` já voltam 400 com a mensagem da regra. Sem `EditarConfigConta` a tela é só leitura.
 - **Link público tem só o nome**: `<origin>/catalogo/{nomeLink}` (nunca o lojaId no link).
+- **QR code do link**: `shared/catalogo-qrcode` (lib `qrcode`), usado em `catalogo-design` embaixo do link. Gerado **só no front** a partir de `linkPublico` (nada no backend); baixa PNG 1024px ou SVG, correção de erro `H`. Trocar o `nomeLink` muda o QR.
 - **Página pública** (`page/catalogo-publico`, rota `/catalogo/:nomeLink`, **sem guard** e sem sidebar — `app.ts` trata `/catalogo/` como rota pública): lista as lojas com `GET /catalogo-online/{nomeLink}/lojas` (escolhe sozinha se houver uma, senão mostra chips) e os produtos com `GET /catalogo-online/{nomeLink}/lojas/{lojaId}/produtos` (filtros `nomeProduto`, `categoriaId`, `somentePromocao`); categorias vêm de `GET /catalogo-online/{nomeLink}/categorias` (público, só ativas, em ordem de nome; o `id` vai em `?categoriaId=`). **Não use `GET /categorias` aqui** — é do painel e exige login + `VerCategoria`. `404` = nome inexistente, catálogo desligado ou loja de outra empresa → "Catálogo indisponível". O `authInterceptor` não manda token para `/catalogo-online/`.
 - **Design do catálogo** (`page/catalogo-design`, rota `/catalogo-design`, permissão `VerConfigConta`; salvar exige `EditarConfigConta`): `GET`/`PUT /config-conta/design-catalogo` com `modeloCard` (`PADRAO | RETANGULAR | GRANDE | COMPACTO`), `descricaoRodape` (≤1000), `whatsapp`/`telefoneSuporte` (**só dígitos**, 10–13; a tela mostra formatado), `instagram`/`facebook`/`tiktok` (@usuario ou link, ≤150) e `emailSuporte`. O **PUT substitui tudo** — sempre mande o formulário inteiro; vazio vai como `null` (apaga). A página pública lê `GET /catalogo-online/{nomeLink}/design`, aplica a classe `modelo-*` na grade e renderiza o rodapé com `shared/catalogo-rodape` (o mesmo componente da prévia do painel). Se o design falhar, segue com `PADRAO` e sem rodapé.
 - **Logo e banner** usam o mesmo componente `shared/catalogo-imagem-upload` (`tipo="logo" | "banner"`): `GET /config-conta/{tipo}` → `{ {tipo}Url, {tipo}Ativo }` (url null = nunca enviada), `POST` (1ª vez, já fica ativa) / `PUT` (troca e apaga a antiga) como **multipart** campo `imagem`, `PATCH /config-conta/{tipo}/status` `{ ativo }`. O front barra não-imagem e > 15 MB (o backend devolve 500 nesses casos). Logo: máx. 512px e **transparência vira branco** no backend. Na página pública vêm em `design.logoUrl` / `design.bannerUrl` (só preenchidos se existem e estão ativos).

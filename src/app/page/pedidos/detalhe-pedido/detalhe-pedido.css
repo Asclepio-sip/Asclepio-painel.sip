@@ -5,14 +5,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap');
 
 :host {
-  --bg: #f4f6f8;
+  --bg: var(--ds-fundo);
   --surface: #ffffff;
-  --border: #e8ecf4;
-  --text-primary: #1a1d2e;
-  --text-secondary: #6b7494;
-  --text-muted: #9ba3bf;
-  --accent: #4361ee;
-  --accent-soft: #eef1fd;
+  --border: var(--ds-borda);
+  --text-primary: var(--ds-texto);
+  --text-secondary: var(--ds-texto-suave);
+  --text-muted: var(--ds-texto-fraco);
+  --accent: var(--ds-primaria);
+  --accent-soft: var(--ds-primaria-clara);
   --success: #10b981;
   --success-soft: #ecfdf5;
   --danger: #ef4444;
@@ -263,7 +263,7 @@
 }
 
 .itens-table tbody tr:last-child { border-bottom: none; }
-.itens-table tbody tr:hover { background: #f8f9fe; }
+.itens-table tbody tr:hover { background: var(--ds-superficie-3); }
 
 .itens-table td {
   padding: 14px;
@@ -360,7 +360,7 @@
   font-family: var(--font-display);
   font-size: 1.3rem;
   font-weight: 700;
-  color: var(--danger);
+  color: var(--ds-primaria-escura);
 }
 
 /* ── Observações ── */
@@ -495,16 +495,16 @@ button {
 .btn-voltar:hover {
   background: var(--bg);
   color: var(--text-primary);
-  border-color: #c8cedf;
+  border-color: var(--ds-borda-forte);
 }
 
 .btn-pdf {
-  background: #1e293b;
+  background: var(--ds-texto);
   color: #ffffff;
 }
 
 .btn-pdf:hover {
-  background: #0f172a;
+  background: var(--ds-texto);
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.25);
 }
@@ -574,7 +574,7 @@ button {
 
   .card {
     box-shadow: none !important;
-    border: 1px solid #ddd !important;
+    border: 1px solid var(--ds-borda-forte) !important;
     break-inside: avoid;
     page-break-inside: avoid;
     padding: 16px 18px;
@@ -610,7 +610,7 @@ button {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #d1d5db;
+  background: var(--ds-borda-forte);
 }
 
 .historico-item.ativo .historico-dot {
@@ -621,7 +621,7 @@ button {
 .historico-linha {
   width: 2px;
   height: 40px;
-  background: #e5e7eb;
+  background: var(--ds-borda);
   margin: 0 auto;
 }
 
@@ -652,7 +652,7 @@ margin-right:10px;
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #d1d5db;
+  background: var(--ds-borda-forte);
   transition: 0.3s;
 }
 
@@ -663,7 +663,7 @@ margin-right:10px;
 .historico-linha {
   width: 3px;
   height: 40px;
-  background: #d1d5db;
+  background: var(--ds-borda-forte);
   margin: 4px auto 0;
 }
 

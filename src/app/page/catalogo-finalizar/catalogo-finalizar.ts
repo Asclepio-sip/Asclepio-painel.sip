@@ -2,10 +2,12 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { CatalogoOnlineService } from '../../service/catalogo-online.service';
+import { CatalogoDesativado } from '../catalogo-publico/catalogo-desativado';
+import { catalogoDesativado, CatalogoOnlineService } from '../../service/catalogo-online.service';
 import {
   CatalogoBairro, CatalogoCarrinhoItem, CatalogoCheckout, CatalogoPedidoRequest, CatalogoPedidoResponse,
-  DESIGN_PADRAO, DesignCatalogo, TipoAtendimentoCatalogo, gravarCarrinho, guardarPedidoRecente, lerCarrinho, normalizarDesign, variaveisTema
+  DESIGN_PADRAO, DesignCatalogo, TipoAtendimentoCatalogo, gravarCarrinho, guardarPedidoRecente, lerCarrinho, linkWhatsapp,
+  normalizarDesign, variaveisTema
 } from '../../models/catalogo-online.model';
 
 type EstadoPagina = 'carregando' | 'ok' | 'indisponivel' | 'erro' | 'sucesso';
@@ -19,7 +21,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 @Component({
   selector: 'app-catalogo-finalizar',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, CatalogoDesativado],
   templateUrl: './catalogo-finalizar.html',
   styleUrl: './catalogo-finalizar.css',
 })
@@ -28,6 +30,8 @@ export class CatalogoFinalizar implements OnInit, OnDestroy {
   nomeLink = '';
   lojaId = 0;
   estado: EstadoPagina = 'carregando';
+  /** Indisponível porque a empresa foi bloqueada (não porque o link não existe). */
+  desativado = false;
 
   design: DesignCatalogo = { ...DESIGN_PADRAO };
   checkout: CatalogoCheckout | null = null;
@@ -50,6 +54,8 @@ export class CatalogoFinalizar implements OnInit, OnDestroy {
   pedido: CatalogoPedidoResponse | null = null;
   /** Resumo guardado na hora do envio (o carrinho é limpo depois). */
   totalPedido = 0;
+  /** Link do WhatsApp da loja já com os dados do pedido (null = a farmácia não ligou essa opção). */
+  linkPedidoWhatsapp: string | null = null;
   codigoCopiado = false;
 
   readonly rotuloAtendimento: Record<TipoAtendimentoCatalogo, string> = {
@@ -116,7 +122,8 @@ export class CatalogoFinalizar implements OnInit, OnDestroy {
         this.cd.detectChanges();
       },
       error: err => {
-        this.estado = err.status === 404 ? 'indisponivel' : 'erro';
+        this.desativado = catalogoDesativado(err);
+        this.estado = err.status === 404 || this.desativado ? 'indisponivel' : 'erro';
         this.cd.detectChanges();
       }
     });
@@ -251,6 +258,8 @@ export class CatalogoFinalizar implements OnInit, OnDestroy {
       next: res => {
         this.pedido = res;
         this.totalPedido = total;
+        // Antes de limpar o carrinho: a mensagem usa os itens e os dados preenchidos.
+        this.linkPedidoWhatsapp = this.montarLinkWhatsapp(res.codigoRastreio, total);
         this.itens = [];
         gravarCarrinho(this.nomeLink, this.lojaId, []);
         guardarPedidoRecente(this.nomeLink, res.codigoRastreio);
@@ -261,18 +270,64 @@ export class CatalogoFinalizar implements OnInit, OnDestroy {
       },
       error: err => {
         this.enviando = false;
+        if (catalogoDesativado(err)) {
+          this.desativado = true;
+          this.estado = 'indisponivel';
+        }
         this.erroEnvio = this.mensagemErro(err);
         this.cd.detectChanges();
       }
     });
   }
 
-  private mensagemErro(err: { status: number; error?: { message?: string } }): string {
+  /** Mensagem para a loja com tudo do pedido; só se a farmácia ligou "Receber pedidos no WhatsApp". */
+  private montarLinkWhatsapp(codigo: string, total: number): string | null {
+    const numero = this.design.whatsapp;
+    if (!this.design.enviarPedidoWhatsapp || !numero) return null;
+
+    const linhas: string[] = [
+      `Olá${this.nomeLoja ? ', *' + this.nomeLoja + '*' : ''}! Acabei de fazer um pedido pelo catálogo online.`,
+      '',
+      `*Pedido:* ${codigo}`,
+      `*Cliente:* ${this.nomeCliente.trim()}`,
+      `*Telefone:* ${this.telefone}`,
+      '',
+      '*Itens:*',
+      ...this.itens.map(item => {
+        const nome = item.nomeVariacao ? `${item.nomeProduto} (${item.nomeVariacao})` : item.nomeProduto;
+        return `• ${item.quantidade}x ${nome} — ${this.moeda(item.valorFinal * item.quantidade)}`;
+      }),
+      '',
+      `*Subtotal:* ${this.moeda(this.subtotal)}`,
+    ];
+    if (this.entrega) {
+      linhas.push(`*Frete:* ${this.frete ? this.moeda(this.frete) : 'Grátis'}`);
+    }
+    linhas.push(`*Total:* ${this.moeda(total)}`, '');
+
+    linhas.push(`*Receber:* ${this.tipoAtendimento ? this.rotuloAtendimento[this.tipoAtendimento] : '-'}`);
+    if (this.entrega) {
+      const endereco = [this.endereco.trim(), this.complemento.trim()].filter(Boolean).join(', ');
+      const bairro = this.bairroSelecionado?.nomeBairro;
+      linhas.push(`*Endereço:* ${endereco}${bairro ? ' — ' + bairro : ''}`);
+    }
+    const pagamento = this.checkout?.formasPagamento.find(f => f.forma === this.formaPagamento)?.descricao;
+    linhas.push(`*Pagamento:* ${pagamento ?? this.formaPagamento ?? '-'}`);
+    if (this.observacao.trim()) {
+      linhas.push(`*Observação:* ${this.observacao.trim()}`);
+    }
+    linhas.push('', `Acompanhar: ${window.location.origin}/catalogo/${this.nomeLink}/acompanhar?codigo=${codigo}`);
+
+    return `${linkWhatsapp(numero)}?text=${encodeURIComponent(linhas.join('\n'))}`;
+  }
+
+  private mensagemErro(err: { status: number; error?: { message?: string; error?: string } }): string {
     const msg = typeof err.error?.message === 'string' ? err.error.message : '';
     switch (err.status) {
       case 0: return 'Sem conexão. Verifique sua internet e tente de novo.';
       case 429: return msg || 'Muitos pedidos em pouco tempo. Aguarde um minuto e tente novamente.';
       case 404: return 'Esta loja não está recebendo pedidos pelo catálogo no momento.';
+      case 403: return catalogoDesativado(err) ? 'Catálogo desativado temporariamente.' : 'Não foi possível enviar o pedido. Tente novamente.';
       case 400: return msg || 'Confira os dados do pedido e tente novamente.';
       default: return 'Não foi possível enviar o pedido. Tente novamente.';
     }

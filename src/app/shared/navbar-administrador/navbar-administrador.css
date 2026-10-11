@@ -1,118 +1,108 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-
-.navbar {
-  height: 72px;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 32px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-  font-family: 'Poppins', sans-serif;
+/* Altura: a mesma de --altura-topo em app.css */
+.topo {
+  height: 64px;
   position: sticky;
   top: 0;
   z-index: 1100;
-}
-
-.nav-left {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 24px;
+  background: rgba(252, 250, 246, .92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--ds-borda);
 }
 
-/* ===== LOGO ===== */
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  text-decoration: none;
-}
-.nav-logo-symbol {
-  height: 52px;
-  width: auto;
-  display: block;
+.topo-esquerda { display: flex; align-items: center; gap: 16px; min-width: 0; }
+
+/* Marca */
+.marca { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ds-texto); }
+.marca:hover { color: var(--ds-texto); }
+.marca-icone {
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
-}
-.nav-brand-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-.nav-brand-name {
-  font-size: 17px;
-  font-weight: 700;
-  color: #20272E;
-  letter-spacing: 3px;
-  line-height: 1;
-  font-family: 'Montserrat', 'Poppins', sans-serif;
-}
-.nav-brand-sub {
-  font-size: 10px;
-  font-weight: 500;
-  color: #C5794E;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  line-height: 1;
-}
-
-/* ===== LOJA DA SESSAO ===== */
-.nav-loja-badge {
-  margin-left: 18px;
-  padding: 6px 14px;
-  background: #fdf1ea;
-  color: #C5794E;
-  border: 1px solid #f1d9c7;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-}
-
-/* ===== AÇÕES ===== */
-.actions {
+  border-radius: 9px;
+  background: var(--ds-primaria);
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+}
+.marca-texto { display: flex; flex-direction: column; gap: 2px; line-height: 1; }
+.marca-nome {
+  font-family: var(--ds-fonte-titulo);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -.02em;
+}
+.marca-sub {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ds-primaria-escura);
 }
 
-/* ===== BOTÃO USUÁRIO ===== */
-.user-btn {
-  background: #f9fafb;
-  color: #111827;
-  border: 1px solid #e5e7eb;
-  padding: 8px 16px;
-  border-radius: 10px;
+/* Loja da sessão */
+.loja {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--ds-primaria-clara);
+  color: var(--ds-primaria-escura);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+}
+
+/* Ações */
+.acoes { display: flex; align-items: center; gap: 12px; }
+
+.usuario { display: inline-flex; align-items: center; gap: 10px; }
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--ds-tinta);
+  color: var(--ds-primaria-media);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ds-fonte-titulo);
+  font-weight: 700;
   font-size: 14px;
-  font-weight: 500;
-  cursor: default;
 }
+.usuario-nome { font-size: 14px; font-weight: 600; color: var(--ds-texto); white-space: nowrap; }
 
-/* ===== BOTÃO SAIR ===== */
-.logout-btn {
-  background: #C5794E;
-  color: #fff;
-  border: none;
-  padding: 8px 18px;
+.botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
   border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
+  text-decoration: none;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background-color .15s, color .15s, border-color .15s;
 }
+.botao-primario { border: 0; background: var(--ds-primaria); color: #fff; }
+.botao-primario:hover { background: var(--ds-primaria-escura); color: #fff; }
+.botao-contorno { border: 1.5px solid var(--ds-borda-forte); background: var(--ds-superficie); color: var(--ds-texto); }
+.botao-contorno:hover { border-color: var(--ds-perigo); color: var(--ds-perigo); background: #fef2f2; }
+.botao:focus-visible { outline: 3px solid var(--ds-primaria-media); outline-offset: 2px; }
 
-.logout-btn:hover {
-  background: #C5794E;
-  transform: translateY(-1px);
+@media (max-width: 720px) {
+  .marca-sub, .usuario-nome { display: none; }
 }
-
-/* ===== RESPONSIVO ===== */
 @media (max-width: 480px) {
-  .user-btn {
-    display: none;
-  }
-
-  .nav-loja-badge {
-    display: none;
-  }
+  .topo { padding: 0 16px; }
+  .loja { display: none; }
 }

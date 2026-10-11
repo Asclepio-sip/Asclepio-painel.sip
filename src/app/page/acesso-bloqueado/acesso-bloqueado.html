@@ -1,0 +1,60 @@
+<div class="pagina">
+  <div class="deco-circle deco-circle-1"></div>
+  <div class="deco-circle deco-circle-2"></div>
+  <div class="deco-ring deco-ring-1"></div>
+  <div class="deco-ring deco-ring-2"></div>
+  <div class="deco-dots"></div>
+
+  <main class="conteudo">
+    <img src="logo-light.svg" alt="Asclepio" class="logo" />
+
+    <section class="card" aria-labelledby="titulo-bloqueio">
+      <div class="icone">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+
+      <div class="selo-linha"><span class="selo">Acesso suspenso</span></div>
+      <h1 id="titulo-bloqueio">Seu acesso está temporariamente bloqueado</h1>
+      <p class="descricao">
+        Identificamos uma pendência na mensalidade da sua farmácia. Enquanto ela não for regularizada,
+        o acesso à plataforma fica suspenso.
+      </p>
+
+      <ul class="itens">
+        <li>
+          <span class="item-icone item-icone-alerta">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          </span>
+          <span>Painel, pedidos, estoque e relatórios ficam indisponíveis para toda a equipe.</span>
+        </li>
+        <li>
+          <span class="item-icone item-icone-alerta">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          </span>
+          <span>O catálogo online da farmácia sai do ar e não recebe novos pedidos.</span>
+        </li>
+        <li>
+          <span class="item-icone item-icone-ok">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          <span>Nenhum dado é perdido: tudo volta exatamente como estava.</span>
+        </li>
+      </ul>
+
+      <div class="regularizar">
+        <strong>Como regularizar</strong>
+        <p>
+          Entre em contato com o suporte do Asclépio e informe o pagamento da mensalidade.
+          Assim que ele for confirmado, o acesso é liberado na hora.
+        </p>
+      </div>
+
+      <a routerLink="/login" class="btn-voltar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Tentar entrar novamente
+      </a>
+    </section>
+
+    <p class="rodape">PromoFarma &copy; {{ currentYear }} — Todos os direitos reservados</p>
+  </main>
+</div>

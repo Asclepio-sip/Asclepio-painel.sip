@@ -141,7 +141,7 @@ export class ProductListComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Salvar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#C5794E',
+      confirmButtonColor: '#008E51',
       inputValidator: (value) => {
         if (!value || !value.trim()) {
           return 'Digite o nome do produto';
@@ -183,12 +183,12 @@ export class ProductListComponent implements OnInit {
       title: 'Editar categoria do produto',
       html: `
         <div style="text-align:left; margin-top:6px;">
-          <label for="swal-categoria-select" style="display:block; font-family:'Poppins',sans-serif; font-size:12.5px; font-weight:600; color:#374151; margin-bottom:6px;">Categoria</label>
+          <label for="swal-categoria-select" style="display:block; font-size:12.5px; font-weight:600; color:var(--ds-texto-2); margin-bottom:6px;">Categoria</label>
           <div style="display:flex; gap:8px; align-items:stretch;">
-            <select id="swal-categoria-select" style="flex:1; min-width:0; height:42px; padding:0 12px; border:1.5px solid #e5e7eb; border-radius:8px; font-family:'Poppins',sans-serif; font-size:14px; color:#111827; background:#fff;">
+            <select id="swal-categoria-select" style="flex:1; min-width:0; height:42px; padding:0 12px; border:1.5px solid var(--ds-borda-forte); border-radius:8px; font-size:14px; color:var(--ds-texto); background:#fff;">
               ${opcoesHtml}
             </select>
-            <button type="button" id="swal-nova-categoria-btn" title="Nova categoria" style="width:42px; height:42px; flex-shrink:0; border:none; background:#111827; color:#fff; border-radius:8px; font-size:20px; font-weight:700; cursor:pointer; line-height:1;">+</button>
+            <button type="button" id="swal-nova-categoria-btn" title="Nova categoria" style="width:42px; height:42px; flex-shrink:0; border:none; background:var(--ds-texto); color:#fff; border-radius:8px; font-size:20px; font-weight:700; cursor:pointer; line-height:1;">+</button>
           </div>
         </div>
       `,
@@ -203,7 +203,7 @@ export class ProductListComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Salvar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#C5794E',
+      confirmButtonColor: '#008E51',
       preConfirm: () => {
         const select = document.getElementById('swal-categoria-select') as HTMLSelectElement;
 
@@ -236,7 +236,7 @@ export class ProductListComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Criar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#C5794E',
+      confirmButtonColor: '#008E51',
       inputValidator: (value) => {
         if (!value || !value.trim()) {
           return 'Digite o nome da categoria';

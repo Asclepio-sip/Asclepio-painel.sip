@@ -1,0 +1,18 @@
+<section id="como-funciona" class="secao">
+  <div class="lp-container conteudo">
+    <div class="cabeca">
+      <p class="lp-eyebrow">Como funciona</p>
+      <h2 class="lp-titulo">Do cadastro à primeira venda em três passos</h2>
+    </div>
+
+    <ol class="passos">
+      @for (p of passos; track p.numero) {
+        <li class="passo">
+          <div class="numero lp-sora">{{ p.numero }}</div>
+          <h3 class="passo-titulo lp-sora">{{ p.titulo }}</h3>
+          <p class="passo-texto">{{ p.texto }}</p>
+        </li>
+      }
+    </ol>
+  </div>
+</section>

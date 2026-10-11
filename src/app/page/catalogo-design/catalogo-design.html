@@ -99,6 +99,8 @@
               </button>
             </div>
           </div>
+
+          <app-catalogo-qrcode [link]="linkPublico" [nomeArquivo]="nomeLink" />
           } @else {
           <p class="card-subtitle">O nome do link ainda não foi definido. Peça para o gerente da conta configurar.</p>
           }
@@ -244,6 +246,11 @@
                 <input type="checkbox" [checked]="design.mostrarBotaoWhatsapp" [disabled]="!podeEditar"
                   (change)="onWhatsappBotaoChange($any($event.target).checked)" />
                 <span>Mostrar botão flutuante do WhatsApp</span>
+              </label>
+              <label class="opcao">
+                <input type="checkbox" [(ngModel)]="design.enviarPedidoWhatsapp" (ngModelChange)="limparAvisos()"
+                  [disabled]="!podeEditar" />
+                <span>Receber pedidos no WhatsApp (o cliente envia os dados do pedido ao finalizar)</span>
               </label>
             </div>
             <div class="campo">

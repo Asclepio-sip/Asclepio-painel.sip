@@ -150,3 +150,8 @@ export class CatalogoOnlineService {
     return this.http.get<PedidoStatusPublico>(`${this.API}/pedidos/status/${encodeURIComponent(codigoRastreio)}`);
   }
 }
+
+/** 403 "Catalogo Desativado": a empresa foi bloqueada pelo painel SaaS (mensalidade não paga). */
+export function catalogoDesativado(err: any): boolean {
+  return err?.status === 403 && err.error?.error === 'Catalogo Desativado';
+}

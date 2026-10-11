@@ -1,0 +1,32 @@
+:host { display: block; }
+
+.rodape { padding-top: 56px; padding-bottom: 32px; }
+.topo { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 40px; }
+
+.marca-bloco { max-width: 320px; display: flex; flex-direction: column; gap: 12px; }
+.marca { display: flex; align-items: center; gap: 10px; }
+.marca-icone {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--lp-verde);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.marca-nome { font-weight: 700; font-size: 18px; color: var(--lp-tinta); }
+.descricao { margin: 0; font-size: 14px; line-height: 1.6; color: var(--lp-texto-suave); }
+
+.colunas { display: flex; flex-wrap: wrap; gap: 56px; }
+.coluna { display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
+.coluna-titulo { font-weight: 700; color: var(--lp-tinta); }
+.coluna a { color: var(--lp-texto-suave); }
+.coluna a:hover { color: var(--lp-verde-escuro); }
+
+.copyright {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--lp-borda);
+  font-size: 13px;
+  color: var(--lp-texto-suave);
+}
