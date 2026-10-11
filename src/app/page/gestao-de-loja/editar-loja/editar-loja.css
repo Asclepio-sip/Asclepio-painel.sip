@@ -1,7 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
 * {
-  font-family: 'Poppins', sans-serif;
   box-sizing: border-box;
 }
 
@@ -33,7 +30,7 @@
   background: #ffffff;
   border-radius: 12px;
   padding: 32px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ds-borda);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -42,10 +39,10 @@
 .card h2 {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #111;
+  color: var(--ds-texto);
   margin: 0 0 8px 0;
   padding-bottom: 16px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--ds-borda);
 }
 
 /* Acoes do topo (fora dos cards) */
@@ -59,13 +56,12 @@
 
 .btn-voltar,
 .btn-acao-topo {
-  font-family: 'Poppins', sans-serif;
   width: fit-content;
   padding: 8px 14px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ds-borda);
   background: #fff;
-  color: #374151;
+  color: var(--ds-texto-2);
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
@@ -74,8 +70,8 @@
 
 .btn-voltar:hover,
 .btn-acao-topo:hover {
-  border-color: #111;
-  color: #111;
+  border-color: var(--ds-texto);
+  color: var(--ds-texto);
 }
 
 /* Card de tipo de atendimento */
@@ -94,7 +90,7 @@
 .toggle-item span {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--ds-texto-2);
 }
 
 .toggle-switch {
@@ -103,7 +99,7 @@
   padding: 0;
   border: none;
   border-radius: 999px;
-  background: #e2e8f0;
+  background: var(--ds-borda);
   position: relative;
   cursor: pointer;
   transition: background .2s;
@@ -111,7 +107,7 @@
 }
 
 .toggle-switch.on {
-  background: #C5794E;
+  background: var(--ds-primaria);
 }
 
 .toggle-knob {
@@ -140,7 +136,7 @@
 .field label {
   font-size: 0.78rem;
   font-weight: 500;
-  color: #aaa;
+  color: var(--ds-texto-fraco);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -148,13 +144,12 @@
 .field input,
 .field select,
 .field textarea {
-  font-family: 'Poppins', sans-serif;
   width: 100%;
   padding: 10px 14px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ds-borda);
   font-size: 0.9rem;
-  color: #111;
+  color: var(--ds-texto);
   background: #fff;
   outline: none;
   resize: vertical;
@@ -163,14 +158,14 @@
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
-  border-color: #111;
+  border-color: var(--ds-texto);
 }
 
 .field input:disabled,
 .field select:disabled,
 .field textarea:disabled {
-  background: #f4f6f8;
-  color: #aaa;
+  background: var(--ds-fundo);
+  color: var(--ds-texto-fraco);
   cursor: not-allowed;
 }
 
@@ -180,29 +175,27 @@
   gap: 10px;
   margin-top: 8px;
   padding-top: 16px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--ds-borda);
 }
 
 .actions button[type="button"] {
-  font-family: 'Poppins', sans-serif;
   flex: 1;
   padding: 10px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: #f4f6f8;
-  color: #111;
+  border: 1px solid var(--ds-borda);
+  background: var(--ds-fundo);
+  color: var(--ds-texto);
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
 }
 
 .actions button[type="submit"] {
-  font-family: 'Poppins', sans-serif;
   flex: 1;
   padding: 10px;
   border-radius: 8px;
   border: none;
-  background: #111;
+  background: var(--ds-texto);
   color: #fff;
   font-size: 0.85rem;
   font-weight: 500;

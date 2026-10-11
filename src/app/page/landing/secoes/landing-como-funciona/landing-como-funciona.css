@@ -1,0 +1,32 @@
+:host { display: block; }
+
+.secao {
+  background: var(--lp-areia);
+  border-top: 1px solid var(--lp-borda);
+  border-bottom: 1px solid var(--lp-borda);
+}
+.conteudo { padding-top: 96px; padding-bottom: 96px; }
+.cabeca { max-width: 640px; margin-bottom: 48px; }
+.cabeca .lp-titulo { margin-bottom: 0; }
+
+.passos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 20px;
+}
+.passo {
+  background: var(--lp-fundo);
+  border-radius: 18px;
+  padding: 32px;
+  border: 1px solid var(--lp-borda-forte);
+}
+.numero { font-weight: 800; font-size: 44px; color: var(--lp-verde); line-height: 1; }
+.passo-titulo { margin: 20px 0 8px; font-weight: 700; font-size: 20px; color: var(--lp-tinta); }
+.passo-texto { margin: 0; font-size: 15px; line-height: 1.6; color: var(--lp-texto); }
+
+@media (max-width: 520px) {
+  .conteudo { padding-top: 64px; padding-bottom: 64px; }
+}

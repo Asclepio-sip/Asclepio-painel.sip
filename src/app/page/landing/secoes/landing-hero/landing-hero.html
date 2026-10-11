@@ -1,0 +1,91 @@
+<section id="topo" class="lp-container hero">
+  <div class="texto">
+    <span class="selo">
+      <span class="selo-ponto"></span>
+      PDV + Estoque + Catálogo online
+    </span>
+    <h1 class="titulo lp-sora">Venda no balcão e online com um só sistema.</h1>
+    <p class="subtitulo">
+      O Asclepio é o ponto de venda que controla o estoque do seu estabelecimento e já cria o seu
+      mini catálogo online, todo configurado. Cadastrou o produto, ele aparece no caixa e na sua
+      vitrine digital.
+    </p>
+    <div class="botoes">
+      <a href="#planos" class="lp-btn lp-btn-primary botao-principal" (click)="ir($event, 'planos')">
+        Começar grátis
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+      </a>
+      <a href="#como-funciona" class="lp-btn lp-btn-ghost lp-btn-outline botao-secundario" (click)="ir($event, 'como-funciona')">
+        Ver como funciona
+      </a>
+    </div>
+    <div class="vantagens">
+      @for (v of vantagens; track v) {
+        <span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#008E51" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+          {{ v }}
+        </span>
+      }
+    </div>
+  </div>
+
+  <!-- Prévia: PDV + catálogo no celular -->
+  <div class="previa" role="img" aria-label="Prévia do painel do Asclepio e do catálogo online">
+    <div class="pdv">
+      <div class="pdv-topo">
+        <span class="lp-sora pdv-titulo">PDV · Caixa 01</span>
+        <span class="pdv-status">Caixa aberto</span>
+      </div>
+      <div class="pdv-metricas">
+        @for (m of metricas; track m.rotulo) {
+          <div class="pdv-metrica">
+            <div class="pdv-metrica-rotulo">{{ m.rotulo }}</div>
+            <div class="pdv-metrica-valor lp-sora" [class.alerta]="m.alerta">{{ m.valor }}</div>
+          </div>
+        }
+      </div>
+      <div class="pdv-itens">
+        @for (item of itensCaixa; track item.nome) {
+          <div class="pdv-item">
+            <span>{{ item.nome }}</span>
+            <span class="pdv-item-qtd">{{ item.qtd }}</span>
+          </div>
+        }
+      </div>
+      <div class="pdv-total">
+        <span class="pdv-total-rotulo">Total</span>
+        <span class="lp-sora pdv-total-valor">R$ 101,70</span>
+      </div>
+    </div>
+
+    <div class="celular">
+      <div class="celular-tela">
+        <div class="celular-topo">
+          <div class="celular-link">asclepio.app/padaria-do-ze</div>
+          <div class="lp-sora celular-loja">Padaria do Zé</div>
+        </div>
+        <div class="celular-grade">
+          @for (p of produtosCelular; track p.nome) {
+            <div class="celular-card">
+              <div class="celular-foto" [style.background]="p.cor"></div>
+              <div class="celular-nome">{{ p.nome }}</div>
+              <div class="celular-preco">{{ p.preco }}</div>
+            </div>
+          }
+        </div>
+        <div class="celular-carrinho">Ver carrinho · 3 itens</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="faixa" aria-label="Destaques">
+  <div class="lp-container faixa-grade">
+    @for (d of destaques; track d.titulo) {
+      <div>
+        <div class="faixa-titulo lp-sora">{{ d.titulo }}</div>
+        <div class="faixa-texto">{{ d.texto }}</div>
+      </div>
+    }
+  </div>
+</section>

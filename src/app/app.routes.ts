@@ -22,13 +22,13 @@ import { RelacionarBairroLoja } from './page/gestao-de-loja/relacionar-bairro-lo
 import { ListaDeCliente } from './page/cliente/lista-de-cliente/lista-de-cliente';
 import { PermissionGroups } from './core/security/permission-groups';
 import { LandingComponent } from './page/landing/landing';
-import { CadastroComponent } from './page/cadastro/cadastro';
 export const routes: Routes = [
 
   { path: '', redirectTo: 'landing', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, canActivate: [publicGuard] },
   { path: 'landing', component: LandingComponent, canActivate: [publicGuard] },
-  { path: 'cadastro', component: CadastroComponent, canActivate: [publicGuard] },
+  // Empresa bloqueada por falta de pagamento (painel SaaS)
+  { path: 'acesso-bloqueado', loadComponent: () => import('./page/acesso-bloqueado/acesso-bloqueado').then(m => m.AcessoBloqueado) },
   // Catálogo público da loja: sem guard — qualquer pessoa, logada ou não, pode abrir.
   { path: 'catalogo/:nomeLink/acompanhar', loadComponent: () => import('./page/catalogo-acompanhar/catalogo-acompanhar').then(m => m.CatalogoAcompanhar) },
   { path: 'catalogo/:nomeLink/lojas/:lojaId/finalizar', loadComponent: () => import('./page/catalogo-finalizar/catalogo-finalizar').then(m => m.CatalogoFinalizar) },

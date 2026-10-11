@@ -1,0 +1,69 @@
+<section id="planos" class="lp-container planos">
+  <div class="cabeca">
+    <p class="lp-eyebrow">Planos</p>
+    <h2 class="lp-titulo">Escolha o plano do tamanho do seu negócio</h2>
+    <p class="lp-lead">Comece grátis e mude de plano quando quiser.</p>
+  </div>
+
+  @if (carregando()) {
+    <div class="grade">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="card esqueleto" aria-hidden="true"></div>
+      }
+    </div>
+  } @else if (erro()) {
+    <div class="mensagem">
+      <p>Não foi possível carregar os planos agora.</p>
+      <button type="button" class="lp-btn lp-btn-ghost lp-btn-outline botao" (click)="carregar()">Tentar novamente</button>
+    </div>
+  } @else if (planos().length === 0) {
+    <div class="mensagem">
+      <p>Os planos estarão disponíveis em breve.</p>
+    </div>
+  } @else {
+    <div class="grade">
+      @for (plano of planos(); track plano.id) {
+        <article class="card" [class.destaque]="plano.maisPopular">
+          @if (plano.maisPopular) {
+            <span class="selo">Mais escolhido</span>
+          }
+          <div>
+            <h3 class="nome lp-sora">{{ plano.nome }}</h3>
+            <p class="descricao">{{ plano.descricao }}</p>
+          </div>
+
+          <div class="preco">
+            <span class="valor lp-sora">{{ preco(plano.preco) }}</span>
+            <span class="periodo">/mês</span>
+          </div>
+
+          <a
+            [href]="linkCriarConta"
+            target="_blank"
+            rel="noopener"
+            class="lp-btn botao"
+            [class.lp-btn-primary]="plano.maisPopular"
+            [class.lp-btn-ghost]="!plano.maisPopular"
+            [class.lp-btn-outline]="!plano.maisPopular"
+          >{{ textoBotao(plano) }}</a>
+
+          <ul class="lp-checklist recursos">
+            @for (r of plano.recursos; track $index) {
+              <li [class.fora]="!r.incluido">
+                @if (r.incluido) {
+                  <svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
+                } @else {
+                  <svg class="x" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+                }
+                <span>
+                  <span class="lp-sr-only">{{ r.incluido ? 'Inclui:' : 'Não inclui:' }}</span>
+                  {{ textoRecurso(r) }}
+                </span>
+              </li>
+            }
+          </ul>
+        </article>
+      }
+    </div>
+  }
+</section>

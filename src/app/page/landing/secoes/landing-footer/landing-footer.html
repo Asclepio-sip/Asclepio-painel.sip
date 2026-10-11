@@ -1,0 +1,30 @@
+<footer class="lp-container rodape">
+  <div class="topo">
+    <div class="marca-bloco">
+      <div class="marca">
+        <span class="marca-icone">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+        </span>
+        <span class="marca-nome lp-sora">Asclepio</span>
+      </div>
+      <p class="descricao">PDV, controle de estoque e catálogo online para quem vende no balcão e na internet.</p>
+    </div>
+
+    <div class="colunas">
+      <nav class="coluna" aria-label="Produto">
+        <div class="coluna-titulo">Produto</div>
+        <a href="#recursos" (click)="ir($event, 'recursos')">Recursos</a>
+        <a href="#catalogo" (click)="ir($event, 'catalogo')">Catálogo online</a>
+        <a href="#planos" (click)="ir($event, 'planos')">Planos</a>
+      </nav>
+      <nav class="coluna" aria-label="Conta">
+        <div class="coluna-titulo">Conta</div>
+        <a [routerLink]="rotaLogin">Entrar</a>
+        <a [href]="linkCriarConta" target="_blank" rel="noopener">Criar conta</a>
+        <a href="#faq" (click)="ir($event, 'faq')">Dúvidas</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="copyright">Asclepio © {{ anoAtual }} — Todos os direitos reservados</div>
+</footer>

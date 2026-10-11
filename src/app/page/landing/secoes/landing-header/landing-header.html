@@ -1,0 +1,21 @@
+<header class="cabecalho">
+  <nav class="lp-container barra" aria-label="Principal">
+    <a href="#topo" class="marca" (click)="ir($event, 'topo')">
+      <span class="marca-icone">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+      </span>
+      <span class="marca-nome lp-sora">Asclepio</span>
+    </a>
+
+    <div class="links">
+      @for (link of links; track link.id) {
+        <a [href]="'#' + link.id" (click)="ir($event, link.id)">{{ link.texto }}</a>
+      }
+    </div>
+
+    <div class="acoes">
+      <a [routerLink]="rotaLogin" class="lp-btn lp-btn-ghost botao">Entrar</a>
+      <a [href]="linkCriarConta" target="_blank" rel="noopener" class="lp-btn lp-btn-primary botao">Criar conta grátis</a>
+    </div>
+  </nav>
+</header>

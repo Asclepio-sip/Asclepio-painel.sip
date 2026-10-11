@@ -2,7 +2,8 @@ import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { CatalogoOnlineService } from '../../service/catalogo-online.service';
+import { CatalogoDesativado } from './catalogo-desativado';
+import { catalogoDesativado, CatalogoOnlineService } from '../../service/catalogo-online.service';
 import {
   CatalogoCarrinhoItem, CatalogoCategoria, CatalogoLoja, CatalogoProduto, DESIGN_PADRAO, DesignCatalogo, gravarCarrinho, lerCarrinho, linkWhatsapp, normalizarDesign, variaveisTema
 } from '../../models/catalogo-online.model';
@@ -11,6 +12,7 @@ import { CatalogoCarrinhoComponent } from '../../shared/catalogo-carrinho/catalo
 
 type EstadoCatalogo = 'carregando' | 'ok' | 'indisponivel' | 'erro';
 
+
 /**
  * Página pública (sem login) do catálogo: /catalogo/:nomeLink.
  * O link tem só o nome; a loja é escolhida aqui (automática quando a empresa tem uma só).
@@ -18,7 +20,7 @@ type EstadoCatalogo = 'carregando' | 'ok' | 'indisponivel' | 'erro';
 @Component({
   selector: 'app-catalogo-publico',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, CatalogoRodape, CatalogoCarrinhoComponent],
+  imports: [CommonModule, FormsModule, RouterLink, CatalogoRodape, CatalogoCarrinhoComponent, CatalogoDesativado],
   templateUrl: './catalogo-publico.html',
   styleUrl: './catalogo-publico.css',
 })
@@ -30,6 +32,8 @@ export class CatalogoPublico implements OnInit, OnDestroy {
   design: DesignCatalogo = { ...DESIGN_PADRAO };
   lojaId: number | null = null;
   estado: EstadoCatalogo = 'carregando';
+  /** Indisponível porque a empresa foi bloqueada (não porque o link não existe). */
+  desativado = false;
 
   produtos: CatalogoProduto[] = [];
   categorias: CatalogoCategoria[] = [];
@@ -146,7 +150,8 @@ export class CatalogoPublico implements OnInit, OnDestroy {
         this.buscar(0);
       },
       error: err => {
-        this.estado = err.status === 404 ? 'indisponivel' : 'erro';
+        this.desativado = catalogoDesativado(err);
+        this.estado = err.status === 404 || this.desativado ? 'indisponivel' : 'erro';
         this.cd.detectChanges();
       }
     });
@@ -264,7 +269,8 @@ export class CatalogoPublico implements OnInit, OnDestroy {
       },
       error: err => {
         // 404 = nome não existe, catálogo desligado ou loja de outra empresa (sempre igual, de propósito)
-        this.estado = err.status === 404 ? 'indisponivel' : 'erro';
+        this.desativado = catalogoDesativado(err);
+        this.estado = err.status === 404 || this.desativado ? 'indisponivel' : 'erro';
         this.produtos = [];
         this.cd.detectChanges();
       }

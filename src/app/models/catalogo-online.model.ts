@@ -210,6 +210,8 @@ export interface DesignCatalogo {
   telefoneSuporte: string | null;
   /** Botão flutuante do WhatsApp na página pública. Ligado exige `whatsapp` (senão 400). */
   mostrarBotaoWhatsapp: boolean;
+  /** Botão "Enviar pedido pelo WhatsApp" depois de finalizar o pedido. Ligado exige `whatsapp` (senão 400). */
+  enviarPedidoWhatsapp: boolean;
   /** Instagram/Facebook/TikTok no rodapé. O backend trata null como ligado. */
   mostrarIconesRedesSociais: boolean;
   /** #RRGGBB; null = cor padrão (ver CORES_PADRAO). */
@@ -302,6 +304,7 @@ export const DESIGN_PADRAO: DesignCatalogo = {
   emailSuporte: null,
   telefoneSuporte: null,
   mostrarBotaoWhatsapp: false,
+  enviarPedidoWhatsapp: false,
   mostrarIconesRedesSociais: true,
   corPrimaria: null,
   corSecundaria: null,
@@ -318,6 +321,7 @@ export function normalizarDesign(d: Partial<DesignCatalogo> | null | undefined):
     modeloCard: d?.modeloCard ?? 'PADRAO',
     modeloNavbar: d?.modeloNavbar ?? 'PADRAO',
     mostrarBotaoWhatsapp: d?.mostrarBotaoWhatsapp ?? false,
+    enviarPedidoWhatsapp: d?.enviarPedidoWhatsapp ?? false,
     mostrarIconesRedesSociais: d?.mostrarIconesRedesSociais ?? true,
   };
 }
