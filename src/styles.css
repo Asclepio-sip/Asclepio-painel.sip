@@ -13,6 +13,14 @@
   --ds-primaria-sombra: rgba(0, 142, 81, .28);
   --ds-foco: 0 0 0 4px rgba(0, 142, 81, .14);
 
+  /* Menu lateral (rail verde-escuro) */
+  --ds-rail: #013A21;
+  --ds-rail-texto: #9FBFAE;
+  --ds-rail-texto-forte: #FFFFFF;
+  --ds-rail-hover: rgba(255, 255, 255, .08);
+  --ds-rail-ativo: rgba(134, 216, 177, .18);
+  --ds-rail-ativo-borda: rgba(134, 216, 177, .25);
+
   /* Superfícies */
   --ds-fundo: #FCFAF6;
   --ds-superficie: #FFFFFF;

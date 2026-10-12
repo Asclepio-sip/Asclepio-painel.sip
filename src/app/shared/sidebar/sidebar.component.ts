@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Component, signal } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 import { AuthService } from '../../service/auth.service';
 import { PermissionGroups } from '../../core/security/permission-groups';
+import { PlanoService } from '../../service/plano.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,67 +15,41 @@ import { PermissionGroups } from '../../core/security/permission-groups';
 })
 export class SidebarComponent {
 
-  estoqueOpen = false;
   estoquePermissions = PermissionGroups.estoque;
-  pedidoOpen = false;
   pedidoPermissions = PermissionGroups.pedidos;
   gestaoPermissions = PermissionGroups.lojas;
   configContaPermissions = PermissionGroups.configConta;
 
-  showLogoutModal = false;
-  closing = false;
+  /** Plano inclui o cadastro de clientes. Começa true: se a consulta falhar, o backend ainda barra. */
+  cadastroClientes = signal(true);
 
   constructor(
     public authService: AuthService,
-    private router: Router
+    private planoService: PlanoService
   ) {
-    this.estoqueOpen = this.isEstoqueRoute();
-    this.pedidoOpen = this.isPedidoRoute();
+    if (this.authService.isAuthenticated()) {
+      this.planoService.atual().subscribe({
+        next: plano => this.cadastroClientes.set(plano.cadastroClientes),
+        error: () => {}
+      });
+    }
   }
 
-  toggleEstoque() {
-    this.estoqueOpen = !this.estoqueOpen;
-  }
-
-  togglePedido() {
-    this.pedidoOpen = !this.pedidoOpen;
-  }
-
-  private isEstoqueRoute() {
-    return [
-      '/addestoque',
-      '/atualizar-estoque',
-      '/relatorio-estoque'
-    ].some(route => this.router.url.startsWith(route));
-  }
-
-  private isPedidoRoute() {
-    return [
-      '/pedido',
-      '/pedidos',
-      '/fazer-pedido'
-    ].some(route => this.router.url.startsWith(route));
-  }
-
-  abrirLogout() {
-    this.showLogoutModal = true;
-  }
-
-  cancelarLogout() {
-    this.closing = true;
-
-    setTimeout(() => {
-      this.showLogoutModal = false;
-      this.closing = false;
-    }, 250);
-  }
-
-  confirmarLogout() {
-    this.closing = true;
-
-    setTimeout(() => {
-      this.authService.logout();
-      location.href = '/';
-    }, 250);
+  sair() {
+    Swal.fire({
+      title: 'Sair da conta?',
+      text: 'Você precisará fazer login novamente.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sair',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#5C6862'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.authService.logout();
+        location.href = '/';
+      }
+    });
   }
 }

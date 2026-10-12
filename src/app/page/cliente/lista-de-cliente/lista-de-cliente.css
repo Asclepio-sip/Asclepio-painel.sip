@@ -75,3 +75,11 @@
 
 @media (max-width: 900px) { .content-grid { grid-template-columns: 1fr; } }
 @media (max-width: 600px) { .cliente-container { padding: 20px 16px; } }
+
+/* Plano sem cadastro de clientes */
+.plano-bloqueado .card-icon { background: #fffbeb; }
+.plano-bloqueado-corpo { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 16px; }
+.plano-bloqueado-corpo p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--ds-texto-2); }
+.btn-trocar-plano { align-self: flex-start; padding: 10px 16px; border-radius: 10px; background: var(--ds-primaria); color: #fff; font-size: 14px; font-weight: 600; text-decoration: none; }
+.btn-trocar-plano:hover { background: var(--ds-primaria-escura); color: #fff; }
+.btn-editar:disabled { opacity: .45; cursor: not-allowed; }

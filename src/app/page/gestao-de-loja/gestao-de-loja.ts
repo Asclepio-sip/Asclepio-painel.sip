@@ -1,9 +1,12 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ProductService } from '../../service/product.service';
 import { RouterModule } from '@angular/router';
 import { ListaDeLoja } from "./lista-de-loja/lista-de-loja";
 import { forkJoin } from 'rxjs';
 import { LojaService, PageResponse, Loja } from '../../service/loja/loja.service';
+import { PlanoService } from '../../service/plano.service';
+import { PlanoEmpresa } from '../../models/plano.model';
+import { LINK_WHATSAPP } from '../landing/landing-navegacao';
 
 @Component({
   selector: 'app-gestao-de-loja',
@@ -11,78 +14,63 @@ import { LojaService, PageResponse, Loja } from '../../service/loja/loja.service
   templateUrl: './gestao-de-loja.html',
   styleUrl: './gestao-de-loja.css',
 })
-export class GestaoDeLoja {
+export class GestaoDeLoja implements OnInit {
 
-  totalLojas = 0;
-  totalEntrega = 0;
-  totalRetirada = 0;
-  totalAmbos = 0;
+  private productService = inject(ProductService);
+  private lojaService = inject(LojaService);
+  private planoService = inject(PlanoService);
 
+  // Signals: a app é zoneless.
+  totalEntrega = signal(0);
+  totalRetirada = signal(0);
+  totalAmbos = signal(0);
 
-  // ðŸ”¹ FORM PRODUTO
-  name = '';
-  valor!: number;
-  desconto = 0;
-  imagemUrl = '';
-  categoriaId!: number;
-  temEmEstoque = true;
-
-  // ðŸ”¹ CONTROLE MODAIS
-  showProductModal = false;
-  showCategoryModal = false;
-
-  constructor(
-    private productService: ProductService,
-    private lojaService: LojaService
-  ) {}
+  /** null enquanto carrega ou se falhar (aí não trava o botão: o backend valida de qualquer jeito). */
+  plano = signal<PlanoEmpresa | null>(null);
+  readonly linkTrocarPlano = LINK_WHATSAPP;
 
   ngOnInit() {
     this.carregarResumoLojas();
+    this.carregarPlano();
   }
 
-
-  
-  // ðŸ”¥ MODAL PRODUTO
-  openProductModal() {
-    this.showProductModal = true;
-  }
-
-  closeProductModal() {
-    this.showProductModal = false;
-  }
-
-  // ðŸ”¥ MODAL CATEGORIA
-  openCategoryModal() {
-    this.showCategoryModal = true;
-  }
-
-  closeCategoryModal() {
-    this.showCategoryModal = false;
-  }
-
-  // ðŸ” PESQUISA
   onSearch(value: string) {
     this.productService.setSearch(value);
   }
 
+  /** "1/1", "2/3" ou "2/∞". */
+  get usoLojas(): string {
+    const lojas = this.plano()?.lojas;
+    if (!lojas) return '—';
+    return `${lojas.usado}/${lojas.limite ?? '∞'}`;
+  }
+
+  get limiteLojasAtingido(): boolean {
+    return this.plano()?.lojas.atingido ?? false;
+  }
+
+  carregarPlano() {
+    this.planoService.atual().subscribe({
+      next: plano => this.plano.set(plano),
+      error: () => this.plano.set(null),
+    });
+  }
+
   carregarResumoLojas() {
     forkJoin({
-      total: this.lojaService.listar(0, 1),
       entrega: this.lojaService.listar(0, 1, { tipoAtendimento: 'ENTREGA' }),
       retirada: this.lojaService.listar(0, 1, { tipoAtendimento: 'RETIRADA' }),
       ambos: this.lojaService.listar(0, 1, { tipoAtendimento: 'AMBOS' }),
     }).subscribe({
-      next: ({ total, entrega, retirada, ambos }) => {
-        this.totalLojas = this.obterTotalElementos(total);
-        this.totalEntrega = this.obterTotalElementos(entrega);
-        this.totalRetirada = this.obterTotalElementos(retirada);
-        this.totalAmbos = this.obterTotalElementos(ambos);
+      next: ({ entrega, retirada, ambos }) => {
+        this.totalEntrega.set(this.obterTotalElementos(entrega));
+        this.totalRetirada.set(this.obterTotalElementos(retirada));
+        this.totalAmbos.set(this.obterTotalElementos(ambos));
       },
       error: () => {
-        this.totalLojas = 0;
-        this.totalEntrega = 0;
-        this.totalRetirada = 0;
-        this.totalAmbos = 0;
+        this.totalEntrega.set(0);
+        this.totalRetirada.set(0);
+        this.totalAmbos.set(0);
       }
     });
   }
@@ -90,6 +78,4 @@ export class GestaoDeLoja {
   private obterTotalElementos(response: PageResponse<Loja>): number {
     return response.page?.totalElements ?? response.totalElements ?? response.content?.length ?? 0;
   }
-
-  
 }
