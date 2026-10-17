@@ -1,147 +1,77 @@
-<aside class="sidebar">
+<nav class="rail" aria-label="Menu principal">
 
-  <nav class="menu">
+  @if (authService.isAuthenticated()) {
 
-    @if (authService.isAuthenticated()) {
-
-      <!-- TÍTULO DA SIDEBAR -->
-      <div class="sidebar-title">
-        <span class="sidebar-title-text">Menu</span>
-        <span class="sidebar-title-accent">Administrativo</span>
-      </div>
-
-      <!-- ── SEÇÃO: GESTÃO ── -->
-      <div class="nav-section">
-        @if (authService.hasAnyPermission(gestaoPermissions) || authService.hasAnyPermission(authService.PERMISSIONS.USUARIO)) {
-          <span class="section-label">Gestão</span>
-
-          <a routerLink="/loja" routerLinkActive="active">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10"/>
-            </svg>
-            Gestão
-          </a>
-        }
-      </div>
-
-      <!-- ── SEÇÃO: CATÁLOGO ── -->
-      @if (authService.hasAnyPermission(authService.PERMISSIONS.PRODUTO)) {
-        <div class="nav-section">
-          <span class="section-label">Catálogo</span>
-
-          <a routerLink="/products" routerLinkActive="active">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
-            </svg>
-            Produtos
-          </a>
-
-          @if (authService.hasAnyPermission(configContaPermissions)) {
-          <a routerLink="/catalogo-design" routerLinkActive="active">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.34M11 7.34l1.66-1.66a2 2 0 012.83 0l2.83 2.83a2 2 0 010 2.83L9.6 19.07M7 17h.01"/>
-            </svg>
-            Personalizar Catálogo
-          </a>
-          }
-        </div>
-      }
-
-      <!-- ── SEÇÃO: CLIENTES ── -->
-      <div class="nav-section">
-        <span class="section-label">Clientes</span>
-
-        <a routerLink="/clientes" routerLinkActive="active">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1M9 20H4v-2a4 4 0 014-4h1m4-4a4 4 0 100-8 4 4 0 000 8z"/>
-          </svg>
-          Clientes
-        </a>
-      </div>
-
-      <!-- ── SEÇÃO: OPERAÇÕES ── -->
-      <div class="nav-section">
-        <span class="section-label">Operações</span>
-
-        @if (authService.hasAnyPermission(pedidoPermissions)) {
-          <button
-            type="button"
-            class="submenu-toggle"
-            [class.open]="pedidoOpen"
-            (click)="togglePedido()">
-            <span class="menu-item-content">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-              </svg>
-              Pedidos
-            </span>
-            <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-
-          @if (pedidoOpen) {
-            <div class="submenu">
-              <a routerLink="/pedido" routerLinkActive="active" class="submenu-link">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
-                </svg>
-                Painel de Pedidos
-              </a>
-              <a routerLink="/fazer-pedido" routerLinkActive="active" class="submenu-link">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Fazer Pedido
-              </a>
-            </div>
-          }
-        }
-
-        @if (authService.hasAnyPermission(estoquePermissions)) {
-          <button
-            type="button"
-            class="submenu-toggle"
-            [class.open]="estoqueOpen"
-            (click)="toggleEstoque()">
-            <span class="menu-item-content">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-              </svg>
-              Estoque
-            </span>
-            <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-            </svg>
-          </button>
-
-          @if (estoqueOpen) {
-            <div class="submenu">
-              <a routerLink="/addestoque" routerLinkActive="active" class="submenu-link">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Novo Estoque
-              </a>
-              <a routerLink="/atualizar-estoque" routerLinkActive="active" class="submenu-link">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                </svg>
-                Atualizar Estoque
-              </a>
-              <a routerLink="/relatorio-estoque" routerLinkActive="active" class="submenu-link">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
-                Relatório de Estoque
-              </a>
-            </div>
-          }
-        }
-      </div>
-
+    @if (authService.hasAnyPermission(dashboardPermissions)) {
+      <a routerLink="/dashboard" routerLinkActive="active" class="rail-item" title="Dashboard: lucro e gastos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="5" rx="1"/><rect x="12" y="8" width="3" height="9" rx="1"/><rect x="17" y="5" width="3" height="12" rx="1"/></svg>
+        <span>Dashboard</span>
+      </a>
     }
 
-  </nav>
-</aside>
+    @if (authService.hasAnyPermission(gestaoPermissions) || authService.hasAnyPermission(authService.PERMISSIONS.USUARIO)) {
+      <a routerLink="/loja" routerLinkActive="active" class="rail-item" title="Gestão de lojas e equipe">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span>Gestão</span>
+      </a>
+    }
+
+    @if (authService.hasAnyPermission(authService.PERMISSIONS.PRODUTO)) {
+      <a routerLink="/products" routerLinkActive="active" class="rail-item" title="Produtos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+        <span>Produtos</span>
+      </a>
+
+      @if (authService.hasAnyPermission(configContaPermissions)) {
+        <a routerLink="/catalogo-design" routerLinkActive="active" class="rail-item" title="Personalizar catálogo online">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/></svg>
+          <span>Catálogo</span>
+        </a>
+      }
+    }
+
+    <!-- Só aparece se o plano incluir o cadastro de clientes -->
+    @if (cadastroClientes()) {
+      <a routerLink="/clientes" routerLinkActive="active" class="rail-item" title="Clientes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>
+        <span>Clientes</span>
+      </a>
+    }
+
+    @if (authService.hasAnyPermission(pedidoPermissions)) {
+      <a routerLink="/pedido" routerLinkActive="active" class="rail-item" title="Painel de pedidos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 13H6z"/><path d="M9 8V6a3 3 0 016 0v2"/></svg>
+        <span>Pedidos</span>
+      </a>
+
+      <a routerLink="/fazer-pedido" routerLinkActive="active" class="rail-item" title="Fazer pedido">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6L5 3H2"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg>
+        <span>Fazer pedido</span>
+      </a>
+    }
+
+    @if (authService.hasAnyPermission(estoquePermissions)) {
+      <a routerLink="/addestoque" routerLinkActive="active" class="rail-item" title="Novo estoque">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v10a2 2 0 002 2h10a2 2 0 002-2V9"/><path d="M12 12v6M9 15h6"/></svg>
+        <span>Novo estoque</span>
+      </a>
+
+      <a routerLink="/atualizar-estoque" routerLinkActive="active" class="rail-item" title="Atualizar estoque">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 01-15.5 6.2L3 16"/><path d="M3 12a9 9 0 0115.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M3 21v-5h5"/></svg>
+        <span>Atualizar estoque</span>
+      </a>
+
+      <a routerLink="/relatorio-estoque" routerLinkActive="active" class="rail-item" title="Relatório de estoque">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><path d="M5 16l4-5 4 3 6-8"/><path d="M15 6h4v4"/></svg>
+        <span>Relatório</span>
+      </a>
+    }
+
+    <div class="rail-espaco"></div>
+
+    <button type="button" class="rail-item" title="Sair da conta" (click)="sair()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      <span>Sair</span>
+    </button>
+  }
+</nav>

@@ -44,7 +44,10 @@
 
         <div class="form-group">
           <label class="form-label">Usuario</label>
-          <input class="form-input" type="text" [(ngModel)]="filtros.usuario" placeholder="Buscar usuario..." />
+          <select class="form-input" [(ngModel)]="filtros.usuarioId">
+            <option [ngValue]="null">Todos os usuarios</option>
+            <option *ngFor="let usuario of usuarios" [ngValue]="usuario.id">{{ usuario.nome }}</option>
+          </select>
         </div>
 
         <div class="form-group">

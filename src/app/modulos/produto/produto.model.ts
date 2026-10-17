@@ -32,6 +32,9 @@ export interface ProdutoCompletoRequest {
   lojaId: number;
   quantidade: number;
   precoVenda: number;
+  precoCusto?: number | null;
+  estoqueMinimo?: number | null;
+  mostrarNoCatalogo?: boolean;
 }
 
 export interface ProdutoCompletoResponse {

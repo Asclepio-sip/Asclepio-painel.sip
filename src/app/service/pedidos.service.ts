@@ -46,6 +46,8 @@ export interface Pedido {
   totalComFrete?: number;
   freteGratis?: boolean;
   tipoEntrega?: string;
+  /** BALCAO | RETIRADA_NA_LOJA | ENTREGA_PROPRIA | ENTREGA_TERCEIRIZADA (null em pedido antigo). */
+  tipoAtendimento?: string | null;
   totalFinal?: number;
 }
 
@@ -82,6 +84,16 @@ export interface PedidoFiltro {
   page?: number;
   size?: number;
   sort?: string;
+}
+
+/** GET /pedidos/contadores: pedidos de cada status com os filtros da lista. */
+export interface ContadoresPedido {
+  todos: number;
+  aguardando: number;
+  separacao: number;
+  emTransito: number;
+  concluido: number;
+  cancelado: number;
 }
 
 export interface PageResponse<T> {
@@ -147,10 +159,32 @@ export class PedidosService {
     this.adicionarParametro(params, 'freteGratis', filtro.freteGratis);
     this.adicionarParametro(params, 'somenteHoje', filtro.somenteHoje);
 
-    return this.http.get<PageResponse<any>>(
+    // O backend manda a paginação em "page" (VIA_DTO); aceita também o formato antigo
+    return this.http.get<any>(
       this.pedidosApi,
       { params }
+    ).pipe(
+      map(res => ({
+        ...res,
+        content: res.content ?? [],
+        totalElements: res.page?.totalElements ?? res.totalElements ?? 0,
+        totalPages: res.page?.totalPages ?? res.totalPages ?? 0,
+        size: res.page?.size ?? res.size ?? 0,
+        number: res.page?.number ?? res.number ?? 0
+      }))
     );
+  }
+
+  /** Contadores dos cards (o status do filtro é ignorado). */
+  contadores(filtro: PedidoFiltro = {}): Observable<ContadoresPedido> {
+    const params: Record<string, string> = {};
+
+    this.adicionarParametro(params, 'lojaId', filtro.lojaId);
+    this.adicionarParametro(params, 'nomeCliente', filtro.nomeCliente);
+    this.adicionarParametro(params, 'tipoEntrega', filtro.tipoEntrega);
+    this.adicionarParametro(params, 'somenteHoje', filtro.somenteHoje);
+
+    return this.http.get<ContadoresPedido>(`${this.pedidosApi}/contadores`, { params });
   }
 
   geraPdf(

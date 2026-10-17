@@ -1,34 +1,16 @@
 <div class="pagamento-container">
 
-  <!-- Header -->
-  <div class="page-header">
-    <div>
-      <div class="breadcrumb">ADMIN / GESTÃO DE LOJA / <span>FORMAS DE PAGAMENTO</span></div>
-      <h1 class="page-title">Formas de Pagamento</h1>
-      <p class="page-subtitle">Escolha quais formas de pagamento sua loja aceita hoje</p>
-    </div>
-    <div class="header-actions">
-      <button class="btn-back" [routerLink]="['/editar-loja', lojaId]">
-        Editar dados da loja
-      </button>
-      <button class="btn-back" [routerLink]="['/loja', lojaId, 'formas-pagamento']">
-        Editar forma de pagamento
-      </button>
-      <button class="btn-back" [routerLink]="['/loja', lojaId, 'bairros']">
-        Configurar frete por bairro
-      </button>
-      <button class="btn-back" (click)="voltar()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-        Voltar
-      </button>
-    </div>
-  </div>
+  <app-loja-cabecalho
+    [lojaId]="lojaId"
+    titulo="Formas de pagamento"
+    subtitulo="Escolha quais formas de pagamento a loja aceita">
+  </app-loja-cabecalho>
 
   <!-- Card -->
   <div class="card">
     <div class="card-header">
       <div class="card-icon">
-        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#008E51" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
       </div>
       <div>
         <p class="card-title">Formas Aceitas</p>

@@ -75,7 +75,7 @@
             <select [(ngModel)]="clienteSelecionadoId" [disabled]="carregandoClientes">
               <option value="">{{ carregandoClientes ? 'Carregando...' : 'Selecione um cliente' }}</option>
               <option *ngFor="let cliente of clientesFiltrados" [value]="cliente.id">
-                {{ cliente.nome }} — {{ cliente.numero }}
+                {{ cliente.nome }} — {{ formatarTelefone(cliente.numero) }}
               </option>
             </select>
           </div>
@@ -94,7 +94,8 @@
           </div>
           <div class="field">
             <span>Número</span>
-            <input type="text" [(ngModel)]="novoCliente.numero" placeholder="Ex: (11) 91234-5678" autocomplete="off" />
+            <input type="tel" inputmode="numeric" maxlength="16" [value]="formatarTelefone(novoCliente.numero)"
+              (input)="digitarTelefone(campoTelefone)" #campoTelefone placeholder="(81) 9 9999-9999" autocomplete="off" />
           </div>
           <div class="field">
             <span>Email</span>

@@ -35,6 +35,9 @@ export class AddProdutoEstoqueLoja implements OnInit, OnDestroy {
   quantidade = 0;
   precoVenda = 0;
   percentualDesconto = 0;
+  precoCusto: number | null = null;
+  estoqueMinimo: number | null = null;
+  mostrarNoCatalogo = true;
 
   paginaAtual = 0;
   totalPaginas = 0;
@@ -166,6 +169,15 @@ export class AddProdutoEstoqueLoja implements OnInit, OnDestroy {
     });
   }
 
+  get precoFinal(): number {
+    return this.precoVenda * (1 - (this.percentualDesconto || 0) / 100);
+  }
+
+  /** Prévia: preço final − custo (o backend calcula igual). Null sem custo. */
+  get lucro(): number | null {
+    return this.precoCusto == null || !this.precoVenda ? null : this.precoFinal - this.precoCusto;
+  }
+
   salvar() {
     if (!this.lojaSelecionada) {
       Swal.fire('Atencao', 'Selecione uma loja.', 'warning');
@@ -187,6 +199,11 @@ export class AddProdutoEstoqueLoja implements OnInit, OnDestroy {
       return;
     }
 
+    if ((this.precoCusto != null && this.precoCusto < 0) || (this.estoqueMinimo != null && this.estoqueMinimo < 0)) {
+      Swal.fire('Atencao', 'Preco de custo e estoque minimo nao podem ser negativos.', 'warning');
+      return;
+    }
+
     const data: EstoqueRequest = {
       produtoId: this.produtoSelecionado.id,
       variacaoId: this.variacaoSelecionada.id,
@@ -195,7 +212,10 @@ export class AddProdutoEstoqueLoja implements OnInit, OnDestroy {
       nomeProduto: this.produtoSelecionado.name,
       quantidade: this.quantidade,
       precoVenda: this.precoVenda,
-      percentualDesconto: this.percentualDesconto || 0
+      percentualDesconto: this.percentualDesconto || 0,
+      precoCusto: this.precoCusto,
+      estoqueMinimo: this.estoqueMinimo,
+      mostrarNoCatalogo: this.mostrarNoCatalogo
     };
 
     this.estoqueService.salvar(data).subscribe({
@@ -259,5 +279,8 @@ export class AddProdutoEstoqueLoja implements OnInit, OnDestroy {
     this.quantidade = 0;
     this.precoVenda = 0;
     this.percentualDesconto = 0;
+    this.precoCusto = null;
+    this.estoqueMinimo = null;
+    this.mostrarNoCatalogo = true;
   }
 }

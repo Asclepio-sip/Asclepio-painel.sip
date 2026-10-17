@@ -19,16 +19,6 @@
 /* Marca */
 .marca { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ds-texto); }
 .marca:hover { color: var(--ds-texto); }
-.marca-icone {
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
-  border-radius: 9px;
-  background: var(--ds-primaria);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 .marca-texto { display: flex; flex-direction: column; gap: 2px; line-height: 1; }
 .marca-nome {
   font-family: var(--ds-fonte-titulo);

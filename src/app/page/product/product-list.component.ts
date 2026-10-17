@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { Product, ProductService } from '../../service/product.service';
 import { Categoria, CategoriaService } from '../../service/categoria.service';
 import { NavbarAdministradorComponent } from "../../shared/navbar-administrador/navbar-administrador";
+import { isWebp, webpParaPng } from '../../shared/imagem/webp-para-png';
 
 const TAMANHO_MAXIMO_IMAGEM = 15 * 1024 * 1024;
 
@@ -286,21 +287,34 @@ export class ProductListComponent implements OnInit {
     });
   }
 
-  trocarImagem(produto: Product, input: HTMLInputElement) {
-    const arquivo = input.files?.[0];
+  async trocarImagem(produto: Product, input: HTMLInputElement) {
+    let arquivo = input.files?.[0];
     input.value = '';
 
     if (!arquivo) {
       return;
     }
 
-    if (!arquivo.type.startsWith('image/')) {
+    if (!arquivo.type.startsWith('image/') && !isWebp(arquivo)) {
       Swal.fire('Atenção', 'Selecione um arquivo de imagem valido.', 'warning');
       return;
     }
 
     if (arquivo.size > TAMANHO_MAXIMO_IMAGEM) {
       Swal.fire('Atenção', 'A imagem enviada é muito grande. Envie um arquivo de até 15MB.', 'warning');
+      return;
+    }
+
+    try {
+      arquivo = await webpParaPng(arquivo);
+    } catch {
+      Swal.fire('Atenção', 'Não foi possível converter a imagem WebP. Tente outra imagem.', 'warning');
+      return;
+    }
+
+    // O PNG convertido costuma ser maior que o WebP original
+    if (arquivo.size > TAMANHO_MAXIMO_IMAGEM) {
+      Swal.fire('Atenção', 'A imagem convertida para PNG passou de 15MB. Envie uma imagem menor.', 'warning');
       return;
     }
 

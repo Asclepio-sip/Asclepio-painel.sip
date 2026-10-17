@@ -13,6 +13,10 @@ export interface EstoqueRequest {
   quantidade: number;
   precoVenda: number;
   percentualDesconto?: number;
+  precoCusto?: number | null;
+  estoqueMinimo?: number | null;
+  /** omitido/null = mostra no catálogo online */
+  mostrarNoCatalogo?: boolean | null;
 }
 
 export interface AtualizarEstoqueRequest {
@@ -20,6 +24,10 @@ export interface AtualizarEstoqueRequest {
   produtoId: number;
   quantidade: number;
   precoVenda?: number;
+  /** null/omitido = não altera */
+  precoCusto?: number | null;
+  estoqueMinimo?: number | null;
+  mostrarNoCatalogo?: boolean | null;
 }
 
 export interface AplicarPromocaoRequest {
@@ -50,6 +58,16 @@ export interface Estoque {
   percentualDesconto: number;
 
   valorFinal: number;
+
+  /** null = custo não informado */
+  precoCusto: number | null;
+  /** valorFinal - precoCusto (calculado no backend); null sem custo */
+  lucro: number | null;
+  estoqueMinimo: number | null;
+  estoqueBaixo: boolean;
+  /** false = escondido do catálogo online */
+  mostrarNoCatalogo: boolean;
+
   Entregar: string;
 }
 
@@ -75,6 +93,9 @@ export interface EstoqueFiltros {
   categoriaId?: number;
   nomeCategoria?: string;
   semEstoque?: boolean;
+  estoqueBaixo?: boolean;
+  /** true = só visíveis no catálogo, false = só escondidos */
+  mostrarNoCatalogo?: boolean;
   page?: number;
   size?: number;
   sort?: string | string[];
@@ -160,6 +181,8 @@ export class EstoqueService {
     params = this.adicionarParametro(params, 'categoriaId', filtros.categoriaId);
     params = this.adicionarParametro(params, 'nomeCategoria', filtros.nomeCategoria);
     params = this.adicionarParametro(params, 'semEstoque', filtros.semEstoque);
+    params = this.adicionarParametro(params, 'estoqueBaixo', filtros.estoqueBaixo);
+    params = this.adicionarParametro(params, 'mostrarNoCatalogo', filtros.mostrarNoCatalogo);
 
     const sort = filtros.sort;
     if (Array.isArray(sort)) {
@@ -233,6 +256,11 @@ private normalizarEstoque(item: any): Estoque {
   return {
     ...item,
     imagemBase64,
+    precoCusto: item.precoCusto ?? null,
+    lucro: item.lucro ?? null,
+    estoqueMinimo: item.estoqueMinimo ?? null,
+    estoqueBaixo: item.estoqueBaixo ?? false,
+    mostrarNoCatalogo: item.mostrarNoCatalogo ?? true,
     imagemUrl:
       item.imagemUrl ??
       item.produto?.imagemUrl ??

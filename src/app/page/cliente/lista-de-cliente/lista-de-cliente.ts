@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Cliente, ClienteService } from '../../../service/cliente.service';
+import { PlanoService } from '../../../service/plano.service';
+import { LINK_WHATSAPP } from '../../landing/landing-navegacao';
 
 @Component({
   selector: 'app-lista-de-cliente',
@@ -35,13 +37,27 @@ export class ListaDeCliente implements OnInit, OnDestroy {
 
   private buscaTimeout: any;
 
+  /** false quando o plano não inclui o cadastro de clientes (o backend também barra criar/editar). */
+  cadastroLiberado = true;
+  nomePlano: string | null = null;
+  readonly linkTrocarPlano = LINK_WHATSAPP;
+
   constructor(
     private clienteService: ClienteService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private planoService: PlanoService
   ) {}
 
   ngOnInit(): void {
     this.carregarClientes();
+    this.planoService.atual().subscribe({
+      next: plano => {
+        this.cadastroLiberado = plano.cadastroClientes;
+        this.nomePlano = plano.plano;
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
   }
 
   ngOnDestroy(): void {
