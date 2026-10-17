@@ -106,10 +106,10 @@
 .status-card.concluido .status-card-value { color: #16a34a; }
 .status-card.concluido.ativo { border-color: #16a34a; background: #f0fdf4; }
 
-.status-card.cancelado { color: var(--ds-primaria); }
-.status-card.cancelado .status-card-icon { background: var(--ds-primaria-clara); color: var(--ds-primaria); }
-.status-card.cancelado .status-card-value { color: var(--ds-primaria); }
-.status-card.cancelado.ativo { border-color: var(--ds-primaria); background: var(--ds-primaria-clara); }
+.status-card.cancelado { color: #dc2626; }
+.status-card.cancelado .status-card-icon { background: #fef2f2; color: #dc2626; }
+.status-card.cancelado .status-card-value { color: #dc2626; }
+.status-card.cancelado.ativo { border-color: #dc2626; background: #fef2f2; }
 
 .status-card.todos { color: var(--ds-texto-2); }
 .status-card.todos .status-card-icon { background: var(--ds-superficie-2); color: var(--ds-texto-2); }
@@ -144,12 +144,52 @@
 .td-data { font-size: 13px; color: var(--ds-texto-2); white-space: nowrap; }
 .td-hora { font-size: 11.5px; color: var(--ds-texto-fraco); }
 
-.status-select { border: none; outline: none; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 600;cursor: pointer; }
-.status-pendente   { background: #fffbeb; color: #d97706; }
-.status-processando { background: #eff6ff; color: #2563eb; }
-.status-enviado    { background: #f5f3ff; color: #7c3aed; }
-.status-entregue   { background: #f0fdf4; color: #16a34a; }
-.status-cancelado  { background: var(--ds-primaria-clara); color: var(--ds-primaria); }
+.td-status { white-space: nowrap; }
+
+/* Cor de cada status (mesma dos cards do topo). Cancelado é vermelho, nunca o verde da marca. */
+.status-pendente    { --status-cor: #b45309; --status-fundo: #fffbeb; --status-borda: #fde68a; }
+.status-processando { --status-cor: #1d4ed8; --status-fundo: #eff6ff; --status-borda: #bfdbfe; }
+.status-enviado     { --status-cor: #6d28d9; --status-fundo: #f5f3ff; --status-borda: #ddd6fe; }
+.status-entregue    { --status-cor: #15803d; --status-fundo: #f0fdf4; --status-borda: #bbf7d0; }
+.status-cancelado   { --status-cor: #b91c1c; --status-fundo: #fef2f2; --status-borda: #fecaca; }
+
+.status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--status-cor); }
+
+/* Botão do status na linha */
+.status-badge {
+  display: inline-flex; align-items: center; gap: 7px; min-width: 132px; height: 30px; padding: 0 10px 0 11px;
+  border: 1px solid var(--status-borda); border-radius: 999px; background: var(--status-fundo); color: var(--status-cor);
+  font: inherit; font-size: 12px; font-weight: 600; line-height: 1; cursor: pointer; transition: box-shadow .15s, border-color .15s;
+}
+.status-badge:hover:not(:disabled) { border-color: var(--status-cor); }
+.status-badge:focus-visible { outline: none; box-shadow: var(--ds-foco); }
+.status-badge[aria-expanded="true"] { border-color: var(--status-cor); box-shadow: 0 0 0 3px var(--status-fundo); }
+.status-badge:disabled { cursor: default; }
+.status-texto { flex: 1; text-align: left; }
+.status-seta { width: 13px; height: 13px; flex-shrink: 0; opacity: .7; transition: transform .15s; }
+.status-badge[aria-expanded="true"] .status-seta { transform: rotate(180deg); }
+
+/* Menu com as opções */
+.status-menu {
+  position: fixed; z-index: 1050; width: 200px; margin: 0; padding: 6px; list-style: none;
+  background: var(--ds-superficie); border: 1px solid var(--ds-borda); border-radius: var(--ds-raio);
+  box-shadow: 0 12px 32px -8px rgba(5, 22, 13, .22), 0 2px 6px rgba(5, 22, 13, .06);
+  animation: status-menu-entrar .12s ease-out;
+}
+.status-menu.acima { transform: translateY(-100%); animation: none; }
+@keyframes status-menu-entrar { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+.status-opcao {
+  display: flex; align-items: center; gap: 10px; width: 100%; height: 36px; padding: 0 10px;
+  border: none; border-radius: var(--ds-raio-sm); background: transparent; color: var(--ds-texto);
+  font: inherit; font-size: 13px; font-weight: 500; text-align: left; cursor: pointer;
+}
+.status-opcao:hover, .status-opcao:focus-visible { outline: none; background: var(--status-fundo); color: var(--status-cor); }
+.status-opcao.atual { background: var(--status-fundo); color: var(--status-cor); font-weight: 600; }
+.status-opcao .status-dot { width: 10px; height: 10px; box-shadow: 0 0 0 3px var(--status-fundo); }
+.status-opcao-texto { flex: 1; }
+.status-check { width: 15px; height: 15px; flex-shrink: 0; }
+.status-menu li:last-child { margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--ds-borda); }
 
 .td-total { font-weight: 600; color: var(--ds-texto); white-space: nowrap; }
 .td-actions { text-align: right; padding-right: 20px; }

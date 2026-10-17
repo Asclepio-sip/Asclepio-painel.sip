@@ -1,14 +1,15 @@
 ﻿import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LojaService, Loja } from '../../../service/loja/loja.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
 import Swal from 'sweetalert2';
+import { LojaCabecalho } from '../loja-cabecalho/loja-cabecalho';
 @Component({
   selector: 'app-editar-loja',
   standalone: true,
-imports: [CommonModule, FormsModule, RouterLink],
+imports: [CommonModule, FormsModule, LojaCabecalho],
   templateUrl: './editar-loja.html',
   styleUrls: ['./editar-loja.css'],
 })
@@ -57,6 +58,12 @@ carregarLoja() {
 }
   ativarEdicao() {
     this.modoEdicao = true;
+  }
+
+  /** Sai do modo de edição descartando o que foi digitado. */
+  cancelarEdicao() {
+    this.modoEdicao = false;
+    this.carregarLoja();
   }
 
   salvar() {

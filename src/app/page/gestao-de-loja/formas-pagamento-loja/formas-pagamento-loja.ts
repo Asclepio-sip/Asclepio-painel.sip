@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { FormaPagamento, FormaPagamentoService, getFormaPagamentoLabel } from '../../../service/loja/forma-pagamento.service';
 
@@ -25,12 +25,14 @@ const ICONES: Record<string, string> = {
   CREDIARIO: 'M3 4h18v18H3zM16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01'
 };
 
+import { LojaCabecalho } from '../loja-cabecalho/loja-cabecalho';
+
 @Component({
   selector: 'app-formas-pagamento-loja',
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule
+    LojaCabecalho
   ],
   templateUrl: './formas-pagamento-loja.html',
   styleUrls: ['./formas-pagamento-loja.css']

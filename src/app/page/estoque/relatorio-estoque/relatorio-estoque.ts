@@ -5,6 +5,7 @@ import {
   MovimentacaoEstoque,
   MovimentacaoEstoqueFiltros,
   MovimentacaoLoja,
+  MovimentacaoUsuario,
   RelatorioEstoqueService,
   TipoMovimentacaoEstoque
 } from '../../../service/Relatorio-estoque.service';
@@ -24,7 +25,8 @@ export class RelatorioEstoque implements OnInit {
   filtros: MovimentacaoEstoqueFiltros = {
     page: 0,
     size: 20,
-    sort: 'criadoEm,desc'
+    sort: 'criadoEm,desc',
+    usuarioId: null
   };
 
   tipos: TipoMovimentacaoEstoque[] = [
@@ -32,12 +34,14 @@ export class RelatorioEstoque implements OnInit {
     'ATUALIZACAO',
     'ENTRADA',
     'SAIDA_PEDIDO',
+    'DEVOLUCAO_PEDIDO',
     'PROMOCAO',
     'DELECAO'
   ];
 
   movimentacoes: MovimentacaoEstoque[] = [];
   lojas: MovimentacaoLoja[] = [];
+  usuarios: MovimentacaoUsuario[] = [];
   carregando = false;
   erro = '';
   totalElementos = 0;
@@ -60,6 +64,7 @@ export class RelatorioEstoque implements OnInit {
 
   ngOnInit() {
     this.carregarLojas();
+    this.carregarUsuarios();
     this.buscar();
   }
 
@@ -73,6 +78,20 @@ export class RelatorioEstoque implements OnInit {
         },
         error: (err) => {
           console.error('Erro ao carregar lojas', err);
+        }
+      });
+  }
+
+  carregarUsuarios() {
+    this.relatorioEstoqueService
+      .listarUsuarios()
+      .subscribe({
+        next: (usuarios) => {
+          this.usuarios = usuarios;
+          this.cd.detectChanges();
+        },
+        error: (err) => {
+          console.error('Erro ao carregar usuarios', err);
         }
       });
   }
@@ -132,7 +151,8 @@ export class RelatorioEstoque implements OnInit {
     this.filtros = {
       page: 0,
       size: 20,
-      sort: 'criadoEm,desc'
+      sort: 'criadoEm,desc',
+      usuarioId: null
     };
     this.periodoSelecionado = '';
 
@@ -191,6 +211,7 @@ export class RelatorioEstoque implements OnInit {
       ATUALIZACAO: 'Atualizacao',
       ENTRADA: 'Entrada',
       SAIDA_PEDIDO: 'Saida por pedido',
+      DEVOLUCAO_PEDIDO: 'Devolução por pedido cancelado',
       PROMOCAO: 'Promocao',
       DELECAO: 'Exclusao'
     };

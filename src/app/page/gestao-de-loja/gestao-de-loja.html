@@ -1,6 +1,6 @@
 <div class="gestao-container">
 
-  <section class="stats-grid" aria-label="Resumo de lojas">
+  <section class="stats-grid" aria-label="Limites do plano">
     <article class="stat-card stat-total" [class.stat-limite]="limiteLojasAtingido">
       <span class="stat-label">Limite de lojas</span>
       <strong>{{ usoLojas }}</strong>
@@ -18,22 +18,21 @@
       }
     </article>
 
-    <article class="stat-card stat-entrega">
-      <span class="stat-label">Por entrega</span>
-      <strong>{{ totalEntrega() }}</strong>
-      <p>Lojas que atendem só por entrega.</p>
-    </article>
-
-    <article class="stat-card stat-retirada">
-      <span class="stat-label">Por retirada</span>
-      <strong>{{ totalRetirada() }}</strong>
-      <p>Lojas que atendem só com retirada.</p>
-    </article>
-
-    <article class="stat-card stat-ambos">
-      <span class="stat-label">Entrega e retirada</span>
-      <strong>{{ totalAmbos() }}</strong>
-      <p>Lojas que fazem os dois.</p>
+    <article class="stat-card stat-funcionarios" [class.stat-limite]="limiteFuncionariosAtingido">
+      <span class="stat-label">Limite de funcionários</span>
+      <strong>{{ usoFuncionarios }}</strong>
+      @if (plano(); as p) {
+        @if (p.funcionarios.atingido) {
+          <p>Limite do plano {{ p.plano }} atingido.
+            <a [href]="linkTrocarPlano" target="_blank" rel="noopener">Trocar de plano</a></p>
+        } @else if (p.funcionarios.limite === null) {
+          <p>{{ p.plano ? 'Plano ' + p.plano + ': funcionários ilimitados.' : 'Sem limite de funcionários.' }}</p>
+        } @else {
+          <p>Plano {{ p.plano }}: até {{ p.funcionarios.limite }}. Você pode cadastrar mais {{ p.funcionarios.limite - p.funcionarios.usado }}.</p>
+        }
+      } @else {
+        <p>Funcionários usados do seu plano.</p>
+      }
     </article>
   </section>
 

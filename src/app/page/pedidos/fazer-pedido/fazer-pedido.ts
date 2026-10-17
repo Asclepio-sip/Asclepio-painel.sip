@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CartItem, CartService } from '../../../service/cart.service';
 import { ListaProdutoEstoque } from '../../../shared/lista-produto-estoque/lista-produto-estoque';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
   selector: 'app-fazer-pedido',
@@ -15,12 +16,19 @@ import { ListaProdutoEstoque } from '../../../shared/lista-produto-estoque/lista
 export class FazerPedido implements OnInit, OnDestroy {
   itens: CartItem[] = [];
 
+  /** Cabeçalho do cupom: loja logada e hora em que a venda foi aberta. */
+  nomeLoja = '';
+  abertoEm = new Date();
+
   private cartSubscription?: Subscription;
 
   constructor(
     public cartService: CartService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private authService: AuthService
+  ) {
+    this.nomeLoja = this.authService.getNomeLoja() ?? '';
+  }
 
   ngOnInit() {
     this.cartSubscription = this.cartService.cart$.subscribe(items => {
@@ -46,6 +54,18 @@ export class FazerPedido implements OnInit, OnDestroy {
 
   totalItens(): number {
     return this.itens.reduce((total, item) => total + item.quantidade, 0);
+  }
+
+  /** Soma pelo preço cheio; a diferença para o total é o desconto que já veio no valorFinal. */
+  subtotalValor(): number {
+    return this.itens.reduce(
+      (total, item) => total + Math.max(item.precoVenda, item.valorFinal) * item.quantidade,
+      0
+    );
+  }
+
+  descontoValor(): number {
+    return this.subtotalValor() - this.totalValor();
   }
 
   totalValor(): number {

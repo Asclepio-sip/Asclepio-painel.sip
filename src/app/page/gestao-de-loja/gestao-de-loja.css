@@ -4,7 +4,7 @@
 
 .stats-grid {
 	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 14px;
 	margin-bottom: 24px;
 }
@@ -41,11 +41,9 @@
 }
 
 .stat-total strong { color: var(--ds-primaria); }
-.stat-entrega strong { color: #2563eb; }
-.stat-retirada strong { color: #16a34a; }
-.stat-ambos strong { color: #9333ea; }
+.stat-funcionarios strong { color: var(--ds-primaria); }
 
-/* Limite de lojas do plano atingido */
+/* Limite do plano atingido */
 .stat-limite { border-color: #fde68a; background: #fffbeb; }
 .stat-limite strong { color: var(--ds-alerta); }
 .stat-card p a { color: var(--ds-primaria-escura); font-weight: 700; text-decoration: none; }
@@ -74,12 +72,6 @@
 .btn-secondary:hover { border-color: var(--ds-primaria); color: var(--ds-primaria); }
 
 @media (max-width: 700px) { .gestao-container { padding: 20px 16px; } .page-header { flex-direction: column; align-items: flex-start; } }
-
-@media (max-width: 1100px) {
-	.stats-grid {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-}
 
 @media (max-width: 700px) {
 	.stats-grid {

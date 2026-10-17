@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -51,7 +51,8 @@ export class FinalizarPedido implements OnInit, OnDestroy {
     private pedidosService: PedidosService,
     private formaPagamentoService: FormaPagamentoService,
     private clienteService: ClienteService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -70,6 +71,7 @@ export class FinalizarPedido implements OnInit, OnDestroy {
 
     this.cartSubscription = this.cartService.cart$.subscribe(items => {
       this.itens = items;
+      this.cdr.detectChanges();
     });
   }
 
@@ -88,15 +90,36 @@ export class FinalizarPedido implements OnInit, OnDestroy {
     this.modoCliente = modo;
   }
 
+  // ── Telefone: a tela mostra "(81) 9 9999-9999", o backend recebe só os dígitos ──
+
+  digitarTelefone(campo: HTMLInputElement) {
+    const digitos = campo.value.replace(/\D/g, '').slice(0, 11);
+    this.novoCliente.numero = digitos;
+    // Reescreve o campo na hora: sem isso, letras e dígitos a mais ficam visíveis
+    campo.value = this.formatarTelefone(digitos);
+  }
+
+  formatarTelefone(numero: string | null | undefined): string {
+    const d = (numero ?? '').replace(/\D/g, '');
+    if (d.length === 0) return '';
+    if (d.length <= 2) return `(${d}`;
+    if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
+    if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+    return `(${d.slice(0, 2)}) ${d.slice(2, 3)} ${d.slice(3, 7)}-${d.slice(7, 11)}`;
+  }
+
   get clientesFiltrados(): Cliente[] {
 
     const termo = this.termoBuscaCliente.trim().toLowerCase();
 
     if (!termo) return this.clientes;
 
+    // Busca por número ignora a máscara: "(81) 9 99" acha "8199..."
+    const termoDigitos = termo.replace(/\D/g, '');
+
     return this.clientes.filter(c =>
       c.nome?.toLowerCase().includes(termo) ||
-      c.numero?.toLowerCase().includes(termo) ||
+      (termoDigitos.length > 0 && c.numero?.replace(/\D/g, '').includes(termoDigitos)) ||
       c.email?.toLowerCase().includes(termo)
     );
   }
@@ -110,11 +133,13 @@ export class FinalizarPedido implements OnInit, OnDestroy {
       next: (resposta) => {
         this.clientes = resposta.content;
         this.carregandoClientes = false;
+        this.cdr.detectChanges();
       },
 
       error: (err) => {
         console.error('Erro ao carregar clientes', err);
         this.carregandoClientes = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -134,6 +159,7 @@ export class FinalizarPedido implements OnInit, OnDestroy {
         this.formaDePagamento = this.formasDePagamento[0]?.value ?? '';
 
         this.carregandoFormasDePagamento = false;
+        this.cdr.detectChanges();
       },
 
       error: (err) => {
@@ -141,6 +167,7 @@ export class FinalizarPedido implements OnInit, OnDestroy {
         this.formasDePagamento = [];
         this.formaDePagamento = '';
         this.carregandoFormasDePagamento = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -169,9 +196,15 @@ export class FinalizarPedido implements OnInit, OnDestroy {
         Swal.fire('Atenção', 'Preencha nome, número e email do cliente.', 'warning');
         return;
       }
+
+      if (this.novoCliente.numero.length < 10) {
+        Swal.fire('Atenção', 'Informe o número com DDD, ex.: (81) 9 9999-9999.', 'warning');
+        return;
+      }
     }
 
     this.finalizando = true;
+    this.cdr.detectChanges();
 
     Swal.fire({
       title: 'Finalizando pedido...',
@@ -183,7 +216,7 @@ export class FinalizarPedido implements OnInit, OnDestroy {
 
     if (this.modoCliente === 'novo') {
 
-      this.clienteService.criar(this.novoCliente).subscribe({
+      this.clienteService.criar({ ...this.novoCliente, numero: this.novoCliente.numero.replace(/\D/g, '') }).subscribe({
         next: (clienteCriado) => this.enviarPedido(clienteCriado),
         error: (err) => this.tratarErroFinalizar(err, 'Não foi possível cadastrar o cliente.')
       });
@@ -197,6 +230,7 @@ export class FinalizarPedido implements OnInit, OnDestroy {
 
       if (!cliente) {
         this.finalizando = false;
+        this.cdr.detectChanges();
         Swal.fire('Erro', 'Cliente selecionado não encontrado.', 'error');
         return;
       }
@@ -241,6 +275,7 @@ export class FinalizarPedido implements OnInit, OnDestroy {
   private tratarErroFinalizar(err: unknown, mensagem: string) {
     console.error('Erro ao finalizar pedido', err);
     this.finalizando = false;
-    Swal.fire('Erro', mensagem, 'error');
+    this.cdr.detectChanges();
+    Swal.fire('Erro', (err as any)?.error?.message || mensagem, 'error');
   }
 }

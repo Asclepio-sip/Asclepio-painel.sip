@@ -19,6 +19,7 @@ export class SidebarComponent {
   pedidoPermissions = PermissionGroups.pedidos;
   gestaoPermissions = PermissionGroups.lojas;
   configContaPermissions = PermissionGroups.configConta;
+  dashboardPermissions = PermissionGroups.dashboard;
 
   /** Plano inclui o cadastro de clientes. Começa true: se a consulta falhar, o backend ainda barra. */
   cadastroClientes = signal(true);

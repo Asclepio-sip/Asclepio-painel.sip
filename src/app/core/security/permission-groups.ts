@@ -39,6 +39,10 @@ export const PermissionGroups = {
     AppPermissions.ConfigConta.read,
   ],
 
+  dashboard: [
+    AppPermissions.Dashboard.read,
+  ],
+
   roles: [
     AppPermissions.Sistema.roleRead,
   ],
