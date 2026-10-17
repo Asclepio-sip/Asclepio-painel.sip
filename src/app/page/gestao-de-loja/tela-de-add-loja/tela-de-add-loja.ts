@@ -114,7 +114,8 @@ export class TelaDeAddLoja {
 
         console.error(err);
 
-        alert('Erro ao criar loja');
+        // Ex.: limite de lojas do plano (400 com a mensagem do backend)
+        alert(err?.error?.message || 'Erro ao criar loja');
       }
     });
   }

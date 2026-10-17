@@ -60,6 +60,12 @@ Padrões seguidos no código:
 - Autorização é por **permissão nominal** vinda do JWT (`hasPermission` / `hasAnyPermission`), não por nome de cargo. Rotas protegidas usam `canActivate: [adminGuard], data: { permissions: PermissionGroups.x }`. Ao adicionar uma permissão nova, ela precisa existir no backend (`DataInitializer`) e em `app-permissions.ts`.
 - `SISTEMA_PERMISSOES_README.md` e `GUIA_RAPIDO_PERMISSOES.txt` estão **desatualizados** (citam `PermissionService`, diretiva `*appHasPermission` e permissões `PRODUCT_READ` que não existem mais). A fonte da verdade é `core/security/` + `AuthService`.
 
+### Plano da empresa (limites)
+
+- `GET /planos/atual` (`PlanoService.atual()`, tipo `PlanoEmpresa`) traz o plano da empresa logada: `lojas` e `funcionarios` como `{ usado, limite, atingido }` (`limite: null` = sem limite) e `cadastroClientes`. `plano: null` = empresa sem plano = sem limites.
+- **Quem barra é o backend**: criar loja/usuário ou criar/editar cliente além do plano dá **400** com `message` pronta para mostrar. O front só mostra o uso e desliga botões — Gestão ("Limite de lojas 1/1" + "Nova Loja"), Equipe ("2/5 usuários" + "Adicionar Membro"), Clientes (menu some da sidebar e o formulário vira aviso). Se `/planos/atual` falhar, não trave nada (o backend valida igual).
+- "Trocar de plano" abre o WhatsApp (`LINK_WHATSAPP` em `page/landing/landing-navegacao.ts`).
+
 ### Gestão de equipe (`page/criar-users`)
 
 - "Adicionar Membro" **só cria usuário novo** (`POST /user` com `{ nome, email, password, lojas: [{ lojaId, roleId }] }`); o login é gerado pelo backend.

@@ -1,9 +1,11 @@
-﻿import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+﻿import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import Swal from 'sweetalert2';
 import { AuthService } from '../../service/auth.service';
+import { CatalogoOnlineService } from '../../service/catalogo-online.service';
+import { AppPermissions } from '../../core/security/app-permissions';
 import { Loja } from '../../service/loja/loja.service';
 import { PedidosService, Pedido } from '../../service/pedidos.service';
 
@@ -33,6 +35,20 @@ export class Pedidos implements OnInit {
    * as duas abas (Balcao/Delivery) normalmente.
    */
   tipoAtendimentoLoja: 'ENTREGA' | 'RETIRADA' | 'AMBOS' | null = null;
+  /**
+   * Catálogo online da empresa (GET /config-conta). null = não deu pra saber
+   * (sem VerConfigConta ou erro) — trata como ligado pra não esconder pedido.
+   */
+  catalogoOnlineAtivo: boolean | null = null;
+
+  /**
+   * Loja só de retirada e sem catálogo online: todo pedido é venda na hora,
+   * então só existem Concluído/Cancelado. Com catálogo ligado os pedidos
+   * de retirada chegam como Aguardando, por isso aí mostra todos os cards.
+   */
+  get somenteVendaNaHora(): boolean {
+    return this.tipoAtendimentoLoja === 'RETIRADA' && this.catalogoOnlineAtivo === false;
+  }
 
   lojas: Loja[] = [];
   /** Loja da sessao (JWT). Se definida, trava o painel nela. */
@@ -72,6 +88,7 @@ export class Pedidos implements OnInit {
   constructor(
     private service: PedidosService,
     private authService: AuthService,
+    private catalogoService: CatalogoOnlineService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
@@ -81,11 +98,39 @@ export class Pedidos implements OnInit {
     this.travadoNaLoja = this.lojaSessaoId !== null;
     this.lojaSelecionadaId = this.lojaSessaoId;
 
-    if (this.travadoNaLoja) {
-      this.carregarTipoAtendimento(this.lojaSessaoId!);
-    } else {
-      this.carregarLojas();
-      this.carregarPedidos();
+    this.carregarStatusCatalogo(() => {
+      if (this.travadoNaLoja) {
+        this.carregarTipoAtendimento(this.lojaSessaoId!);
+      } else {
+        this.carregarLojas();
+        this.carregarPedidos();
+      }
+    });
+  }
+
+  /** Só consulta com VerConfigConta: sem ela o GET dá 403 e o interceptor desloga. */
+  private carregarStatusCatalogo(depois: () => void) {
+    if (!this.authService.hasPermission(AppPermissions.ConfigConta.read)) {
+      depois();
+      return;
+    }
+
+    this.catalogoService.getConfig().subscribe({
+      next: config => {
+        this.catalogoOnlineAtivo = config?.catalogoOnlineAtivo ?? null;
+        depois();
+      },
+      error: err => {
+        console.error('Erro ao carregar status do catálogo online', err);
+        depois();
+      }
+    });
+  }
+
+  /** Sem os cards de andamento, um filtro neles sumiria com a lista — cai pro "todos". */
+  private ajustarFiltroVendaNaHora() {
+    if (this.somenteVendaNaHora && ['AGUARDANDO', 'SEPARACAO', 'EM_TRANSITO'].includes(this.filtroAtivo)) {
+      this.filtroAtivo = 'todos';
     }
   }
 
@@ -122,10 +167,7 @@ export class Pedidos implements OnInit {
 
         if (this.tipoAtendimentoLoja === 'RETIRADA') {
           this.tipoEntregaFiltro = 'BALCAO';
-          // "Aguardando" (filtro padrao) nao existe pra balcao — cai pro "todos".
-          if (['AGUARDANDO', 'SEPARACAO', 'EM_TRANSITO'].includes(this.filtroAtivo)) {
-            this.filtroAtivo = 'todos';
-          }
+          this.ajustarFiltroVendaNaHora();
         } else if (this.tipoAtendimentoLoja === 'ENTREGA') {
           this.tipoEntregaFiltro = 'DELIVERY';
         } else {
@@ -167,23 +209,19 @@ export class Pedidos implements OnInit {
   }
 
   carregarContadores() {
-    const lojaId = this.lojaSelecionadaId ?? undefined;
-
-    forkJoin({
-      todos: this.service.listar({ page: 0, size: 1, somenteHoje: this.somenteHoje, lojaId }),
-      aguardando: this.service.listar({ status: 'AGUARDANDO', page: 0, size: 1, somenteHoje: this.somenteHoje, lojaId }),
-      separacao: this.service.listar({ status: 'SEPARACAO', page: 0, size: 1, somenteHoje: this.somenteHoje, lojaId }),
-      transito: this.service.listar({ status: 'EM_TRANSITO', page: 0, size: 1, somenteHoje: this.somenteHoje, lojaId }),
-      concluido: this.service.listar({ status: 'CONCLUIDO', page: 0, size: 1, somenteHoje: this.somenteHoje, lojaId }),
-      cancelado: this.service.listar({ status: 'CANCELADO', page: 0, size: 1, somenteHoje: this.somenteHoje, lojaId }),
+    this.service.contadores({
+      lojaId: this.lojaSelecionadaId ?? undefined,
+      nomeCliente: this.busca.trim() || undefined,
+      tipoEntrega: this.tipoEntregaFiltro || undefined,
+      somenteHoje: this.somenteHoje
     }).subscribe({
       next: res => {
-        this.totalTodos = res.todos.totalElements ?? 0;
-        this.contadores.novosHoje = res.aguardando.totalElements ?? 0;
-        this.contadores.pendentes = res.separacao.totalElements ?? 0;
-        this.contadores.emTransito = res.transito.totalElements ?? 0;
-        this.contadores.finalizados = res.concluido.totalElements ?? 0;
-        this.contadores.cancelados = res.cancelado.totalElements ?? 0;
+        this.totalTodos = res.todos;
+        this.contadores.novosHoje = res.aguardando;
+        this.contadores.pendentes = res.separacao;
+        this.contadores.emTransito = res.emTransito;
+        this.contadores.finalizados = res.concluido;
+        this.contadores.cancelados = res.cancelado;
         this.cdr.detectChanges();
       },
       error: err => console.error('Erro ao carregar contadores de pedidos', err)
@@ -208,13 +246,7 @@ export class Pedidos implements OnInit {
 
   filtrarTipoEntrega(tipo: '' | 'BALCAO' | 'DELIVERY') {
     this.tipoEntregaFiltro = tipo;
-
-    // Balcao nao tem os status de entrega (aguardando/separacao/em transito) —
-    // se o filtro ativo for um desses, cai pro "todos" pra nao sumir a lista.
-    const statusSoDelivery = ['AGUARDANDO', 'SEPARACAO', 'EM_TRANSITO'];
-    if (tipo === 'BALCAO' && statusSoDelivery.includes(this.filtroAtivo)) {
-      this.filtroAtivo = 'todos';
-    }
+    this.ajustarFiltroVendaNaHora();
 
     this.paginaAtual = 1;
     this.carregarPedidos();
@@ -255,6 +287,74 @@ export class Pedidos implements OnInit {
     this.paginas = paginas;
   }
 
+  readonly statusOpcoes = [
+    { value: 'AGUARDANDO', label: 'Aguardando', classe: 'status-pendente' },
+    { value: 'SEPARACAO', label: 'Separação', classe: 'status-processando' },
+    { value: 'EM_TRANSITO', label: 'Em trânsito', classe: 'status-enviado' },
+    { value: 'CONCLUIDO', label: 'Concluído', classe: 'status-entregue' },
+    { value: 'CANCELADO', label: 'Cancelado', classe: 'status-cancelado' },
+  ];
+
+  /** Menu de status aberto (posição fixa na tela, calculada pelo botão). */
+  menuStatus: { pedido: PedidoUI; top: number; left: number; acima: boolean } | null = null;
+
+  /**
+   * Entrega: todos os status. Retirada na loja: sem Separação/Em trânsito.
+   * Balcão (venda na hora): só Concluído e Cancelado.
+   */
+  opcoesStatus(pedido: PedidoUI) {
+    const tipo = pedido.tipoAtendimento;
+    if (!tipo || tipo.startsWith('ENTREGA')) return this.statusOpcoes;
+
+    const permitidos = tipo === 'BALCAO' ? ['CONCLUIDO', 'CANCELADO'] : ['AGUARDANDO', 'CONCLUIDO', 'CANCELADO'];
+    return this.statusOpcoes.filter(o => permitidos.includes(o.value));
+  }
+
+  rotuloStatus(status: string): string {
+    return this.statusOpcoes.find(o => o.value === status)?.label ?? status;
+  }
+
+  abrirMenuStatus(pedido: PedidoUI, event: MouseEvent) {
+    event.stopPropagation();
+
+    if (this.menuStatus?.pedido === pedido) {
+      this.fecharMenuStatus();
+      return;
+    }
+
+    const botao = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const alturaMenu = 230;
+    const acima = window.innerHeight - botao.bottom < alturaMenu && botao.top > alturaMenu;
+
+    this.menuStatus = {
+      pedido,
+      top: acima ? botao.top - 6 : botao.bottom + 6,
+      left: Math.min(botao.left, window.innerWidth - 200 - 8),
+      acima
+    };
+  }
+
+  @HostListener('document:click')
+  @HostListener('document:keydown.escape')
+  @HostListener('window:resize')
+  @HostListener('window:scroll')
+  // O painel rola dentro de um container, não na janela: roda do mouse/toque também fecha
+  @HostListener('document:wheel')
+  @HostListener('document:touchmove')
+  fecharMenuStatus() {
+    if (this.menuStatus) {
+      this.menuStatus = null;
+      this.cdr.detectChanges();
+    }
+  }
+
+  escolherStatus(pedido: PedidoUI, novoStatus: string) {
+    this.fecharMenuStatus();
+    if (novoStatus !== pedido.statusDoPedido) {
+      this.atualizarStatus(pedido, novoStatus);
+    }
+  }
+
   getStatusClass(status: string): string {
     const map: Record<string, string> = {
       AGUARDANDO: 'status-pendente',
@@ -267,18 +367,36 @@ export class Pedidos implements OnInit {
     return map[status] ?? 'status-pendente';
   }
 
-  atualizarStatus(pedido: PedidoUI) {
+  async atualizarStatus(pedido: PedidoUI, novoStatus: string) {
     const statusAnterior = pedido.statusDoPedido;
 
-    this.service.atualizarStatus(pedido.id, pedido.statusDoPedido)
+    // Cancelar devolve os itens ao estoque e não tem volta (o backend recusa mudar depois)
+    if (novoStatus === 'CANCELADO') {
+      const { isConfirmed } = await Swal.fire({
+        title: `Cancelar o pedido #${pedido.id}?`,
+        text: 'Os itens voltam para o estoque da loja. Depois de cancelado, o pedido não pode mudar de status.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Cancelar pedido',
+        cancelButtonText: 'Voltar'
+      });
+      if (!isConfirmed) {
+        return;
+      }
+    }
+
+    pedido.statusDoPedido = novoStatus;
+    this.cdr.detectChanges();
+
+    this.service.atualizarStatus(pedido.id, novoStatus)
       .subscribe({
         next: () => {
           this.carregarContadores();
         },
-        error: () => {
+        error: err => {
           pedido.statusDoPedido = statusAnterior;
-          this.carregarPedidos();
-          console.error('Erro ao atualizar status');
+          this.cdr.detectChanges();
+          Swal.fire('Erro', err?.error?.message || 'Não foi possível atualizar o status do pedido.', 'error');
         }
       });
   }
@@ -316,6 +434,7 @@ export class Pedidos implements OnInit {
       complemento: p.complemento ?? '',
       formaDePagamento: p.formaDePagamento ?? '',
       tipoEntrega: p.tipoEntrega ?? '',
+      tipoAtendimento: p.tipoAtendimento ?? null,
       observacao: p.observacao ?? '',
       selecionado: false
     };

@@ -57,9 +57,10 @@
 
 /* Modal de confirmação */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
-.modal { width: 100%; max-width: 420px; background: #fff; border-radius: 14px; padding: 26px 26px 22px; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
-.modal h3 { font-size: 18px; font-weight: 600; color: var(--ds-texto); margin: 0 0 8px; }
-.modal p { font-size: 14px; color: var(--ds-texto-suave); margin: 0 0 22px; line-height: 1.5; }
+/* Não usar a classe "modal": o Bootstrap esconde (display: none) e a confirmação some. */
+.modal-confirmar { width: 100%; max-width: 420px; background: #fff; border-radius: 14px; padding: 26px 26px 22px; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+.modal-confirmar h3 { font-size: 18px; font-weight: 600; color: var(--ds-texto); margin: 0 0 8px; }
+.modal-confirmar p { font-size: 14px; color: var(--ds-texto-suave); margin: 0 0 22px; line-height: 1.5; }
 .modal-acoes { display: flex; justify-content: flex-end; gap: 10px; }
 
 .card-header-acao { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }

@@ -7,6 +7,8 @@ import { UserLojaService } from '../../service/user-loja.service';
 import { AuthService } from '../../service/auth.service';
 import { Loja, LojaService } from '../../service/loja/loja.service';
 import { forkJoin } from 'rxjs';
+import { PlanoService } from '../../service/plano.service';
+import { PlanoEmpresa } from '../../models/plano.model';
 
 interface LinhaLojaCargo {
   lojaId: number | null;
@@ -83,14 +85,40 @@ export class AdminUsersComponent implements OnInit {
     private lojaService: LojaService,
     private authService: AuthService,
     private cd: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private planoService: PlanoService
   ) {}
+
+  /** Plano da empresa (limite de usuários). null = não carregou: o backend valida de qualquer jeito. */
+  planoEmpresa: PlanoEmpresa | null = null;
 
   ngOnInit() {
     this.lojaId = this.authService.getLojaId();
     this.carregarRoles();
     this.carregarUsuarios(0);
     this.carregarTodasLojas();
+    this.carregarPlano();
+  }
+
+  carregarPlano() {
+    this.planoService.atual().subscribe({
+      next: plano => {
+        this.planoEmpresa = plano;
+        this.cd.detectChanges();
+      },
+      error: () => {}
+    });
+  }
+
+  get limiteUsuariosAtingido(): boolean {
+    return this.planoEmpresa?.funcionarios.atingido ?? false;
+  }
+
+  /** "2/5 usuários" ou "2 usuários (sem limite)". */
+  get usoUsuarios(): string {
+    const f = this.planoEmpresa?.funcionarios;
+    if (!f) return '';
+    return f.limite === null ? `${f.usado} usuários · sem limite` : `${f.usado}/${f.limite} usuários`;
   }
 
   carregarTodasLojas() {
@@ -462,6 +490,7 @@ export class AdminUsersComponent implements OnInit {
     this.salvandoCriar = false;
     this.atualizarAdminCount();
     this.carregarUsuarios(0);
+    this.carregarPlano();
   }
 
   private falharCriacao(err: any) {

@@ -16,6 +16,7 @@ import { EditarLoja } from './page/gestao-de-loja/editar-loja/editar-loja';
 import { AddFuncionarioLoja } from './page/gestao-de-loja/add-funcionario-loja/add-funcionario-loja';
 import { AddProdutoEstoqueLoja } from './page/estoque/add-produto-estoque-loja/add-produto-estoque-loja';
 import { RelatorioEstoque } from './page/estoque/relatorio-estoque/relatorio-estoque';
+import { Dashboard } from './page/dashboard/dashboard';
 import { AtualizarEstoque } from './page/estoque/atualizar-estoque/atualizar-estoque';
 import { AddBairro } from './page/gestao-de-loja/add-bairro/add-bairro';
 import { RelacionarBairroLoja } from './page/gestao-de-loja/relacionar-bairro-loja/relacionar-bairro-loja';
@@ -53,6 +54,7 @@ export const routes: Routes = [
   { path: 'addProduto', component: TelaDeAddProduto, canActivate: [adminGuard], data: { permissions: PermissionGroups.produtos }},
   { path: 'addestoque', component: AddProdutoEstoqueLoja, canActivate: [adminGuard], data: { permissions: PermissionGroups.estoque }},
   { path: 'atualizar-estoque', component: AtualizarEstoque, canActivate: [adminGuard], data: { permissions: PermissionGroups.estoque }},
+  { path: 'dashboard', component: Dashboard, canActivate: [adminGuard], data: { permissions: PermissionGroups.dashboard }},
   { path: 'relatorio-estoque', component: RelatorioEstoque, canActivate: [adminGuard], data: { permissions: PermissionGroups.estoque }},
   { path: 'addCategoria', component: AddEditCartegoria, canActivate: [adminGuard], data: { permissions: PermissionGroups.produtos }},
   { path: 'add-bairro', component: AddBairro, canActivate: [adminGuard], data: { permissions: PermissionGroups.lojas }},

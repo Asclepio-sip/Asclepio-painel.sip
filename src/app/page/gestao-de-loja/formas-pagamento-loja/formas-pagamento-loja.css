@@ -1,22 +1,14 @@
 *, *::before, *::after { box-sizing: border-box; }
 
-.pagamento-container {padding: 32px 36px; background: var(--ds-fundo); min-height: 100vh; }
+/* Mesma largura e respiro da aba "Dados da loja" */
+.pagamento-container { max-width: 1100px; margin: 0 auto; padding: 32px clamp(16px, 3vw, 40px); }
 
-/* Header */
-.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; gap: 16px; flex-wrap: wrap; }
-.breadcrumb { font-size: 11px; font-weight: 600; color: var(--ds-texto-fraco); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
-.breadcrumb span { color: var(--ds-primaria); }
-.page-title { font-size: 26px; font-weight: 700; color: var(--ds-texto); margin: 0 0 4px; }
-.page-subtitle { font-size: 13px; color: var(--ds-texto-suave); margin: 0; }
-.header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
-.btn-back { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; background: #fff; color: var(--ds-texto-suave); border: 1.5px solid var(--ds-borda); border-radius: 8px; font-size: 13px; font-weight: 500;cursor: pointer; transition: all .2s; white-space: nowrap; flex-shrink: 0; }
-.btn-back:hover { border-color: var(--ds-primaria); color: var(--ds-primaria); }
 
 /* Card */
-.card { max-width: 640px; background: #fff; border-radius: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.04); }
-.card-header { display: flex; align-items: center; gap: 14px; padding: 18px 24px; border-bottom: 1px solid var(--ds-superficie-2); }
-.card-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--ds-primaria-clara); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.card-title { font-size: 14.5px; font-weight: 600; color: var(--ds-texto); margin: 0 0 2px; }
+.card { max-width: 720px; background: var(--ds-superficie); border: 1px solid var(--ds-borda); border-radius: var(--ds-raio-lg); box-shadow: var(--ds-sombra); }
+.card-header { display: flex; align-items: center; gap: 14px; padding: 18px 24px; border-bottom: 1px solid var(--ds-borda); }
+.card-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--ds-primaria-clara); color: var(--ds-primaria); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.card-title { font-size: 15px; font-weight: 700; color: var(--ds-texto); margin: 0 0 2px; }
 .card-subtitle { font-size: 12px; color: var(--ds-texto-fraco); margin: 0; }
 
 /* States */
@@ -35,7 +27,7 @@
 .forma-item.ativo .forma-icon { background: var(--ds-primaria-clara); }
 .forma-nome { font-size: 13.5px; font-weight: 600; color: var(--ds-texto); margin: 0; }
 .forma-status { font-size: 12px; color: var(--ds-texto-fraco); margin: 2px 0 0; }
-.forma-item.ativo .forma-status { color: #16a34a; }
+.forma-item.ativo .forma-status { color: var(--ds-sucesso); }
 
 /* Switch */
 .switch { position: relative; width: 42px; height: 24px; border-radius: 999px; background: var(--ds-borda); border: none; cursor: pointer; flex-shrink: 0; transition: background .2s; padding: 0; }
@@ -49,4 +41,3 @@
 .btn-save:hover:not(:disabled) { background: var(--ds-primaria-escura); }
 .btn-save:disabled { opacity: .6; cursor: not-allowed; }
 
-@media (max-width: 600px) { .pagamento-container { padding: 20px 16px; } }

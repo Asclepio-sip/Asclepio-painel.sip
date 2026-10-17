@@ -9,6 +9,7 @@ export type TipoMovimentacaoEstoque =
   | 'ATUALIZACAO'
   | 'ENTRADA'
   | 'SAIDA_PEDIDO'
+  | 'DEVOLUCAO_PEDIDO'
   | 'PROMOCAO'
   | 'DELECAO';
 
@@ -39,6 +40,8 @@ export interface MovimentacaoEstoqueFiltros {
   nomeLoja?: string;
   nomeProduto?: string;
   usuario?: string;
+  /** Id do usuário (lista em listarUsuarios). */
+  usuarioId?: string | null;
   tipo?: TipoMovimentacaoEstoque | '';
   dataInicio?: string;
   dataFim?: string;
@@ -67,6 +70,11 @@ export interface MovimentacaoProduto {
   name: string;
   imagemUrl?: string;
   imagemBase64?: string;
+}
+
+export interface MovimentacaoUsuario {
+  id: string;
+  nome: string;
 }
 
 export interface MovimentacaoLoja {
@@ -133,6 +141,7 @@ export class RelatorioEstoqueService {
     params = this.adicionarParametro(params, 'nomeLoja', filtros.nomeLoja);
     params = this.adicionarParametro(params, 'nomeProduto', filtros.nomeProduto);
     params = this.adicionarParametro(params, 'usuario', filtros.usuario);
+    params = this.adicionarParametro(params, 'usuarioId', filtros.usuarioId);
     params = this.adicionarParametro(params, 'tipo', filtros.tipo);
     params = this.adicionarParametro(params, 'dataInicio', filtros.dataInicio);
     params = this.adicionarParametro(params, 'dataFim', filtros.dataFim);
@@ -191,6 +200,11 @@ export class RelatorioEstoqueService {
     ).pipe(
       map((response) => this.normalizarPagina(response, (item) => item))
     );
+  }
+
+  /** Usuários que já movimentaram o estoque da empresa, em ordem de nome. */
+  listarUsuarios(): Observable<MovimentacaoUsuario[]> {
+    return this.http.get<MovimentacaoUsuario[]>(`${this.apiUrl}/usuarios`);
   }
 
   listarLojas(

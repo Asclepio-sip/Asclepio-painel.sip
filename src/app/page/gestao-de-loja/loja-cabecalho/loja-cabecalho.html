@@ -1,0 +1,31 @@
+<header class="cabecalho">
+  <div class="cabecalho-texto">
+    <span class="breadcrumb">Gestão de lojas / <span>{{ titulo }}</span></span>
+    <h1>{{ titulo }}</h1>
+    @if (subtitulo) {
+      <p>{{ subtitulo }}</p>
+    }
+  </div>
+
+  <a class="btn-voltar" routerLink="/loja">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    Voltar para lojas
+  </a>
+</header>
+
+<nav class="abas" aria-label="Configurações da loja">
+  <a [routerLink]="['/editar-loja', lojaId]" routerLinkActive="ativa" ariaCurrentWhenActive="page">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/></svg>
+    Dados da loja
+  </a>
+  <a [routerLink]="['/loja', lojaId, 'formas-pagamento']" routerLinkActive="ativa" ariaCurrentWhenActive="page">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+    Formas de pagamento
+  </a>
+  @if (exibirFrete) {
+    <a [routerLink]="['/loja', lojaId, 'bairros']" routerLinkActive="ativa" ariaCurrentWhenActive="page">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Frete por bairro
+    </a>
+  }
+</nav>

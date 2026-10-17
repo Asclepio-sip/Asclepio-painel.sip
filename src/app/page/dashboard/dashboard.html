@@ -1,0 +1,309 @@
+<div class="dash">
+
+  <header class="dash-topo">
+    <div>
+      <p class="breadcrumb">Painel / <span>Dashboard</span></p>
+      <h1 class="titulo">Dashboard</h1>
+      <p class="subtitulo">Lucro e gastos de {{ descricaoPeriodo }}</p>
+    </div>
+
+    @if (!lojaTravada && lojas().length > 1) {
+      <label class="filtro-loja">
+        <span class="sr-only">Loja</span>
+        <select [ngModel]="lojaId()" (ngModelChange)="escolherLoja($event)" name="loja">
+          <option [ngValue]="null">Todas as lojas</option>
+          @for (loja of lojas(); track loja.id) {
+            <option [ngValue]="loja.id">{{ loja.nomeLoja }}</option>
+          }
+        </select>
+      </label>
+    }
+  </header>
+
+  <!-- Filtros de período -->
+  <div class="filtros">
+    <div class="segmentado" role="group" aria-label="Período">
+      @for (p of periodos; track p.id) {
+        <button type="button" [class.ativo]="periodo() === p.id" [attr.aria-pressed]="periodo() === p.id"
+          (click)="escolherPeriodo(p.id)">{{ p.rotulo }}</button>
+      }
+      <button type="button" [class.ativo]="periodo() === 'personalizado'" [attr.aria-pressed]="periodo() === 'personalizado'"
+        (click)="abrirPersonalizado()">Personalizado</button>
+    </div>
+
+    @if (periodo() === 'personalizado') {
+      <form class="personalizado" (ngSubmit)="aplicarPersonalizado()">
+        <label>
+          <span>De</span>
+          <input type="date" [(ngModel)]="inicioManual" name="inicio" required />
+        </label>
+        <label>
+          <span>Até</span>
+          <input type="date" [(ngModel)]="fimManual" name="fim" required />
+        </label>
+        <button type="submit" class="btn-aplicar">Aplicar</button>
+      </form>
+    }
+  </div>
+  @if (erroPeriodo()) {
+    <p class="erro-periodo" role="alert">{{ erroPeriodo() }}</p>
+  }
+
+  @if (erro()) {
+    <div class="aviso aviso-erro" role="alert">
+      <span>{{ erro() }}</span>
+      <button type="button" (click)="carregar()">Tentar de novo</button>
+    </div>
+  }
+
+  @if (dados(); as d) {
+    <div class="conteudo" [class.carregando]="carregando()">
+
+      <!-- Indicadores -->
+      <section class="kpis" aria-label="Resumo do período">
+        <article class="kpi">
+          <span class="kpi-rotulo">Faturamento</span>
+          <strong class="kpi-valor">{{ moedaFormatada(d.resumo.faturamento) }}</strong>
+          <ng-container *ngTemplateOutlet="delta; context: { $implicit: variacao('faturamento') }"></ng-container>
+        </article>
+
+        <article class="kpi">
+          <span class="kpi-rotulo"><i class="ponto ponto-custo" aria-hidden="true"></i>Gastos</span>
+          <strong class="kpi-valor">{{ moedaFormatada(d.resumo.custo) }}</strong>
+          <ng-container *ngTemplateOutlet="delta; context: { $implicit: variacao('custo') }"></ng-container>
+        </article>
+
+        <article class="kpi kpi-destaque">
+          <span class="kpi-rotulo"><i class="ponto ponto-lucro" aria-hidden="true"></i>Lucro</span>
+          <strong class="kpi-valor" [class.negativo]="d.resumo.lucro < 0">{{ moedaFormatada(d.resumo.lucro) }}</strong>
+          <ng-container *ngTemplateOutlet="delta; context: { $implicit: variacao('lucro') }"></ng-container>
+        </article>
+
+        <article class="kpi">
+          <span class="kpi-rotulo">Margem de lucro</span>
+          <strong class="kpi-valor">{{ percentual(d.resumo.margem) }}</strong>
+          <span class="kpi-sub">
+            {{ d.resumo.pedidos }} pedido(s) · ticket médio {{ moedaFormatada(d.resumo.ticketMedio) }}
+          </span>
+        </article>
+      </section>
+
+      <!-- Avisos sobre o custo -->
+      @if (d.resumo.vendasSemCusto > 0) {
+        <div class="aviso aviso-alerta">
+          <strong>{{ moedaFormatada(d.resumo.vendasSemCusto) }}</strong> em vendas de produtos sem preço de custo:
+          o gasto deles contou como R$ 0, então o lucro real é menor. Cadastre o custo em "Atualizar estoque".
+        </div>
+      }
+      @if (d.resumo.custoEstimado > 0) {
+        <div class="aviso aviso-info">
+          {{ moedaFormatada(d.resumo.custoEstimado) }} do gasto é estimado pelo custo atual do estoque
+          (pedidos feitos antes de o custo passar a ser guardado na venda).
+        </div>
+      }
+
+      <!-- Gráfico -->
+      <section class="cartao-grafico">
+        <div class="grafico-topo">
+          <div>
+            <h2>Lucro e gastos</h2>
+            <p>{{ rotuloAgrupamento }}</p>
+          </div>
+          <div class="grafico-acoes">
+            <ul class="legenda" aria-label="Legenda">
+              <li><i class="ponto ponto-custo" aria-hidden="true"></i>Gastos</li>
+              <li><i class="ponto ponto-lucro" aria-hidden="true"></i>Lucro</li>
+            </ul>
+            <button type="button" class="btn-tabela" (click)="verTabela.set(!verTabela())" [attr.aria-pressed]="verTabela()">
+              {{ verTabela() ? 'Ver gráfico' : 'Ver tabela' }}
+            </button>
+          </div>
+        </div>
+
+        @if (d.resumo.pedidos === 0) {
+          <div class="vazio">
+            <p>Nenhum pedido nesse período.</p>
+            <small>Escolha um período maior ou outra loja.</small>
+          </div>
+        } @else if (verTabela()) {
+          <div class="tabela-scroll">
+            <table class="tabela">
+              <thead>
+                <tr>
+                  <th>Período</th>
+                  <th class="num">Faturamento</th>
+                  <th class="num">Gastos</th>
+                  <th class="num">Lucro</th>
+                  <th class="num">Pedidos</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (p of d.serie; track p.inicio) {
+                  <tr>
+                    <td>{{ p.rotulo }}</td>
+                    <td class="num">{{ moedaFormatada(p.faturamento) }}</td>
+                    <td class="num">{{ moedaFormatada(p.custo) }}</td>
+                    <td class="num" [class.negativo]="p.lucro < 0">{{ moedaFormatada(p.lucro) }}</td>
+                    <td class="num">{{ p.pedidos }}</td>
+                  </tr>
+                }
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td>Total</td>
+                  <td class="num">{{ moedaFormatada(d.resumo.faturamento) }}</td>
+                  <td class="num">{{ moedaFormatada(d.resumo.custo) }}</td>
+                  <td class="num" [class.negativo]="d.resumo.lucro < 0">{{ moedaFormatada(d.resumo.lucro) }}</td>
+                  <td class="num">{{ d.resumo.pedidos }}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        } @else if (grafico(); as g) {
+          <div class="grafico" role="img"
+            [attr.aria-label]="'Gráfico de lucro e gastos ' + rotuloAgrupamento + '. Use Ver tabela para os valores.'">
+
+            <div class="eixo-y" aria-hidden="true">
+              @for (l of g.linhas; track l.valor) {
+                <span [style.top.%]="l.top">{{ moedaCompacta(l.valor) }}</span>
+              }
+            </div>
+
+            <div class="area">
+              @for (l of g.linhas; track l.valor) {
+                <div class="grade" [class.grade-zero]="l.valor === 0" [style.top.%]="l.top"></div>
+              }
+
+              <div class="colunas" (mouseleave)="ativa.set(null)">
+                @for (c of g.colunas; track c.ponto.inicio; let i = $index) {
+                  <div class="coluna" [class.ativa]="ativa() === i" tabindex="0"
+                    [attr.aria-label]="c.ponto.rotulo + ': gastos ' + moedaFormatada(c.ponto.custo) + ', lucro ' + moedaFormatada(c.ponto.lucro)"
+                    (mouseenter)="ativa.set(i)" (focus)="ativa.set(i)" (blur)="ativa.set(null)">
+                    <div class="par">
+                      <span class="barra barra-custo" [class.negativa]="c.custo.negativo"
+                        [style.top.%]="c.custo.top" [style.height.%]="c.custo.height"></span>
+                      <span class="barra barra-lucro" [class.negativa]="c.lucro.negativo"
+                        [style.top.%]="c.lucro.top" [style.height.%]="c.lucro.height"></span>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              @if (ativa() !== null) {
+                @let c = g.colunas[ativa()!];
+                <div class="dica-grafico" [style.left]="posicaoTooltip(ativa()!, g.colunas.length)"
+                  [class.direita]="tooltipAlinhaDireita(ativa()!, g.colunas.length)">
+                  <strong>{{ c.ponto.rotulo }}</strong>
+                  <div><span><i class="ponto ponto-custo"></i>Gastos</span><span>{{ moedaFormatada(c.ponto.custo) }}</span></div>
+                  <div><span><i class="ponto ponto-lucro"></i>Lucro</span><span [class.negativo]="c.ponto.lucro < 0">{{ moedaFormatada(c.ponto.lucro) }}</span></div>
+                  <div class="dica-sub"><span>Faturamento</span><span>{{ moedaFormatada(c.ponto.faturamento) }}</span></div>
+                  <div class="dica-sub"><span>Pedidos</span><span>{{ c.ponto.pedidos }}</span></div>
+                </div>
+              }
+            </div>
+
+            <div class="eixo-x" aria-hidden="true">
+              @for (c of g.colunas; track c.ponto.inicio) {
+                <span>{{ c.mostrarRotulo ? rotuloEixo(c.ponto) : '' }}</span>
+              }
+            </div>
+          </div>
+        }
+      </section>
+
+      <!-- Rankings do período -->
+      <div class="rankings">
+        <section class="cartao-grafico cartao-ranking">
+          <div class="grafico-topo">
+            <div>
+              <h2>Produtos mais vendidos</h2>
+              <p>Unidades vendidas no período</p>
+            </div>
+          </div>
+
+          @if (produtos().length === 0) {
+            <div class="vazio vazio-ranking"><p>Nenhum produto vendido nesse período.</p></div>
+          } @else {
+            <ol class="ranking">
+              @for (l of produtos(); track l.item.produtoId; let i = $index) {
+                <li class="ranking-linha">
+                  <span class="ranking-pos">{{ i + 1 }}</span>
+                  <div class="ranking-corpo">
+                    <div class="ranking-texto">
+                      <span class="ranking-nome" [title]="l.item.nome">{{ l.item.nome }}</span>
+                      <strong class="ranking-valor">{{ l.item.quantidade }} un.</strong>
+                    </div>
+                    <div class="ranking-trilho" aria-hidden="true">
+                      <span class="ranking-barra" [style.width.%]="l.largura"></span>
+                    </div>
+                    <span class="ranking-sub">
+                      {{ moedaFormatada(l.item.faturamento) }} · {{ l.item.pedidos }} pedido(s)
+                    </span>
+                  </div>
+                </li>
+              }
+            </ol>
+            @if (d.produtosMaisVendidos.length > topInicial) {
+              <button type="button" class="btn-tabela btn-ver-mais" (click)="verTodosProdutos.set(!verTodosProdutos())">
+                {{ verTodosProdutos() ? 'Ver só o top ' + topInicial : 'Ver top ' + d.produtosMaisVendidos.length }}
+              </button>
+            }
+          }
+        </section>
+
+        <section class="cartao-grafico cartao-ranking">
+          <div class="grafico-topo">
+            <div>
+              <h2>Clientes que mais compraram</h2>
+              <p>Valor gasto no período (sem frete)</p>
+            </div>
+          </div>
+
+          @if (clientes().length === 0) {
+            <div class="vazio vazio-ranking"><p>Nenhum cliente comprou nesse período.</p></div>
+          } @else {
+            <ol class="ranking">
+              @for (l of clientes(); track $index; let i = $index) {
+                <li class="ranking-linha">
+                  <span class="ranking-pos">{{ i + 1 }}</span>
+                  <div class="ranking-corpo">
+                    <div class="ranking-texto">
+                      <span class="ranking-nome" [title]="l.item.nome">{{ l.item.nome }}</span>
+                      <strong class="ranking-valor">{{ moedaFormatada(l.item.valor) }}</strong>
+                    </div>
+                    <div class="ranking-trilho" aria-hidden="true">
+                      <span class="ranking-barra" [style.width.%]="l.largura"></span>
+                    </div>
+                    <span class="ranking-sub">
+                      {{ l.item.pedidos }} pedido(s) · última compra {{ dataCurta(l.item.ultimaCompra) }}
+                      @if (l.item.telefone) { · {{ telefoneFormatado(l.item.telefone) }} }
+                    </span>
+                  </div>
+                </li>
+              }
+            </ol>
+            @if (d.clientesQueMaisCompraram.length > topInicial) {
+              <button type="button" class="btn-tabela btn-ver-mais" (click)="verTodosClientes.set(!verTodosClientes())">
+                {{ verTodosClientes() ? 'Ver só o top ' + topInicial : 'Ver top ' + d.clientesQueMaisCompraram.length }}
+              </button>
+            }
+          }
+        </section>
+      </div>
+    </div>
+  } @else if (carregando()) {
+    <div class="carregando-inicial">Carregando…</div>
+  }
+
+</div>
+
+<ng-template #delta let-v>
+  @if (v === null) {
+    <span class="kpi-sub">Sem dados do período anterior</span>
+  } @else {
+    <span class="kpi-sub">
+      <span class="delta">{{ v >= 0 ? '▲' : '▼' }} {{ percentual(v >= 0 ? v : -v) }}</span>
+      vs. período anterior
+    </span>
+  }
+</ng-template>

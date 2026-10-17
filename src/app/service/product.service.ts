@@ -172,6 +172,16 @@ export class ProductService {
     formData.append('lojaId', produto.lojaId.toString());
     formData.append('quantidade', produto.quantidade.toString());
     formData.append('precoVenda', produto.precoVenda.toString());
+    // Opcionais: sem valor não vai no form (o backend grava null)
+    if (produto.precoCusto != null) {
+      formData.append('precoCusto', produto.precoCusto.toString());
+    }
+    if (produto.estoqueMinimo != null) {
+      formData.append('estoqueMinimo', produto.estoqueMinimo.toString());
+    }
+    if (produto.mostrarNoCatalogo != null) {
+      formData.append('mostrarNoCatalogo', String(produto.mostrarNoCatalogo));
+    }
 
     return this.http.post<ProdutoCompletoResponse>(
       `${this.API}/criar`,

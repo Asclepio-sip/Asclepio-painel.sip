@@ -69,6 +69,10 @@ export const AppPermissions = {
     update: 'EditarConfigConta',
   },
 
+  Dashboard: {
+    read: 'VerDashboard',
+  },
+
   Sistema: {
     permissionsRead: 'VerPermissoes',
     roleRead: 'VerRole',

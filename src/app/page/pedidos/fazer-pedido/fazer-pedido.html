@@ -11,42 +11,65 @@
       <app-lista-produto-estoque></app-lista-produto-estoque>
     </div>
 
-    <aside class="cart-card">
-      <div class="cart-title">
-        <span class="cart-icon" aria-hidden="true"></span>
-        <h2>Carrinho</h2>
+    <aside class="cupom" aria-label="Cupom do pedido">
+      <header class="cupom-topo">
+        <span class="cupom-marca">{{ nomeLoja || 'Asclepio' }}</span>
+        <span class="cupom-sub">Cupom do pedido · sem valor fiscal</span>
+        <span class="cupom-data">{{ abertoEm | date:'dd/MM/yyyy · HH:mm' }}</span>
+      </header>
+
+      <div class="cupom-colunas" aria-hidden="true">
+        <span>Qtd</span>
+        <span>Descrição</span>
+        <span>Valor</span>
       </div>
 
-      <div class="cart-items" *ngIf="itens.length > 0; else carrinhoVazio">
-        <article class="cart-item" *ngFor="let item of itens">
-          <div class="item-main">
+      <div class="cupom-itens" *ngIf="itens.length > 0; else carrinhoVazio">
+        <article class="cupom-item" *ngFor="let item of itens; let i = index">
+          <span class="cupom-qtd">{{ item.quantidade }}x</span>
+
+          <div class="cupom-desc">
             <strong>{{ item.nomeProduto }}</strong>
-            <small>{{ item.nomeLoja }}</small>
-            <small *ngIf="item.nomeVariacao">{{ item.nomeVariacao }}</small>
+            <small>
+              <ng-container *ngIf="item.nomeVariacao">{{ item.nomeVariacao }} · </ng-container>{{ item.valorFinal | currency:'BRL' }} un.
+            </small>
+            <small *ngIf="item.precoVenda > item.valorFinal" class="cupom-promo">
+              de {{ item.precoVenda | currency:'BRL' }} (promoção)
+            </small>
+
+            <div class="cupom-acoes">
+              <button type="button" (click)="diminuir(item)" aria-label="Diminuir quantidade">−</button>
+              <button type="button" (click)="aumentar(item)" aria-label="Aumentar quantidade">+</button>
+              <button type="button" class="cupom-remover" (click)="remover(item)">Remover</button>
+            </div>
           </div>
 
-          <div class="quantity-control">
-            <button type="button" (click)="diminuir(item)" aria-label="Diminuir quantidade">-</button>
-            <span>{{ item.quantidade }}</span>
-            <button type="button" (click)="aumentar(item)" aria-label="Aumentar quantidade">+</button>
-          </div>
-
-          <strong class="item-total">
-            {{ item.valorFinal * item.quantidade | currency:'BRL' }}
-          </strong>
-
-          <button class="remove-btn" type="button" (click)="remover(item)" aria-label="Remover item">
-            Remover
-          </button>
+          <strong class="cupom-valor">{{ item.valorFinal * item.quantidade | currency:'BRL' }}</strong>
         </article>
       </div>
 
       <ng-template #carrinhoVazio>
-        <div class="empty-cart">Carrinho vazio</div>
+        <div class="cupom-vazio">
+          <strong>Nenhum item no cupom</strong>
+          <span>Adicione produtos ao lado para começar a venda.</span>
+        </div>
       </ng-template>
 
-      <footer class="cart-footer">
-        <div class="total-row">
+      <footer class="cupom-rodape">
+        <div class="cupom-linha">
+          <span>Itens</span>
+          <span>{{ totalItens() }}</span>
+        </div>
+        <div class="cupom-linha">
+          <span>Subtotal</span>
+          <span>{{ subtotalValor() | currency:'BRL' }}</span>
+        </div>
+        <div class="cupom-linha cupom-desconto" *ngIf="descontoValor() > 0">
+          <span>Descontos</span>
+          <span>− {{ descontoValor() | currency:'BRL' }}</span>
+        </div>
+
+        <div class="cupom-total">
           <span>Total</span>
           <strong>{{ totalValor() | currency:'BRL' }}</strong>
         </div>
@@ -59,6 +82,9 @@
         >
           Prosseguir
         </button>
+
+        <div class="cupom-barras" aria-hidden="true"></div>
+        <span class="cupom-obrigado">Obrigado pela preferência!</span>
       </footer>
     </aside>
   </section>
