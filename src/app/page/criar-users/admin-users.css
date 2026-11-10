@@ -811,6 +811,23 @@
   border-color: #dc2626;
 }
 
+.btn-ativar {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.btn-ativar:hover {
+  background: var(--ds-sucesso);
+  color: #fff;
+  border-color: var(--ds-sucesso);
+}
+
+.btn-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* ── Empty / Loading ── */
 .empty-state {
   text-align: center;

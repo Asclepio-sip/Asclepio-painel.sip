@@ -44,7 +44,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         authService.logout();
         // Empresa bloqueada pelo painel SaaS (mensalidade não paga): tela própria explicando o motivo.
         const bloqueada = err.error?.error === 'Conta Bloqueada';
-        router.navigate([bloqueada ? '/acesso-bloqueado' : '/login']);
+        // Usuário desativado pelo gerente: volta pro login com o aviso do motivo.
+        const desativado = err.error?.error === 'Usuario Desativado';
+        if (bloqueada) {
+          router.navigate(['/acesso-bloqueado']);
+        } else if (desativado) {
+          router.navigate(['/login'], { queryParams: { motivo: 'desativado' } });
+        } else {
+          router.navigate(['/login']);
+        }
       }
       return throwError(() => err);
     })

@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService, LojaEscolha } from '../../service/auth.service';
 import { LINK_WHATSAPP } from '../landing/landing-navegacao';
 
@@ -12,7 +12,7 @@ import { LINK_WHATSAPP } from '../landing/landing-navegacao';
   templateUrl: './login.component.html',
    styleUrl: './login.css',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
 
   login = '';
   password = '';
@@ -34,8 +34,29 @@ export class LoginComponent {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private cd: ChangeDetectorRef
   ) {}
+
+  /** Mensagem do backend (403 "Usuario Desativado") quando o gerente desativou este usuário. */
+  private readonly mensagemDesativado =
+    'Seu usuário está desativado. Fale com o responsável pela sua loja.';
+
+  ngOnInit() {
+    // Veio do authInterceptor: estava logado e foi desativado no meio da sessão.
+    if (this.route.snapshot.queryParamMap.get('motivo') === 'desativado') {
+      setTimeout(() => alert(this.mensagemDesativado));
+    }
+  }
+
+  /** 403 "Usuario Desativado": mostra o motivo. Devolve true se tratou o erro. */
+  private avisarUsuarioDesativado(err: any): boolean {
+    if (err?.status === 403 && err.error?.error === 'Usuario Desativado') {
+      alert(err.error?.message || this.mensagemDesativado);
+      return true;
+    }
+    return false;
+  }
 
   /**
    * Empresa bloqueada pelo painel SaaS (403 "Conta Bloqueada"): vai para a tela que explica o motivo.
@@ -69,7 +90,7 @@ export class LoginComponent {
       error: err => {
         this.entrando = false;
         this.cd.detectChanges();
-        if (!this.irParaAcessoBloqueado(err)) {
+        if (!this.irParaAcessoBloqueado(err) && !this.avisarUsuarioDesativado(err)) {
           alert('Login ou senha inválidos');
         }
       }
@@ -79,14 +100,14 @@ export class LoginComponent {
   selecionarLoja(loja: LojaEscolha) {
     this.authService.escolherLoja(loja.id, this.tempToken).subscribe({
       next: () => this.router.navigate([this.authService.getHomeRoute()]),
-      error: err => this.irParaAcessoBloqueado(err) || alert('Não foi possível entrar nessa loja. Tente novamente.')
+      error: err => this.irParaAcessoBloqueado(err) || this.avisarUsuarioDesativado(err) || alert('Não foi possível entrar nessa loja. Tente novamente.')
     });
   }
 
   verTodasAsLojas() {
     this.authService.escolherLoja(null, this.tempToken).subscribe({
       next: () => this.router.navigate([this.authService.getHomeRoute()]),
-      error: err => this.irParaAcessoBloqueado(err) || alert('Sua conta não tem permissão para ver todas as lojas de uma vez.')
+      error: err => this.irParaAcessoBloqueado(err) || this.avisarUsuarioDesativado(err) || alert('Sua conta não tem permissão para ver todas as lojas de uma vez.')
     });
   }
 

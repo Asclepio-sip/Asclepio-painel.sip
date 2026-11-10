@@ -104,6 +104,14 @@
         }
       </select>
     </div>
+    <div class="filter-group">
+      <label>Status:</label>
+      <select [(ngModel)]="filterStatus" (ngModelChange)="filtrarUsuarios()">
+        <option value="">Todos</option>
+        <option value="ativo">Ativos</option>
+        <option value="inativo">Inativos</option>
+      </select>
+    </div>
   </div>
   }
 
@@ -149,6 +157,14 @@
           <td>
             <div class="action-buttons">
               <button class="btn-action btn-acessos" type="button" (click)="abrirGerenciarAcessos(user)">Gerenciar Acessos</button>
+              @if (!ehUsuarioLogado(user)) {
+              <button class="btn-action" type="button"
+                [class.btn-remover]="user.ativo" [class.btn-ativar]="!user.ativo"
+                [disabled]="alterandoAtivoId === user.id"
+                (click)="alternarAtivo(user)">
+                {{ alterandoAtivoId === user.id ? 'Salvando...' : (user.ativo ? 'Desativar' : 'Ativar') }}
+              </button>
+              }
             </div>
           </td>
         </tr>
