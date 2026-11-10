@@ -70,6 +70,7 @@ Padrões seguidos no código:
 
 - "Adicionar Membro" **só cria usuário novo** (`POST /user` com `{ nome, email, password, lojas: [{ lojaId, roleId }] }`); o login é gerado pelo backend.
 - "Gerenciar Acessos" carrega `GET /user/{id}/lojas` (resposta plana: `{ lojaId, lojaNome, roleId, roleNome }[]`, tipo `LojaDoUsuario`) e salva com `PUT /user/{id}/lojas` (`{ lojas: [{ lojaId, roleId }] }`). O PUT **substitui o conjunto inteiro** — loja fora da lista perde o acesso. Por isso, se o GET falhar, o salvar fica bloqueado (senão apagaria os acessos atuais).
+- Botão "Desativar"/"Ativar" na linha (não aparece na do próprio usuário): `PUT /user/{id}/ativo` (`{ ativo }`). Erros vêm 400 com `message` (limite do plano ao reativar, desativar a si mesmo, não-Gerente desativando Gerente). Usuário desativado recebe 403 `error: "Usuario Desativado"` no login e em qualquer chamada: o `authInterceptor` manda pra `/login?motivo=desativado`, que mostra o aviso.
 
 ### Catálogo online
 

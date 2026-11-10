@@ -138,6 +138,15 @@ export class UserAdminService {
     );
   }
 
+  /** PUT /user/{id}/ativo — desativado não entra e é deslogado na hora. Reativar conta no limite do plano. */
+  alterarAtivo(id: string, ativo: boolean) {
+
+    return this.http.put<void>(
+      `${this.API}/user/${id}/ativo`,
+      { ativo }
+    );
+  }
+
   listarRoles() {
 
     return this.http.get<Role[]>(
