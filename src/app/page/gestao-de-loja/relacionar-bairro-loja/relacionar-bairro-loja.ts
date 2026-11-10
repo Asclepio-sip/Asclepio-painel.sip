@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -57,7 +57,9 @@ export class RelacionarBairroLoja implements OnInit {
     private router: Router,
     private bairroService: BairroService,
     private lojaBairroService: LojaBairroService,
-    private lojaService: LojaService
+    private lojaService: LojaService,
+    // App zoneless: sem detectChanges() a tela só atualiza no próximo clique
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -78,6 +80,7 @@ export class RelacionarBairroLoja implements OnInit {
     this.lojaService.buscarPorId(this.lojaId).subscribe({
       next: (loja) => {
         this.lojaNome = loja.nomeLoja;
+        this.cd.detectChanges();
       },
       error: (err) => {
         console.error('Erro ao carregar loja', err);
@@ -91,6 +94,7 @@ export class RelacionarBairroLoja implements OnInit {
       .subscribe({
         next: (dados) => {
           this.bairros = dados;
+          this.cd.detectChanges();
         },
         error: (err) => {
           console.error('Erro ao carregar bairros', err);
@@ -108,10 +112,12 @@ export class RelacionarBairroLoja implements OnInit {
         next: (resposta) => {
           this.bairrosRelacionados = resposta.content;
           this.carregando = false;
+          this.cd.detectChanges();
         },
         error: (err) => {
           console.error('Erro ao carregar bairros relacionados', err);
           this.carregando = false;
+          this.cd.detectChanges();
           Swal.fire('Erro', 'Não foi possível carregar os bairros da loja.', 'error');
         }
       });
@@ -134,6 +140,7 @@ export class RelacionarBairroLoja implements OnInit {
 
         this.novoBairroNome = '';
         this.criandoBairro = false;
+        this.cd.detectChanges();
 
         Swal.fire('Sucesso', 'Bairro criado com sucesso!', 'success');
       },
@@ -141,6 +148,7 @@ export class RelacionarBairroLoja implements OnInit {
       error: (err) => {
         console.error('Erro ao criar bairro', err);
         this.criandoBairro = false;
+        this.cd.detectChanges();
         Swal.fire('Erro', 'Erro ao criar bairro', 'error');
       }
     });
@@ -186,6 +194,7 @@ export class RelacionarBairroLoja implements OnInit {
         };
 
         this.salvando = false;
+        this.cd.detectChanges();
 
         this.carregarRelacionamentos();
       },
@@ -193,6 +202,7 @@ export class RelacionarBairroLoja implements OnInit {
       error: (err) => {
         console.error('Erro ao relacionar bairro', err);
         this.salvando = false;
+        this.cd.detectChanges();
         Swal.fire('Erro', 'Erro ao relacionar bairro', 'error');
       }
     });
@@ -218,6 +228,7 @@ export class RelacionarBairroLoja implements OnInit {
         item.valorFrete = atualizado.valorFrete;
 
         this.edicaoFreteId = null;
+        this.cd.detectChanges();
 
         Swal.fire('Sucesso', 'Frete atualizado com sucesso!', 'success');
       },

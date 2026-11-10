@@ -45,6 +45,7 @@ export class AdminUsersComponent implements OnInit {
   searchTerm = '';
   sortBy: 'recente' | 'nome' = 'recente';
   filterRole = '';
+  filterStatus: '' | 'ativo' | 'inativo' = '';
   showFiltros = false;
   currentPage = 1;
   pageSize = 10;
@@ -141,6 +142,7 @@ export class AdminUsersComponent implements OnInit {
     this.userService.listarUsuarios(page, this.pageSize, {
       login: this.searchTerm.trim() || undefined,
       nomeRole: this.filterRole || undefined,
+      ativo: this.filterStatus ? this.filterStatus === 'ativo' : undefined,
       sort: this.sortBy === 'nome' ? 'username,asc' : undefined
     }).subscribe({
       next: response => {
@@ -239,6 +241,44 @@ export class AdminUsersComponent implements OnInit {
     if (roleName.includes('ADMIN')) return 'role-admin';
     if (roleName.includes('OPERADOR')) return 'role-operador';
     return 'role-default';
+  }
+
+  // ── Ativar / desativar ──
+
+  /** id do usuário com a troca de status em andamento (trava o botão da linha). */
+  alterandoAtivoId: string | null = null;
+
+  /** O backend não deixa desativar o próprio usuário; o botão nem aparece na linha de quem está logado. */
+  ehUsuarioLogado(user: User): boolean {
+    const logado = this.authService.getUserName();
+    return !!logado && (user.username === logado || user.login === logado);
+  }
+
+  alternarAtivo(user: User) {
+    const ativar = !user.ativo;
+    const nome = this.getNomeExibicao(user);
+
+    const confirmado = ativar
+      ? confirm(`Reativar ${nome}? O acesso ao sistema volta a funcionar.`)
+      : confirm(`Desativar ${nome}? O acesso será bloqueado e, se estiver usando o sistema agora, a sessão será encerrada.`);
+    if (!confirmado) return;
+
+    this.alterandoAtivoId = user.id;
+    this.userService.alterarAtivo(user.id, ativar).subscribe({
+      next: () => {
+        this.alterandoAtivoId = null;
+        user.ativo = ativar;
+        this.cd.detectChanges();
+        this.carregarUsuarios(this.currentPage - 1);
+        this.carregarPlano();
+      },
+      error: err => {
+        this.alterandoAtivoId = null;
+        this.cd.detectChanges();
+        // 400 com mensagem pronta (limite do plano, próprio usuário, Gerente...)
+        alert(err.error?.message || 'Erro ao alterar o status do usuário');
+      }
+    });
   }
 
   // ── Gerenciar acessos (lojas/cargos) ──
